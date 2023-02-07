@@ -1,4 +1,5 @@
-package pedidos-api
+package pedidosApi
+
 fun main(args: Array<String>) {
     println("Hello World!")
 
