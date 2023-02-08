@@ -6,6 +6,8 @@ plugins {
     kotlin("jvm") version "1.7.22"
     kotlin("plugin.spring") version "1.7.22"
     kotlin("plugin.jpa") version "1.7.22"
+    //Dokka Documentación Kotlin
+    id("org.jetbrains.dokka") version "1.7.20"
 }
 
 group = "blanco.maldonado.mendoza"
@@ -29,6 +31,12 @@ dependencies {
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+    // Log
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+    // Jackson
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.+")
+    //Dokka Documentación Kotlin
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
 }
 
 tasks.withType<KotlinCompile> {
