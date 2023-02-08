@@ -13,4 +13,4 @@ services:
       - db:/var/lib/postgresql/data
 volumes:
   db:
-    driver: bridge
+    driver: local
