@@ -9,14 +9,17 @@ data class User (
     val password: String,
     val phone: String,
     val role: UserRole,
+    val createdAt: String,
+    val avatar: String,
+    val activo: Boolean
 )
 
 data class Address (
-    val id: UUID? = UUID.randomUUID(),
+    val id: UUID = UUID.randomUUID(),
     val userId: UUID,
     val address: String
 )
 
 enum class UserRole {
-    USER,ADMIN,SUPERADMIN
+    USER,ADMIN,SUPE_RADMIN
 }
