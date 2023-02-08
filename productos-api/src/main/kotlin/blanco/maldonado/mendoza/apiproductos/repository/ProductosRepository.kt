@@ -13,6 +13,6 @@ interface ProductosRepository : CoroutineCrudRepository<Producto, UUID> {
     fun findByNombre(nombre: String): Flow<Producto>
 
     fun findByCategoria(categoria: String): Flow<Producto>
-    
+
 }
 
