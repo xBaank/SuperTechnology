@@ -1,5 +1,6 @@
 package resa.rodriguez.dto
 
+import resa.rodriguez.models.UserRole
 import java.util.*
 
 data class UserDTOlogin (
@@ -12,7 +13,8 @@ data class UserDTOregister (
     val email: String,
     val password: String,
     val repeatPassword: String,
-    val phone: String
+    val phone: String,
+    val addresses: Set<String>
 )
 
 data class UserDTOcreate (
@@ -20,10 +22,14 @@ data class UserDTOcreate (
     val username: String,
     val email: String,
     val password: String,
-    val phone: String
+    val phone: String,
+    val role: UserRole,
+    val addresses: Set<String>
 )
 
 data class UserDTOresponse (
     val username: String,
-    val email: String
+    val email: String,
+    val role: UserRole,
+    val addresses: Set<String>
 )
