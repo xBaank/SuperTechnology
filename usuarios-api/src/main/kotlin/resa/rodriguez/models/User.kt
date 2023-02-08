@@ -3,7 +3,7 @@ package resa.rodriguez.models
 import java.util.UUID
 
 data class User (
-    val uuid: UUID,
+    val id: UUID? = UUID.randomUUID(),
     val username: String,
     val email: String,
     val password: String,

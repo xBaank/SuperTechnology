@@ -16,7 +16,7 @@ data class UserDTOregister (
 )
 
 data class UserDTOcreate (
-    val uuid: UUID? = UUID.randomUUID(),
+    val id: UUID? = UUID.randomUUID(),
     val username: String,
     val email: String,
     val password: String,
