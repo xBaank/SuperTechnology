@@ -1,9 +1,24 @@
 package pedidosApi
 
-fun main(args: Array<String>) {
-    println("Hello World!")
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.contentnegotiation.*
+import kotlinx.serialization.json.Json
+import org.koin.ktor.plugin.Koin
+import pedidosApi.modules.mainModule
+import pedidosApi.routing.pedidosRouting
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+fun main(args: Array<String>) {
+    EngineMain.main(args)
+}
+
+fun Application.module() {
+    install(Koin) {
+        modules(mainModule)
+    }
+    install(ContentNegotiation) {
+        json(Json { this.ignoreUnknownKeys = true })
+    }
+    pedidosRouting()
 }
