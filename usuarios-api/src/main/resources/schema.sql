@@ -1,0 +1,19 @@
+-- Tablas --
+CREATE TABLE IF NOT EXISTS USERS(
+    id uuid NOT NULL
+    username VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL
+    email VARCHAR(255) NOT NULL
+    phone VARCHAR(255) NOT NULL
+    role VARCHAR(15) NOT NULL
+    PRIMARY KEY (id)
+)
+
+CREATE TABLE IF NOT EXISTS ADDRESSES(
+    id uuid NOT NULL
+    user_id UUID NOT NULL
+    address VARCHAR(255) NOT NULL
+    PRIMARY KEY (id)
+    FOREIGN KEY (user_id) REFERENCES USERS(id)
+)
+
