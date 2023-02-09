@@ -11,13 +11,13 @@ fun fakeUserClient() = object : UsuariosClient {
         email = "test@gmail.com"
     )
 
-    override suspend fun getUsuario(id: String): UsuarioDto? = user
+    override suspend fun getUsuario(id: String): UsuarioDto = user
 
     override suspend fun getUsuarios(): List<UsuarioDto> = listOf(user)
 
-    override suspend fun createUsuario(usuario: UsuarioDto): UsuarioDto? = user
+    override suspend fun createUsuario(usuario: UsuarioDto): UsuarioDto = user
 
-    override suspend fun updateUsuario(usuario: UsuarioDto): UsuarioDto? = user
+    override suspend fun updateUsuario(usuario: UsuarioDto): UsuarioDto = user
 
     override suspend fun deleteUsuario(id: String) = Unit
 }
