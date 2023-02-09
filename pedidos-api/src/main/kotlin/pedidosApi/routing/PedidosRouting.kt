@@ -5,6 +5,8 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.pipeline.*
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.koin.ktor.ext.inject
 import pedidosApi.clients.ProductosClient
@@ -22,86 +24,39 @@ fun Application.pedidosRouting() = routing {
     val productClient by inject<ProductosClient>()
 
     get("/pedidos") {
-        call.respond(repository.getAll().toList())
+        try {
+            call.respond(repository.getAll().map(Pedido::toDto).toList())
+        }
+        catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError, e.message ?: "Unknown error")
+        }
     }
     get("/pedidos/{id}") {
+        try {
 
-        val id = call.parameters["id"] ?: return@get call.respond(
-            HttpStatusCode.BadRequest,
-            "Missing id"
-        )
+            val id = call.parameters["id"] ?: return@get call.respond(
+                HttpStatusCode.BadRequest,
+                "Missing id"
+            )
 
-        val pedido = repository.getById(id) ?: return@get call.respond(
-            HttpStatusCode.NotFound,
-            "Pedido not found"
-        )
+            val pedido = repository.getById(id) ?: return@get call.respond(
+                HttpStatusCode.NotFound,
+                "Pedido not found"
+            )
 
-        call.respond(pedido)
+            call.respond(pedido)
+        }
+        catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError, e.message ?: "Unknown error")
+        }
     }
 
     post("/pedidos") {
-        val pedido = call.receiveOrNull<CreatePedidoDto>() ?: return@post call.respond(
-            HttpStatusCode.BadRequest,
-            "Incorrect pedido"
-        )
-
-        val usuario = userClient.getUsuario(pedido.usuario) ?: return@post call.respond(
-            HttpStatusCode.BadRequest,
-            "Missing usuario"
-        )
-
-        val productos = pedido.productos.map {
-            productClient.getProducto(it) ?: return@post call.respond(
-                HttpStatusCode.BadRequest,
-                "Missing producto with id : $it"
-            )
-        }
-
-        val pedidoToSave = Pedido(
-            usuario = usuario,
-            tareas = nonEmptyListOf(
-                Tarea(
-                    productos = productos,
-                    empleado = usuario
-                )
-            )
-        )
-
-
-        repository.save(pedidoToSave)
-        call.respond(pedidoToSave.toDto())
+        save(userClient, productClient, repository)
     }
 
     put("/pedidos") {
-        val pedido = call.receiveOrNull<CreatePedidoDto>() ?: return@put call.respond(
-            HttpStatusCode.BadRequest,
-            "Incorrect pedido"
-        )
-
-        val usuario = userClient.getUsuario(pedido.usuario) ?: return@put call.respond(
-            HttpStatusCode.BadRequest,
-            "Missing usuario"
-        )
-
-        val productos = pedido.productos.map {
-            productClient.getProducto(it) ?: return@put call.respond(
-                HttpStatusCode.BadRequest,
-                "Missing producto with id : $it"
-            )
-        }
-
-        val pedidoToUpdate = Pedido(
-            usuario = usuario,
-            tareas = nonEmptyListOf(
-                Tarea(
-                    productos = productos,
-                    empleado = usuario
-                )
-            )
-        )
-
-        repository.save(pedidoToUpdate)
-        call.respond(pedidoToUpdate.toDto())
+        save(userClient, productClient, repository)
     }
 
     delete("/pedidos/{id}") {
@@ -111,4 +66,35 @@ fun Application.pedidosRouting() = routing {
         repository.delete(id!!)
         call.respond(HttpStatusCode.OK, "Pedido deleted")
     }
+}
+
+private suspend fun PipelineContext<Unit, ApplicationCall>.save(
+    userClient: UsuariosClient,
+    productClient: ProductosClient,
+    repository: PedidosRepository
+) {
+    val pedido = call.receiveOrNull<CreatePedidoDto>() ?: return call.respond(
+        HttpStatusCode.BadRequest,
+        "Incorrect pedido"
+    )
+
+    val usuario = userClient.getUsuario(pedido.usuario)
+
+    val productos = pedido.productos.map {
+        productClient.getProducto(it)
+    }
+
+    val pedidoToSave = Pedido(
+        usuario = usuario,
+        tareas = nonEmptyListOf(
+            Tarea(
+                productos = productos,
+                empleado = usuario
+            )
+        )
+    )
+
+
+    repository.save(pedidoToSave)
+    call.respond(pedidoToSave.toDto())
 }

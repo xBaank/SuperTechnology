@@ -14,13 +14,13 @@ fun fakeProductosClient() = object : ProductosClient {
         avatar = "Fake Avatar"
     )
 
-    override suspend fun getProducto(id: String): ProductoDto? = producto
+    override suspend fun getProducto(id: String): ProductoDto = producto
 
     override suspend fun getProductos(): List<ProductoDto> = listOf(producto)
 
-    override suspend fun createProducto(producto: ProductoDto): ProductoDto? = producto
+    override suspend fun createProducto(producto: ProductoDto): ProductoDto = producto
 
-    override suspend fun updateProducto(producto: ProductoDto): ProductoDto? = producto
+    override suspend fun updateProducto(producto: ProductoDto): ProductoDto = producto
 
     override suspend fun deleteProducto(id: String) = Unit
 
