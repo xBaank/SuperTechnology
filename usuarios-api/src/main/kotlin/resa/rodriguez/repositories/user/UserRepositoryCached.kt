@@ -80,7 +80,7 @@ class UserRepositoryCached
             avatar = user.avatar,
             role = user.role,
             createdAt = user.createdAt,
-            activo = active
+            active = active
         )
         repo.save(res)
     }
@@ -97,7 +97,7 @@ class UserRepositoryCached
             avatar = user.avatar,
             role = user.role,
             createdAt = u.createdAt,
-            activo = user.activo
+            active = user.active
         )
         repo.save(res)
     }
@@ -114,7 +114,7 @@ class UserRepositoryCached
             avatar = user.avatar,
             role = u.role,
             createdAt = u.createdAt,
-            activo = u.activo
+            active = u.active
         )
         repo.save(res)
     }
