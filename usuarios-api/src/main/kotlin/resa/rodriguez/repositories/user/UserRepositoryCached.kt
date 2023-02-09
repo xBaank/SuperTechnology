@@ -42,20 +42,22 @@ class UserRepositoryCached
         repo.findFirstByEmailContaining(email).firstOrNull()
     }
 
-    override suspend fun findByUsername(username: String): Flow<User> {
-        TODO("Not yet implemented")
+    override suspend fun findByUsername(username: String): Flow<User> = withContext(Dispatchers.IO) {
+        repo.findByUsernameContaining(username)
     }
 
-    override suspend fun findByPhone(phone: String): User? {
-        TODO("Not yet implemented")
+    override suspend fun findByPhone(phone: String): User? = withContext(Dispatchers.IO) {
+        repo.findFirstByPhone(phone).firstOrNull()
     }
 
-    override suspend fun save(user: User): User {
-        TODO("Not yet implemented")
+    override suspend fun save(user: User): User = withContext(Dispatchers.IO) {
+        repo.save(user)
     }
 
-    override suspend fun deleteById(id: UUID): User? {
-        TODO("Not yet implemented")
+    override suspend fun deleteById(id: UUID): User? = withContext(Dispatchers.IO) {
+        val user = repo.findById(id)
+        if (user != null) repo.deleteById(user.id)
+        user
     }
 
     override suspend fun setInactive(id: UUID): User? {

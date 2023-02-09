@@ -2,6 +2,7 @@ package resa.rodriguez.models
 
 import jakarta.validation.constraints.NotEmpty
 import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDate
 import java.util.UUID
@@ -21,6 +22,7 @@ data class User (
     val avatar: String = "",
     @NotEmpty(message = "El usuario debe tener un rol.")
     val role: UserRole,
+    @Column("created_at")
     val createdAt: LocalDate = LocalDate.now(),
     val activo: Boolean
 )

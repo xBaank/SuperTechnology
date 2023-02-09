@@ -10,7 +10,7 @@ import java.util.*
 @Repository
 interface UserRepository : CoroutineCrudRepository<User, UUID> {
     fun findFirstByEmailContaining(email: String) : Flow<User>
-    fun findFirstByUsernameContaining(username: String) : Flow<User>
+    fun findByUsernameContaining(username: String) : Flow<User>
     fun findFirstByPhone(phone: String) : Flow<User>
     fun findAllByActivoOrderByCreatedAt(activo: Boolean) : Flow<User>
     fun findAllBy(page: Pageable?) : Flow<User>
