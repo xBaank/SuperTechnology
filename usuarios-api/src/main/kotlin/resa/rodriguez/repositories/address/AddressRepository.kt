@@ -1,4 +1,4 @@
-package resa.rodriguez.repositories
+package resa.rodriguez.repositories.address
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository

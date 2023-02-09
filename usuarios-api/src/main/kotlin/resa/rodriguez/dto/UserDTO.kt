@@ -1,7 +1,7 @@
 package resa.rodriguez.dto
 
 import resa.rodriguez.models.UserRole
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.*
 
 data class UserDTOlogin (
@@ -37,6 +37,6 @@ data class UserDTOresponse (
     val role: UserRole,
     val addresses: Set<String>,
     val avatar: String,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDate,
     val activo: Boolean
 )
