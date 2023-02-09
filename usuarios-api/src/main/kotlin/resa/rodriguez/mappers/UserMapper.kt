@@ -26,7 +26,7 @@ class UserMapper
             addresses = addressesString,
             avatar = user.avatar,
             createdAt = user.createdAt,
-            activo = user.activo
+            active = user.active
         )
     }
 
@@ -48,7 +48,7 @@ fun UserDTOregister.fromDTOtoUser() : User? {
         role = UserRole.USER,
         createdAt = LocalDate.now(),
         avatar = "",
-        activo = true
+        active = true
     )
 }
 
@@ -74,7 +74,7 @@ fun UserDTOcreate.fromDTOtoUser() = User (
     role = role,
     createdAt = LocalDate.now(),
     avatar = avatar,
-    activo = activo
+    active = active
 )
 
 fun UserDTOcreate.fromDTOtoAddresses() : Set<Address> {

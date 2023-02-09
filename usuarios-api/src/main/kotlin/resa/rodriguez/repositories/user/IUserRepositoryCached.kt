@@ -3,9 +3,11 @@ package resa.rodriguez.repositories.user
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.stereotype.Repository
 import resa.rodriguez.models.User
 import java.util.UUID
 
+@Repository
 interface IUserRepositoryCached {
     suspend fun findAll() : Flow<User>
     suspend fun findAllPaged(page: PageRequest) : Flow<Page<User>>
