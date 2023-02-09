@@ -2,15 +2,17 @@ package blanco.maldonado.mendoza.apiproductos.mappers
 
 import blanco.maldonado.mendoza.apiproductos.dtos.ProductosDTO
 import blanco.maldonado.mendoza.apiproductos.model.Producto
+import java.time.LocalDateTime
+import java.util.*
 
 
 fun Producto.toDto(producto: Producto) = ProductosDTO(
-    id= producto.id.toString(),
-    nombre= producto.nombre,
+    id = producto.id.toString(),
+    nombre = producto.nombre,
     categoria = producto.categoria.toString(),
     stock = producto.stock,
     description = producto.description,
-    createdAt= producto.createdAt.toString(),
+    createdAt = producto.createdAt.toString(),
     updateAt = producto.updateAt.toString(),
     deleteAt = producto.deleteAt.toString(),
     precio = producto.precio,
@@ -18,14 +20,14 @@ fun Producto.toDto(producto: Producto) = ProductosDTO(
 )
 
 fun ProductosDTO.toProducto(productoDTO: ProductosDTO) = Producto(
-    id= productoDTO.id.toU,
-    nombre= productoDTO.nombre,
-    categoria = productoDTO.categoria,
+    id = UUID.randomUUID(),
+    nombre = productoDTO.nombre,
+    categoria = Producto.Categoria.MONTAJE,
     stock = productoDTO.stock,
     description = productoDTO.description,
-    createdAt= productoDTO.createdAt,
-    updateAt = productoDTO.updateAt,
-    deleteAt = productoDTO.deleteAt,
+    createdAt = LocalDateTime.parse(this.createdAt),
+    updateAt = LocalDateTime.parse(this.updateAt),
+    deleteAt = LocalDateTime.parse(this.deleteAt),
     precio = productoDTO.precio,
     activo = productoDTO.activo
 )
