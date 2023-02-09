@@ -9,8 +9,8 @@ import resa.rodriguez.dto.UserDTOresponse
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
-import resa.rodriguez.repositories.AddressRepository
-import java.time.LocalDateTime
+import resa.rodriguez.repositories.address.AddressRepository
+import java.time.LocalDate
 
 @Service
 class UserMapper
@@ -25,7 +25,7 @@ class UserMapper
             role = user.role,
             addresses = addressesString,
             avatar = user.avatar,
-            createdAt = LocalDateTime.parse(user.createdAt),
+            createdAt = user.createdAt,
             activo = user.activo
         )
     }
@@ -46,7 +46,7 @@ fun UserDTOregister.fromDTOtoUser() : User? {
         password = password,
         phone = phone,
         role = UserRole.USER,
-        createdAt = LocalDateTime.now().toString(),
+        createdAt = LocalDate.now(),
         avatar = "",
         activo = true
     )
@@ -72,7 +72,7 @@ fun UserDTOcreate.fromDTOtoUser() = User (
     password = password,
     phone = phone,
     role = role,
-    createdAt = LocalDateTime.now().toString(),
+    createdAt = LocalDate.now(),
     avatar = avatar,
     activo = activo
 )
