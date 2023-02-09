@@ -18,7 +18,7 @@ interface IUserRepositoryCached {
     suspend fun findByPhone(phone: String) : User?
     suspend fun save(user: User) : User
     suspend fun deleteById(id: UUID) : User?
-    suspend fun setInactive(id: UUID) : User?
+    suspend fun setActivity(id: UUID, active: Boolean) : User?
     suspend fun update(id: UUID, user: User) : User?
     suspend fun updateCapado(id: UUID, user: User) : User?
 }
