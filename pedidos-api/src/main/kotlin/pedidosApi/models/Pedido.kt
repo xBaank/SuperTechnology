@@ -9,6 +9,13 @@ data class Pedido(
     val _id: Id<String> = newId(),
     val usuario: UsuarioDto,
     val tareas: NonEmptyList<Tarea>,
-)
+    val estado: EstadoPedido
+) {
+    enum class EstadoPedido {
+        ENTREGADO,
+        EN_PROCESO,
+        CANCELADO
+    }
+}
 
 val Pedido.total: Double get() = tareas.sumOf(Tarea::precio)

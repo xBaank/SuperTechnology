@@ -24,6 +24,8 @@ val arrowVersion = "1.1.5"
 
 dependencies {
     testImplementation(kotlin("test"))
+    //testing con ktor
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-serialization:$ktorVersion")
@@ -58,9 +60,9 @@ tasks.test {
     useJUnitPlatform()
 }
 
-kotlin {
+/*kotlin {
     jvmToolchain(8)
-}
+}*/
 
 application {
     mainClass.set("MainKt")
