@@ -31,7 +31,7 @@ class UserRepositoryCached
     }
 
     override suspend fun findByActivo(activo: Boolean): Flow<User> = withContext(Dispatchers.IO) {
-        repo.findAllByActivoOrderByCreatedAt(activo)
+        repo.findAllByActiveOrderByCreatedAt(activo)
     }
 
     override suspend fun findById(id: UUID): User? = withContext(Dispatchers.IO) {

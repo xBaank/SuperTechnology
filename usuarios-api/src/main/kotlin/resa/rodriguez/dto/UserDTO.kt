@@ -28,7 +28,7 @@ data class UserDTOcreate (
     val role: UserRole,
     val addresses: Set<String>,
     val avatar: String = "",
-    val activo: Boolean = true
+    val active: Boolean = true
 )
 
 data class UserDTOresponse (
@@ -38,5 +38,5 @@ data class UserDTOresponse (
     val addresses: Set<String>,
     val avatar: String,
     val createdAt: LocalDate,
-    val activo: Boolean
+    val active: Boolean
 )

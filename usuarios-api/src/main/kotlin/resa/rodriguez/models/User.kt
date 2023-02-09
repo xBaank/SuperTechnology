@@ -2,12 +2,13 @@ package resa.rodriguez.models
 
 import jakarta.validation.constraints.NotEmpty
 import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDate
 import java.util.UUID
 
 @Table(name = "users")
-data class User (
+data class User(
     @Id
     val id: UUID,
     @NotEmpty(message = "El usuario debe tener un username.")
@@ -21,10 +22,11 @@ data class User (
     val avatar: String = "",
     @NotEmpty(message = "El usuario debe tener un rol.")
     val role: UserRole,
+    @Column("created_at")
     val createdAt: LocalDate = LocalDate.now(),
-    val activo: Boolean
+    val active: Boolean
 )
 
 enum class UserRole {
-    USER,ADMIN,SUPER_ADMIN
+    USER, ADMIN, SUPER_ADMIN
 }
