@@ -5,6 +5,8 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.0"
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
+	//Dokka Documentacion Kotlin
+	id("org.jetbrains.dokka") version "1.7.20"
 }
 
 group = "resa.rodriguez"
@@ -26,6 +28,8 @@ dependencies {
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
+	//Dokka Documentación Kotlin
+	dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
 }
 
 tasks.withType<KotlinCompile> {
