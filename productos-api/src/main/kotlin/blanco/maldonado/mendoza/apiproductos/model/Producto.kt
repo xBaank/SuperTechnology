@@ -1,8 +1,10 @@
 package blanco.maldonado.mendoza.apiproductos.model
 
+import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 import java.util.*
 
+@Table(name = "productos")
 data class Producto(
     val id: UUID = UUID.randomUUID(),
     val nombre: String,
