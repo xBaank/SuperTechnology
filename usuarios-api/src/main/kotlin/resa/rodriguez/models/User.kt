@@ -11,12 +11,6 @@ data class User (
     val role: UserRole,
 )
 
-data class Address (
-    val id: UUID? = UUID.randomUUID(),
-    val userId: UUID,
-    val address: String
-)
-
 enum class UserRole {
     USER,ADMIN,SUPERADMIN
 }
