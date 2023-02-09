@@ -3,8 +3,8 @@ package pedidosApi.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UsuarioDto(
+data class TareaDto(
     val id: String,
-    val nombre: String,
-    val email: String
+    val productos: List<ProductoDto>,
+    val empleado: UsuarioDto,
 )

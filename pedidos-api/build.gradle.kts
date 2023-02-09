@@ -20,6 +20,7 @@ val retroFitKtorVersion = "0.8.0"
 val configVersion = "1.4.2"
 val koinVersion = "3.3.2"
 val koinKtorversion = "3.3.0"
+val arrowVersion = "1.1.5"
 
 dependencies {
     testImplementation(kotlin("test"))
@@ -49,6 +50,8 @@ dependencies {
     implementation("io.insert-koin:koin-core:$koinVersion")
     //koin ktor
     implementation("io.insert-koin:koin-ktor:$koinKtorversion")
+    //arrow core
+    implementation("io.arrow-kt:arrow-core:$arrowVersion")
 }
 
 tasks.test {

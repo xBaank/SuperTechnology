@@ -1,13 +1,14 @@
 package pedidosApi.models
 
+import arrow.core.NonEmptyList
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import pedidosApi.dto.ProductoDto
 import pedidosApi.dto.UsuarioDto
 
 data class Pedido(
-    val id: Id<String> = newId(),
+    val _id: Id<String> = newId(),
     val usuario: UsuarioDto,
-    val productos: List<ProductoDto>,
-    val total: Double
+    val tareas: NonEmptyList<Tarea>,
 )
+
+val Pedido.total: Double get() = tareas.sumOf(Tarea::precio)

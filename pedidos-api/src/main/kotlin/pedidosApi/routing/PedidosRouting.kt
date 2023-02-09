@@ -1,17 +1,19 @@
 package pedidosApi.routing
 
+import arrow.core.nonEmptyListOf
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.toList
 import org.koin.ktor.ext.inject
 import pedidosApi.clients.ProductosClient
 import pedidosApi.clients.UsuariosClient
-import pedidosApi.dto.PedidoDto
+import pedidosApi.dto.CreatePedidoDto
 import pedidosApi.extensions.receiveOrNull
+import pedidosApi.extensions.toDto
 import pedidosApi.models.Pedido
+import pedidosApi.models.Tarea
 import pedidosApi.repositories.PedidosRepository
 
 fun Application.pedidosRouting() = routing {
@@ -38,17 +40,42 @@ fun Application.pedidosRouting() = routing {
     }
 
     post("/pedidos") {
-        println("POST /pedidos")
-        val pedido =
-            call.receiveOrNull<PedidoDto>() ?: return@post call.respond(HttpStatusCode.BadRequest, "Missing pedido")
+        val pedido = call.receiveOrNull<CreatePedidoDto>() ?: return@post call.respond(
+            HttpStatusCode.BadRequest,
+            "Incorrect pedido"
+        )
 
-        call.respond(pedido)
+        val usuario = userClient.getUsuario(pedido.usuario) ?: return@post call.respond(
+            HttpStatusCode.BadRequest,
+            "Missing usuario"
+        )
+
+        val productos = pedido.productos.map {
+            productClient.getProducto(it) ?: return@post call.respond(
+                HttpStatusCode.BadRequest,
+                "Missing producto with id : $it"
+            )
+        }
+
+        val pedidoToSave = Pedido(
+            usuario = usuario,
+            tareas = nonEmptyListOf(
+                Tarea(
+                    productos = productos,
+                    empleado = usuario
+                )
+            )
+        )
+
+
+        repository.save(pedidoToSave)
+        call.respond(pedidoToSave.toDto())
     }
 
     put("/pedidos") {
-        val pedido = call.receiveNullable<PedidoDto>() ?: return@put call.respond(
+        val pedido = call.receiveOrNull<CreatePedidoDto>() ?: return@put call.respond(
             HttpStatusCode.BadRequest,
-            "Missing pedido"
+            "Incorrect pedido"
         )
 
         val usuario = userClient.getUsuario(pedido.usuario) ?: return@put call.respond(
@@ -63,42 +90,20 @@ fun Application.pedidosRouting() = routing {
             )
         }
 
-        val pedidoToSave = Pedido(
+        val pedidoToUpdate = Pedido(
             usuario = usuario,
-            productos = productos,
-            total = productos.sumOf { it.precio }
-        )
-
-        repository.save(pedidoToSave)
-        call.respond(pedido)
-    }
-    patch("/pedidos") {
-        val pedido = call.receiveNullable<PedidoDto>() ?: return@patch call.respond(
-            HttpStatusCode.BadRequest,
-            "Missing pedido"
-        )
-
-        val usuario = userClient.getUsuario(pedido.usuario) ?: return@patch call.respond(
-            HttpStatusCode.BadRequest,
-            "Missing usuario"
-        )
-
-        val productos = pedido.productos.map {
-            productClient.getProducto(it) ?: return@patch call.respond(
-                HttpStatusCode.BadRequest,
-                "Missing producto with id : $it"
+            tareas = nonEmptyListOf(
+                Tarea(
+                    productos = productos,
+                    empleado = usuario
+                )
             )
-        }
-
-        val pedidoToSave = Pedido(
-            usuario = usuario,
-            productos = productos,
-            total = productos.sumOf { it.precio }
         )
 
-        repository.update(pedidoToSave)
-        call.respond(pedido)
+        repository.save(pedidoToUpdate)
+        call.respond(pedidoToUpdate.toDto())
     }
+
     delete("/pedidos/{id}") {
         val id = call.parameters["id"]
         if (id == null) call.respond(HttpStatusCode.BadRequest, "Missing id")
