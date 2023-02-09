@@ -18,16 +18,29 @@ repositories {
 }
 
 dependencies {
+	// Spring Boot & Spring Data Reactive
 	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+
+	// Validaciones de Spring Boot
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+
+	// Websocket
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
+
+	// Dependencias Kotlin
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-	runtimeOnly("org.postgresql:postgresql")
+
+	// Bases de datos, comentamos la no reactiva
+	// runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
+
+	// Test
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
+
 	//Dokka Documentación Kotlin
 	dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
 }
