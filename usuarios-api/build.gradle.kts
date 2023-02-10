@@ -33,6 +33,9 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
+	// Logging
+	implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+
 	// Bases de datos, comentamos la no reactiva
 	// runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
