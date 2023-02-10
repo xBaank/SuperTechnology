@@ -7,7 +7,7 @@ import pedidosApi.dto.UsuarioDto
 
 
 data class Tarea(
-    val _id: Id<String> = newId(),
+    val _id: Id<Tarea> = newId(),
     val productos: List<ProductoDto>,
     val empleado: UsuarioDto,
 )
