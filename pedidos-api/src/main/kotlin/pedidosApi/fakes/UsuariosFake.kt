@@ -7,7 +7,7 @@ import pedidosApi.dto.UsuarioDto
 fun fakeUserClient() = object : UsuariosClient {
     val user = UsuarioDto(
         id = "fake",
-        nombre = "Fake User",
+        username = "Fake User",
         email = "test@gmail.com"
     )
 

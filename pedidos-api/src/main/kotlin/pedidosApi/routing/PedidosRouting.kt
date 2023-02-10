@@ -1,73 +1,74 @@
 package pedidosApi.routing
 
-import arrow.core.nonEmptyListOf
-import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.util.pipeline.*
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
+import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
+import org.litote.kmongo.Id
+import org.litote.kmongo.id.toId
+import org.litote.kmongo.newId
 import pedidosApi.clients.ProductosClient
 import pedidosApi.clients.UsuariosClient
 import pedidosApi.dto.CreatePedidoDto
+import pedidosApi.exceptions.PedidoError.InvalidPedidoFormat
+import pedidosApi.exceptions.PedidoError.InvalidPedidoId
+import pedidosApi.extensions.inject
 import pedidosApi.extensions.receiveOrNull
-import pedidosApi.extensions.toDto
+import pedidosApi.extensions.toObjectIdOrNull
+import pedidosApi.handlers.handleError
+import pedidosApi.handlers.handleResult
 import pedidosApi.models.Pedido
 import pedidosApi.models.Tarea
 import pedidosApi.repositories.PedidosRepository
 
 fun Routing.pedidosRouting() = route("/pedidos") {
     val repository by inject<PedidosRepository>()
-    val userClient by inject<UsuariosClient>()
-    val productClient by inject<ProductosClient>()
+
 
     get {
-        call.respond(repository.getAll().map(Pedido::toDto).toList())
+        val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 0
+        val size = call.request.queryParameters["size"]?.toIntOrNull() ?: 10
+        handleResult(repository.getByPage(page, size))
     }
+
     get("{id}") {
-        val id = call.parameters["id"] ?: return@get call.respond(
-            HttpStatusCode.BadRequest,
-            "Missing id"
-        )
-
-        val pedido = repository.getById(id) ?: return@get call.respond(
-            HttpStatusCode.NotFound,
-            "Pedido not found"
-        )
-
-        call.respond(pedido.toDto())
+        val id = call.parameters.getOrFail("id")
+        handleResult(repository.getById(id))
     }
 
     post {
-        save(userClient, productClient, repository)
+        val pedido = call.receiveOrNull<CreatePedidoDto>()
+            ?: return@post handleError(InvalidPedidoFormat("Invalid body format"))
+
+        val pedidoToSave = createPedido(pedido)
+
+        handleResult(repository.save(pedidoToSave))
     }
 
-    put {
-        save(userClient, productClient, repository)
+    put("{id}") {
+        val id = call.parameters.getOrFail("id").toObjectIdOrNull()?.toId<Pedido>()
+            ?: return@put handleError(InvalidPedidoId("Invalid id format"))
+
+        val pedido = call.receiveOrNull<CreatePedidoDto>()
+            ?: return@put handleError(InvalidPedidoFormat("Invalid body format"))
+
+        val pedidoToUpdate = createPedido(pedido, id)
+
+        handleResult(repository.save(pedidoToUpdate))
     }
 
     delete("{id}") {
-        val id = call.parameters["id"] ?: return@delete call.respond(
-            HttpStatusCode.BadRequest,
-            "Missing id"
-        )
-
-        repository.delete(id)
-        call.respond(HttpStatusCode.OK, "Pedido deleted")
+        val id = call.parameters.getOrFail("id")
+        handleResult(repository.delete(id))
     }
 }
 
-private suspend fun PipelineContext<Unit, ApplicationCall>.save(
-    userClient: UsuariosClient,
-    productClient: ProductosClient,
-    repository: PedidosRepository
-) {
-    val pedido = call.receiveOrNull<CreatePedidoDto>() ?: return call.respond(
-        HttpStatusCode.BadRequest,
-        "Incorrect pedido"
-    )
+private suspend fun createPedido(
+    pedido: CreatePedidoDto,
+    id: Id<Pedido> = newId()
+): Pedido {
+    val userClient by inject<UsuariosClient>()
+    val productClient by inject<ProductosClient>()
 
     val usuario = userClient.getUsuario(pedido.usuario)
 
@@ -75,17 +76,14 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.save(
         productClient.getProducto(it)
     }
 
-    val pedidoToSave = Pedido(
+    return Pedido(
+        _id = id,
         usuario = usuario,
-        tareas = nonEmptyListOf(
+        tareas = listOf(
             Tarea(
                 productos = productos,
                 empleado = usuario
             )
         )
     )
-
-
-    repository.save(pedidoToSave)
-    call.respond(pedidoToSave.toDto())
 }
