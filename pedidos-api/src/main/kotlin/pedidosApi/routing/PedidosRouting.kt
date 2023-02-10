@@ -18,52 +18,43 @@ import pedidosApi.models.Pedido
 import pedidosApi.models.Tarea
 import pedidosApi.repositories.PedidosRepository
 
-fun Application.pedidosRouting() = routing {
+fun Routing.pedidosRouting() = route("/pedidos") {
     val repository by inject<PedidosRepository>()
     val userClient by inject<UsuariosClient>()
     val productClient by inject<ProductosClient>()
 
-    get("/pedidos") {
-        try {
-            call.respond(repository.getAll().map(Pedido::toDto).toList())
-        }
-        catch (e: Exception) {
-            call.respond(HttpStatusCode.InternalServerError, e.message ?: "Unknown error")
-        }
+    get {
+        call.respond(repository.getAll().map(Pedido::toDto).toList())
     }
-    get("/pedidos/{id}") {
-        try {
+    get("{id}") {
+        val id = call.parameters["id"] ?: return@get call.respond(
+            HttpStatusCode.BadRequest,
+            "Missing id"
+        )
 
-            val id = call.parameters["id"] ?: return@get call.respond(
-                HttpStatusCode.BadRequest,
-                "Missing id"
-            )
+        val pedido = repository.getById(id) ?: return@get call.respond(
+            HttpStatusCode.NotFound,
+            "Pedido not found"
+        )
 
-            val pedido = repository.getById(id) ?: return@get call.respond(
-                HttpStatusCode.NotFound,
-                "Pedido not found"
-            )
-
-            call.respond(pedido)
-        }
-        catch (e: Exception) {
-            call.respond(HttpStatusCode.InternalServerError, e.message ?: "Unknown error")
-        }
+        call.respond(pedido.toDto())
     }
 
-    post("/pedidos") {
+    post {
         save(userClient, productClient, repository)
     }
 
-    put("/pedidos") {
+    put {
         save(userClient, productClient, repository)
     }
 
-    delete("/pedidos/{id}") {
-        val id = call.parameters["id"]
-        if (id == null) call.respond(HttpStatusCode.BadRequest, "Missing id")
+    delete("{id}") {
+        val id = call.parameters["id"] ?: return@delete call.respond(
+            HttpStatusCode.BadRequest,
+            "Missing id"
+        )
 
-        repository.delete(id!!)
+        repository.delete(id)
         call.respond(HttpStatusCode.OK, "Pedido deleted")
     }
 }
