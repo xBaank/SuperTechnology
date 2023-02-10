@@ -10,7 +10,7 @@ import java.util.*
 @Repository
 interface ProductosRepository : CoroutineCrudRepository<Producto, UUID> {
 
-    fun findByNombre(nombre: String): Flow<Producto>
+    fun findByNombre(nombre: String): Producto
 
     fun findByCategoria(categoria: String): Flow<Producto>
 
