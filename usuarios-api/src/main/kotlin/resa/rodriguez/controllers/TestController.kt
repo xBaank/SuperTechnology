@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController
 import resa.rodriguez.config.APIConfig
 
 /**
- * Controlador especifico para comprobar que se puede conectar con la API en ejecucion con un cliente
+ * Controlador rest especifico para comprobar que se puede conectar con la API en ejecucion con un cliente
  *
  */
 @RestController

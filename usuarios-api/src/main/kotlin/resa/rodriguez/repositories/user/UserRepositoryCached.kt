@@ -17,11 +17,16 @@ import org.springframework.stereotype.Repository
 import resa.rodriguez.models.User
 import java.util.*
 
+/**
+ * Repositorio cacheado de usuarios
+ *
+ * @property repo
+ */
 @Repository
 class UserRepositoryCached
-    @Autowired constructor(
-        private val repo : UserRepository
-    ): IUserRepositoryCached {
+@Autowired constructor(
+    private val repo: UserRepository
+) : IUserRepositoryCached {
     override suspend fun findAll(): Flow<User> = withContext(Dispatchers.IO) {
         repo.findAll()
     }
