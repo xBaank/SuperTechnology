@@ -15,7 +15,7 @@ import java.time.LocalDate
 @Service
 class UserMapper
 @Autowired constructor(private val aRepo: AddressRepository) {
-    suspend fun toDTO(user: User) : UserDTOresponse {
+    suspend fun toDTO(user: User): UserDTOresponse {
         val addresses = aRepo.findAllByUserId(user.id).toSet()
         val addressesString = mutableSetOf<String>()
         addresses.forEach { addressesString.add(it.address) }
@@ -30,14 +30,14 @@ class UserMapper
         )
     }
 
-    suspend fun toDTO(users: List<User>) : List<UserDTOresponse> {
+    suspend fun toDTO(users: List<User>): List<UserDTOresponse> {
         val res = mutableListOf<UserDTOresponse>()
         users.forEach { res.add(toDTO(it)) }
         return res
     }
 }
 
-fun UserDTOregister.fromDTOtoUser() : User? {
+fun UserDTOregister.fromDTOtoUser(): User? {
     return if (password != repeatPassword) null
     else User(
         id = id,
@@ -52,20 +52,20 @@ fun UserDTOregister.fromDTOtoUser() : User? {
     )
 }
 
-fun UserDTOregister.fromDTOtoAddresses() : Set<Address> {
+fun UserDTOregister.fromDTOtoAddresses(): Set<Address> {
     val result = mutableSetOf<Address>()
     addresses.forEach {
         result.add(
             Address(
-            userId = id,
-            address = it
-        )
+                userId = id,
+                address = it
+            )
         )
     }
     return result.toSet()
 }
 
-fun UserDTOcreate.fromDTOtoUser() = User (
+fun UserDTOcreate.fromDTOtoUser() = User(
     id = id,
     username = username,
     email = email,
@@ -77,13 +77,15 @@ fun UserDTOcreate.fromDTOtoUser() = User (
     active = active
 )
 
-fun UserDTOcreate.fromDTOtoAddresses() : Set<Address> {
+fun UserDTOcreate.fromDTOtoAddresses(): Set<Address> {
     val result = mutableSetOf<Address>()
     addresses.forEach {
-        result.add(Address(
-            userId = id,
-            address = it
-        ))
+        result.add(
+            Address(
+                userId = id,
+                address = it
+            )
+        )
     }
     return result.toSet()
 }
