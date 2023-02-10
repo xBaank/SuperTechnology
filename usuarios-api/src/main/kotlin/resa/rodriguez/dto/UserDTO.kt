@@ -4,7 +4,7 @@ import resa.rodriguez.models.UserRole
 import java.time.LocalDate
 import java.util.*
 
-data class UserDTOlogin (
+data class UserDTOlogin(
     val email: String,
     val password: String
 )
@@ -19,7 +19,7 @@ data class UserDTOregister (
     val addresses: Set<String>
 )
 
-data class UserDTOcreate (
+data class UserDTOcreate(
     val id: UUID = UUID.randomUUID(),
     val username: String,
     val email: String,
@@ -31,7 +31,7 @@ data class UserDTOcreate (
     val active: Boolean = true
 )
 
-data class UserDTOresponse (
+data class UserDTOresponse(
     val username: String,
     val email: String,
     val role: UserRole,
