@@ -7,9 +7,9 @@ import org.springframework.data.relational.core.mapping.Table
 import java.util.*
 
 @Table(name = "addresses")
-data class Address (
+data class Address(
     @Id
-    val id: UUID? = UUID.randomUUID(),
+    val id: UUID? = null,
     @NotEmpty(message = "Debe haber un id de usuario.")
     @Column("user_id")
     val userId: UUID,

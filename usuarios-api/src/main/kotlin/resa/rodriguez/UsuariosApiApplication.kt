@@ -11,5 +11,5 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 class UsuariosApiApplication
 
 fun main(args: Array<String>) {
-	runApplication<UsuariosApiApplication>(*args)
+    runApplication<UsuariosApiApplication>(*args)
 }

@@ -11,12 +11,13 @@ import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.address.AddressRepository
 import java.time.LocalDate
+import java.util.*
 
 @Service
 class UserMapper
 @Autowired constructor(private val aRepo: AddressRepository) {
     suspend fun toDTO(user: User): UserDTOresponse {
-        val addresses = aRepo.findAllByUserId(user.id).toSet()
+        val addresses = aRepo.findAllByUserId(user.id!!).toSet()
         val addressesString = mutableSetOf<String>()
         addresses.forEach { addressesString.add(it.address) }
         return UserDTOresponse(
@@ -52,7 +53,7 @@ fun UserDTOregister.fromDTOtoUser(): User? {
     )
 }
 
-fun UserDTOregister.fromDTOtoAddresses(): Set<Address> {
+fun UserDTOregister.fromDTOtoAddresses(id: UUID): Set<Address> {
     val result = mutableSetOf<Address>()
     addresses.forEach {
         result.add(
@@ -82,7 +83,7 @@ fun UserDTOcreate.fromDTOtoAddresses(): Set<Address> {
     addresses.forEach {
         result.add(
             Address(
-                userId = id,
+                userId = id!!,
                 address = it
             )
         )
