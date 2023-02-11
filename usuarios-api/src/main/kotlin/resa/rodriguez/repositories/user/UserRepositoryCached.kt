@@ -69,7 +69,7 @@ class UserRepositoryCached
     @CacheEvict("usuarios")
     override suspend fun deleteById(id: UUID): User? = withContext(Dispatchers.IO) {
         val user = repo.findById(id) ?: return@withContext null
-        repo.deleteById(user.id)
+        user.id?.let { repo.deleteById(it) }
         user
     }
 

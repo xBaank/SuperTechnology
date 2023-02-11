@@ -9,8 +9,8 @@ data class UserDTOlogin(
     val password: String
 )
 
-data class UserDTOregister (
-    val id: UUID = UUID.randomUUID(),
+data class UserDTOregister(
+    var id: UUID? = null,
     val username: String,
     val email: String,
     val password: String,
@@ -20,7 +20,7 @@ data class UserDTOregister (
 )
 
 data class UserDTOcreate(
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID? = null,
     val username: String,
     val email: String,
     val password: String,
