@@ -6,7 +6,7 @@ import org.litote.kmongo.newId
 import pedidosApi.dto.UsuarioDto
 
 data class Pedido(
-    val _id: Id<String> = newId(),
+    val _id: Id<Pedido> = newId(),
     val usuario: UsuarioDto,
     val tareas: List<Tarea>,
 )

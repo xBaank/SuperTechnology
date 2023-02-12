@@ -60,9 +60,9 @@ tasks.test {
     useJUnitPlatform()
 }
 
-/*kotlin {
-    jvmToolchain(8)
-}*/
+kotlin {
+    jvmToolchain(17)
+}
 
 application {
     mainClass.set("MainKt")
