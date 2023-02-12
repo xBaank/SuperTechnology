@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.8.0"
     kotlin("plugin.serialization") version "1.8.0"
+    id("io.ktor.plugin") version "2.2.2"
     application
 }
 
@@ -22,8 +23,6 @@ val koinVersion = "3.3.2"
 val koinKtorVersion = "3.3.0"
 val arrowVersion = "1.1.5"
 
-
-
 dependencies {
     testImplementation(kotlin("test"))
     //testing con ktor
@@ -34,6 +33,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-request-validation:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
 
@@ -56,7 +56,6 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koinKtorVersion")
     //arrow core
     implementation("io.arrow-kt:arrow-core:$arrowVersion")
-
 }
 
 tasks.test {
