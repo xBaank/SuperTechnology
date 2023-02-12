@@ -80,9 +80,10 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.save(
         tareas = nonEmptyListOf(
             Tarea(
                 productos = productos,
-                empleado = usuario
+                empleado = usuario,
             )
-        )
+        ),
+        estado = Pedido.EstadoPedido.EN_PROCESO
     )
 
 

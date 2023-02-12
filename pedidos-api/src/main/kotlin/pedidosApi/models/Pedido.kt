@@ -9,8 +9,6 @@ data class Pedido(
     val _id: Id<Pedido> = newId(),
     val usuario: UsuarioDto,
     val tareas: List<Tarea>,
-)
-    val tareas: NonEmptyList<Tarea>,
     val estado: EstadoPedido
 ) {
     enum class EstadoPedido {
