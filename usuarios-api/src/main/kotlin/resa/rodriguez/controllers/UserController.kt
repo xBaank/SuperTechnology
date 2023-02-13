@@ -2,7 +2,10 @@ package resa.rodriguez.controllers
 
 import jakarta.validation.Valid
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -96,5 +99,26 @@ class UserController
         if (checked != null) return@withContext checked
 
         ResponseEntity.ok(addressRepositoryCached.findAll().toList())
+    }
+
+    @GetMapping("")
+    suspend fun findByUsername(@RequestParam username: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+        log.info { "Obteniendo usuario con username: $username" }
+        val user = userRepositoryCached.findByUsername(username).firstOrNull() ?:
+        return@withContext ResponseEntity("User with name: $username not found.", HttpStatus.NOT_FOUND)
+
+        val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
+        val addr = mutableSetOf<String>()
+        addresses.forEach { addr.add(it.address) }
+        val result = UserDTOresponse(
+            username = user.username,
+            email = user.email,
+            role = user.role,
+            addresses = addr,
+            avatar = user.avatar,
+            createdAt = user.createdAt,
+            active = user.active
+        )
+        ResponseEntity.ok(result)
     }
 }
