@@ -10,6 +10,7 @@ import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.address.AddressRepository
+import resa.rodriguez.services.cipher
 import java.time.LocalDate
 import java.util.*
 
@@ -41,10 +42,9 @@ class UserMapper
 fun UserDTOregister.fromDTOtoUser(): User? {
     return if (password != repeatPassword) null
     else User(
-        id = id,
         username = username,
         email = email,
-        password = password,
+        password = cipher(password),
         phone = phone,
         role = UserRole.USER,
         createdAt = LocalDate.now(),
@@ -67,10 +67,9 @@ fun UserDTOregister.fromDTOtoAddresses(id: UUID): Set<Address> {
 }
 
 fun UserDTOcreate.fromDTOtoUser() = User(
-    id = id,
     username = username,
     email = email,
-    password = password,
+    password = cipher(password),
     phone = phone,
     role = role,
     createdAt = LocalDate.now(),
@@ -78,12 +77,12 @@ fun UserDTOcreate.fromDTOtoUser() = User(
     active = active
 )
 
-fun UserDTOcreate.fromDTOtoAddresses(): Set<Address> {
+fun UserDTOcreate.fromDTOtoAddresses(id: UUID): Set<Address> {
     val result = mutableSetOf<Address>()
     addresses.forEach {
         result.add(
             Address(
-                userId = id!!,
+                userId = id,
                 address = it
             )
         )

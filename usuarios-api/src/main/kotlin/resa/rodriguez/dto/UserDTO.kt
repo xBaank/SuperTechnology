@@ -10,7 +10,6 @@ data class UserDTOlogin(
 )
 
 data class UserDTOregister(
-    var id: UUID? = null,
     val username: String,
     val email: String,
     val password: String,
@@ -20,7 +19,6 @@ data class UserDTOregister(
 )
 
 data class UserDTOcreate(
-    val id: UUID? = null,
     val username: String,
     val email: String,
     val password: String,

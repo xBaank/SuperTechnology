@@ -44,8 +44,14 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 
-	//Dokka Documentación Kotlin
+	// Dokka Documentación Kotlin
 	dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
+
+	// BCrypt para cifrar las contraseñas de los users
+	implementation("com.ToxicBakery.library.bcrypt:bcrypt:+")
+
+	// Para tokens
+	implementation("com.auth0:java-jwt:4.2.1")
 }
 
 tasks.withType<KotlinCompile> {
