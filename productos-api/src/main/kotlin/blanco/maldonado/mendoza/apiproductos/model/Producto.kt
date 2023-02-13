@@ -11,7 +11,9 @@ import java.util.*
 @Table(name = "productos")
 data class Producto(
     @Id
-    val id: UUID = UUID.randomUUID(),
+    val id: Int? = null,
+    @Column("uuid")
+    val uuid: String = UUID.randomUUID().toString(),
     @NotEmpty(message = "El nombre no puede estar vacío")
     val nombre: String,
     @NotEmpty(message = "La categoría no puede estar vacía")
@@ -23,7 +25,7 @@ data class Producto(
     @Column("created_at")
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column("updated_at")
-    val updateAt: LocalDateTime = LocalDateTime.now(),
+    val updateAt: LocalDateTime? = null,
     @Column("delete_at")
     val deleteAt: LocalDateTime? = null,
     @Min(value = 0, message = "El precio no puede ser negativo")
