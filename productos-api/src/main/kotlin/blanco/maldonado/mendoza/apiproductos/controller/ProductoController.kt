@@ -15,8 +15,8 @@ import blanco.maldonado.mendoza.apiproductos.validator.validate
 import jakarta.validation.Valid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,7 +24,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
-import java.util.UUID
+import java.util.*
 
 private val logger = KotlinLogging.logger { }
 
@@ -39,10 +39,10 @@ class ProductoController
      * @return ResponseEntity<Flow<ProductosDTO>>
      */
     @GetMapping("")
-    suspend fun findAllProductos(): ResponseEntity<Flow<ProductoDTO>> = withContext(Dispatchers.IO) {
+    suspend fun findAllProductos(): ResponseEntity<List<Producto>> = withContext(Dispatchers.IO) {
         logger.info { "Get productos" }
-        //val res = repository.findAll().map { it.toDto() }
-        val res = flowOf(ProductoDTO(null, "Pepe", Producto.Categoria.PIEZA, 3, "Prueba", 2.13, true))
+        val res = repository.findAll().toList()
+        //val res = flowOf(ProductoDTO(null, "Pepe", Producto.Categoria.PIEZA, 3, "Prueba", 2.13, true))
         return@withContext ResponseEntity.ok(res)
     }
 
@@ -90,7 +90,7 @@ class ProductoController
             logger.info { "Obteniendo producto por id" }
 
             try {
-                val res = repository.findByNombre(nombre)?.toDto()
+                val res = repository.findByNombre(nombre).toDto()
                 return@withContext ResponseEntity.ok(res)
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
