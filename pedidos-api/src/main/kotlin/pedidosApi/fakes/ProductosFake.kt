@@ -19,7 +19,7 @@ fun fakeProductosClient() = object : ProductosClient {
         avatar = "Fake Avatar"
     )
 
-    val productos = mutableMapOf<String, ProductoDto>()
+    val productos = mutableMapOf(producto.id to producto)
 
     override suspend fun getProducto(id: String): Either<CallError, ProductoDto> {
         return productos[id]?.right() ?: HttpError(404, "Not found", "").left()
@@ -27,22 +27,6 @@ fun fakeProductosClient() = object : ProductosClient {
 
     override suspend fun getProductos(): Either<CallError, List<ProductoDto>> {
         return productos.values.toList().right()
-
-    }
-
-    override suspend fun createProducto(producto: ProductoDto): Either<CallError, ProductoDto> {
-        productos[producto.id] = producto
-        return producto.right()
-    }
-
-    override suspend fun updateProducto(producto: ProductoDto): Either<CallError, ProductoDto> {
-        productos[producto.id] = producto
-        return producto.right()
-    }
-
-    override suspend fun deleteProducto(id: String): Either<CallError, Unit> {
-        productos.remove(id)
-        return Unit.right()
     }
 
 }

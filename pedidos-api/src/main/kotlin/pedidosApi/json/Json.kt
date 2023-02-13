@@ -12,13 +12,17 @@ import pedidosApi.repositories.PagedFlow
 fun buildPedidoDto(pedido: Pedido) = PedidoDto(
     id = pedido._id.toString(),
     usuario = pedido.usuario,
-    tareas = pedido.tareas.map(::buildTareaDto)
+    tareas = pedido.tareas.map(::buildTareaDto),
+    iva = pedido.iva,
+    estado = pedido.estado,
+    createdAt = pedido.createdAt
 )
 
 fun buildTareaDto(tarea: Tarea) = TareaDto(
     id = tarea._id.toString(),
     productos = tarea.productos,
-    empleado = tarea.empleado
+    empleado = tarea.empleado,
+    createdAt = tarea.createdAt
 )
 
 

@@ -11,13 +11,4 @@ interface ProductosClient {
 
     @GET("/productos")
     suspend fun getProductos(): Either<CallError, List<ProductoDto>>
-
-    @POST("/productos")
-    suspend fun createProducto(@Body producto: ProductoDto): Either<CallError, ProductoDto>
-
-    @PUT("/productos")
-    suspend fun updateProducto(@Body producto: ProductoDto): Either<CallError, ProductoDto>
-
-    @DELETE("/productos/{id}")
-    suspend fun deleteProducto(id: String): Either<CallError, Unit>
 }

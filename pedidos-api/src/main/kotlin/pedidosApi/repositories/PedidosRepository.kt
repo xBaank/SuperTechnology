@@ -29,12 +29,15 @@ class PedidosRepository(client: CoroutineDatabase) {
             ?: return InvalidPedidoId("id : '$id' format is incorrect").left()
 
         return collection.find(Pedido::_id eq _id).first()?.right()
-            ?: PedidoNotFound("Pedido with with user id : '${id}' not found").left()
+            ?: PedidoNotFound("Pedido with with id : '${id}' not found").left()
     }
 
-    suspend fun getByUserId(id: String): Either<PedidoError, Pedido> {
-        return collection.find(Pedido::usuario / UsuarioDto::id eq id).first()?.right()
-            ?: PedidoNotFound("Pedido with id : '${id}' not found").left()
+    fun getByUserId(id: String, page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> {
+        if (page < 0) return InvalidPedidoPage("Page must be greater or equal than 0").left()
+        if (size < 1) return InvalidPedidoPage("Size must be greater than 0").left()
+
+        val flow = collection.find(Pedido::usuario / UsuarioDto::id eq id).skip(page * size).limit(size).toFlow()
+        return PagedFlow(page, size, flow).right()
     }
 
     suspend fun save(pedido: Pedido): Either<PedidoError, Pedido> {

@@ -15,28 +15,14 @@ fun fakeUserClient() = object : UsuariosClient {
         username = "Fake User",
         email = "test@gmail.com"
     )
-    val users = mutableMapOf<String, UsuarioDto>()
+    val users = mutableMapOf(user.id to user)
 
     override suspend fun getUsuario(id: String): Either<CallError, UsuarioDto> {
-        return users[id]?.right() ?: HttpError(404, "Not found", "").left()
+        return users[id]?.right() ?: HttpError(404, "User not found", "").left()
     }
 
     override suspend fun getUsuarios(): Either<CallError, List<UsuarioDto>> {
         return users.values.toList().right()
-    }
-
-    override suspend fun createUsuario(usuario: UsuarioDto): Either<CallError, UsuarioDto> {
-        users[usuario.id] = usuario
-        return usuario.right()
-    }
-
-    override suspend fun updateUsuario(usuario: UsuarioDto): Either<CallError, UsuarioDto> {
-        users[usuario.id] = usuario
-        return usuario.right()
-    }
-
-    override suspend fun deleteUsuario(id: String): Either<CallError, Unit> {
-        return Unit.right()
     }
 
 }
