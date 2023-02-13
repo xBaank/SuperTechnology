@@ -13,12 +13,18 @@ import resa.rodriguez.models.Address
 import resa.rodriguez.repositories.user.UserRepository
 import java.util.*
 
+/**
+ * Repositorio cacheado de direcciones
+ *
+ * @property aRepo
+ * @property uRepo
+ */
 @Repository
 class AddressRepositoryCached
-    @Autowired constructor(
-        private val aRepo : AddressRepository,
-        private val uRepo : UserRepository
-    ): IAddressRepositoryCached {
+@Autowired constructor(
+    private val aRepo: AddressRepository,
+    private val uRepo: UserRepository
+) : IAddressRepositoryCached {
     override suspend fun findAll(): Flow<Address> = withContext(Dispatchers.IO) {
         aRepo.findAll()
     }

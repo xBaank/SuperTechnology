@@ -14,6 +14,11 @@ import resa.rodriguez.services.cipher
 import java.time.LocalDate
 import java.util.*
 
+/**
+ * Clase encargada del paso de dto a modelo y al contrario, tanto de user como de address
+ *
+ * @property aRepo
+ */
 @Service
 class UserMapper
 @Autowired constructor(private val aRepo: AddressRepository) {
