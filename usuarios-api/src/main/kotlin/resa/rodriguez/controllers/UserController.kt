@@ -239,7 +239,7 @@ class UserController
     }
 
     @GetMapping("/list/address/user/{userId}")
-    private suspend fun listAddressesByUserId(userId: UUID): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    private suspend fun listAddressesByUserId(@PathVariable userId: UUID): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo direcciones de usuario con id: $userId" }
 
         val address = addressRepositoryCached.findAllFromUserId(userId).toList()
