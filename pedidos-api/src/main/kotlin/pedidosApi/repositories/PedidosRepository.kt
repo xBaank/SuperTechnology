@@ -4,8 +4,10 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.div
 import org.litote.kmongo.eq
 import org.litote.kmongo.id.toId
+import pedidosApi.dto.UsuarioDto
 import pedidosApi.exceptions.PedidoError
 import pedidosApi.exceptions.PedidoError.*
 import pedidosApi.extensions.toObjectIdOrNull
@@ -27,6 +29,11 @@ class PedidosRepository(client: CoroutineDatabase) {
             ?: return InvalidPedidoId("id : '$id' format is incorrect").left()
 
         return collection.find(Pedido::_id eq _id).first()?.right()
+            ?: PedidoNotFound("Pedido with with user id : '${id}' not found").left()
+    }
+
+    suspend fun getByUserId(id: String): Either<PedidoError, Pedido> {
+        return collection.find(Pedido::usuario / UsuarioDto::id eq id).first()?.right()
             ?: PedidoNotFound("Pedido with id : '${id}' not found").left()
     }
 

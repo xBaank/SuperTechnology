@@ -55,6 +55,8 @@ dependencies {
     //arrow core
     implementation("io.arrow-kt:arrow-core:$arrowVersion")
 
+    implementation("io.arrow-kt:arrow-core-retrofit:1.1.5")
+
 }
 
 tasks.test {
