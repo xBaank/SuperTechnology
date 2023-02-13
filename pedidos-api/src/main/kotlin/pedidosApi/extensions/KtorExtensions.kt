@@ -7,7 +7,7 @@ import io.ktor.server.request.*
 
 suspend inline fun <reified T : Any> ApplicationCall.receiveOrNull(): T? = try {
     receive()
-}
-catch (e: BadRequestException) {
-    if (e.cause is JsonConvertException) null else throw e
+} catch (e: BadRequestException) {
+    if (e.cause is ContentConvertException) null
+    else throw e
 }
