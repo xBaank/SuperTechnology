@@ -1,19 +1,32 @@
 package blanco.maldonado.mendoza.apiproductos.model
 
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotEmpty
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 import java.util.*
 
 @Table(name = "productos")
 data class Producto(
+    @Id
     val id: UUID = UUID.randomUUID(),
+    @NotEmpty(message = "El nombre no puede estar vacío")
     val nombre: String,
+    @NotEmpty(message = "La categoría no puede estar vacía")
     val categoria: Categoria,
+    @Min(value = 0, message = "El stick no puede ser negativo")
     val stock: Int,
+    @NotEmpty(message = "La descripción no puede estar vacía")
     val description: String,
-    val createdAt: LocalDateTime,
-    val updateAt: LocalDateTime,
-    val deleteAt: LocalDateTime,
+    @Column("created_at")
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column("updated_at")
+    val updateAt: LocalDateTime = LocalDateTime.now(),
+    @Column("delete_at")
+    val deleteAt: LocalDateTime? = null,
+    @Min(value = 0, message = "El precio no puede ser negativo")
     val precio: Double,
     val activo: Boolean
 ) {
