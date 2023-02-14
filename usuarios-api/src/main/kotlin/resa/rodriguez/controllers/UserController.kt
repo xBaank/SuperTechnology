@@ -24,6 +24,7 @@ import resa.rodriguez.repositories.address.AddressRepositoryCached
 import resa.rodriguez.repositories.user.UserRepositoryCached
 import resa.rodriguez.services.checkToken
 import resa.rodriguez.services.create
+import resa.rodriguez.services.getRole
 import resa.rodriguez.services.matches
 import java.util.UUID
 
@@ -49,7 +50,7 @@ class UserController
 
     // Register & Login Methods
     @PostMapping("/register")
-    private suspend fun register(@Valid @RequestBody userDto: UserDTOregister): ResponseEntity<out Any> =
+    private suspend fun register(@Valid @RequestBody userDto: UserDTOregister): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
             log.info { "Registro de usuario: ${userDto.username}" }
 
@@ -66,12 +67,12 @@ class UserController
 
                 ResponseEntity.ok(create(userSaved))
             } catch (e: Exception) {
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+                ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
             }
         }
 
     @GetMapping("/login")
-    private suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<out Any> =
+    private suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
             log.info { "Login de usuario: ${userDto.email}" }
 
@@ -87,70 +88,71 @@ class UserController
 
                 ResponseEntity.ok(create(user))
             } catch (e: Exception) {
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+                ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
             }
         }
 
     // "Find All" Methods
     @GetMapping("/list")
-    private suspend fun listUsers(token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    private suspend fun listUsers(@RequestHeader token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios" }
 
         val checked = checkToken(token, UserRole.ADMIN)
         if (checked != null) return@withContext checked
+        val role = getRole(token) ?: return@withContext ResponseEntity("Invalid token.", HttpStatus.UNAUTHORIZED)
 
         val res = userRepositoryCached.findAll().toList()
-
-        ResponseEntity.ok(userMapper.toDTO(res))
+        when (role) {
+            UserRole.USER -> ResponseEntity.ok(userMapper.toDTOLite(res))
+            else -> ResponseEntity.ok(userMapper.toDTO(res))
+        }
     }
 
-    @GetMapping("/list/active")
-    private suspend fun listUsersActive(token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    @GetMapping("/list/activity/{active}")
+    private suspend fun listUsersActive(@PathVariable active: Boolean, @RequestHeader token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios activados" }
 
         val checked = checkToken(token, UserRole.ADMIN)
         if (checked != null) return@withContext checked
+        val role = getRole(token) ?: return@withContext ResponseEntity("Invalid token.", HttpStatus.UNAUTHORIZED)
 
-        val res = userRepositoryCached.findByActivo(true).toList()
+        val res = userRepositoryCached.findByActivo(active).toList()
 
-        ResponseEntity.ok(userMapper.toDTO(res))
-    }
-
-    @GetMapping("/list/notActive")
-    private suspend fun listUsersNotActive(token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
-        log.info { "Obteniendo listado de usuarios activados" }
-
-        val checked = checkToken(token, UserRole.ADMIN)
-        if (checked != null) return@withContext checked
-
-        val res = userRepositoryCached.findByActivo(false).toList()
-
-        ResponseEntity.ok(userMapper.toDTO(res))
+        when (role) {
+            UserRole.USER -> ResponseEntity.ok(userMapper.toDTOLite(res))
+            else -> ResponseEntity.ok(userMapper.toDTO(res))
+        }
     }
 
     // "Find One" Methods
     @GetMapping("/username/{username}")
-    private suspend fun findByUsername(@PathVariable username: String): ResponseEntity<out Any> =
+    private suspend fun findByUsername(@PathVariable username: String, @RequestHeader token: String): ResponseEntity<out Any> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con username: $username" }
+            val role = getRole(token) ?: return@withContext ResponseEntity("Invalid token.", HttpStatus.UNAUTHORIZED)
 
             val user = userRepositoryCached.findByUsername(username).firstOrNull()
                 ?: return@withContext ResponseEntity("User with name: $username not found.", HttpStatus.NOT_FOUND)
 
-            val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
-            val addr = mutableSetOf<String>()
-            addresses.forEach { addr.add(it.address) }
-            val result = UserDTOresponse(
-                username = user.username,
-                email = user.email,
-                role = user.role,
-                addresses = addr,
-                avatar = user.avatar,
-                createdAt = user.createdAt,
-                active = user.active
-            )
+            when (role) {
+                UserRole.USER -> ResponseEntity.ok(userMapper.toDTOLite(user))
+                else -> {
+                    val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
+                    val addr = mutableSetOf<String>()
+                    addresses.forEach { addr.add(it.address) }
+                    val result = UserDTOresponse(
+                        username = user.username,
+                        email = user.email,
+                        role = user.role,
+                        addresses = addr,
+                        avatar = user.avatar,
+                        createdAt = user.createdAt,
+                        active = user.active
+                    )
 
-            ResponseEntity.ok(result)
+                    ResponseEntity.ok(result)
+                }
+            }
         }
 
     @GetMapping("/id/{userId}")
@@ -229,7 +231,7 @@ class UserController
 
     // "Find All" Methods
     @GetMapping("/list/address")
-    private suspend fun listAddresses(token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    private suspend fun listAddresses(@RequestHeader token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de direcciones" }
 
         val checked = checkToken(token, UserRole.ADMIN)
@@ -260,4 +262,7 @@ class UserController
 
         return@withContext ResponseEntity.ok(address)
     }
+
+    @GetMapping("/me")
+    private suspend fun findMyself(@RequestHeader token: String):
 }
