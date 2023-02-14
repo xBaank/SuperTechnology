@@ -19,7 +19,7 @@ fun Application.module() {
         modules(mainModule)
     }
     install(ContentNegotiation) {
-        json(Json)
+        json(Json { ignoreUnknownKeys = true })
     }
     routing {
         pedidosRouting()

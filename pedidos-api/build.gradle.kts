@@ -23,6 +23,8 @@ val koinVersion = "3.3.2"
 val koinKtorVersion = "3.3.0"
 val arrowVersion = "1.1.5"
 
+
+
 dependencies {
     testImplementation(kotlin("test"))
     //testing con ktor
@@ -56,6 +58,9 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koinKtorVersion")
     //arrow core
     implementation("io.arrow-kt:arrow-core:$arrowVersion")
+
+    implementation("io.arrow-kt:arrow-core-retrofit:1.1.5")
+
 }
 
 tasks.test {
