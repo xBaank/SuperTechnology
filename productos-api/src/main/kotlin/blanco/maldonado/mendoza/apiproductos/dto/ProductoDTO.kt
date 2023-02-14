@@ -8,7 +8,7 @@ data class ProductoDTO(
     val id: Int? = null,
     val uuid: String? = null,
     val nombre: String,
-    val categoria: Producto.Categoria,
+    val categoria: String,
     val stock: Int,
     val description: String,
     val precio: Double,
@@ -25,7 +25,7 @@ data class ProductoDTO(
 data class ProductoCreateDto(
     val uuid: String = UUID.randomUUID().toString(),
     val nombre: String,
-    val categoria: Producto.Categoria,
+    val categoria: String,
     val stock: Int,
     val description: String,
     val precio: Double,

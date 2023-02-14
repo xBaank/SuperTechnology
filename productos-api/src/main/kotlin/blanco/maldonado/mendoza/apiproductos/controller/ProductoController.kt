@@ -73,9 +73,29 @@ class ProductoController
     suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
             logger.info { "Get productos by categoria" }
-            val res = repository.findByCategoria(categoria).map { it.toDto() }
-            return@withContext ResponseEntity.ok(res)
-        }
+            try {
+                if (!categoria.trim().isEmpty())  {
+                    try {
+                        var categoriaCorrecta =  Producto.Categoria.valueOf(categoria.trim())
+                        val res = repository.findByCategoria(categoria.trim()).map { it.toDto() }
+                        if ( !res.toList().isEmpty())  {
+                            return@withContext ResponseEntity.ok(res)
+                        }else{
+                            throw ProductoNotFoundException("La categoria $categoria es correcta pero no tiene Prodcutos asociados.")
+                        }
+                    }catch (e: IllegalArgumentException){
+                        throw ProductoNotFoundException("La categoria $categoria no es correcta.")
+                    }
+                }else{
+                    throw ProductoNotFoundException("La categoria esta vacia.")
+                }
+                throw ProductoNotFoundException("La categoria $categoria no es correcta")
+            } catch (e: ProductoNotFoundException) {
+        throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+    }
+}
+
+
 
     /**
      * Get {nombre} : producto por su nombre
@@ -88,11 +108,46 @@ class ProductoController
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por nombre" }
             try {
-                val res = repository.findByNombre(nombre).map { it.toDto() }
-                if (res.toList().isEmpty() || nombre.isEmpty()) {
+                val res = repository.findByNombre(nombre.trim()).map { it.toDto() }
+                if (res.toList().isEmpty() || nombre.trim().isEmpty()) {
                     throw ProductoNotFoundException("No se ha encontrado ningún producto con el nombre $nombre")
                 }
                 return@withContext ResponseEntity.ok(res)
+            } catch (e: ProductoNotFoundException) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+            }
+        }
+
+
+    /**
+     * Get {nombre nulo} : llamada a get nombre nula
+     * @param nombre : nombre del producto
+     * @return ResponseEntity<ProductosDTO>
+     * @throws ResponseStatusException con el mensaje 404 porque el mensaje es nulo.
+     */
+    @GetMapping("/nombre/")
+    suspend fun resultNombreNulo(): ResponseEntity<Flow<ProductoDTO>> =
+        withContext(Dispatchers.IO) {
+            logger.info { "Obteniendo producto por nombre nulo" }
+            try{
+                    throw ProductoNotFoundException("El nombre que ha introducido es nulo.")
+            } catch (e: ProductoNotFoundException) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+            }
+        }
+
+    /**
+     * Get {categoria nula} : llamada a get categoria nula
+     * @param categoria : categoria del producto nula
+     * @return ResponseEntity<ProductosDTO>
+     * @throws ResponseStatusException con el mensaje 404 porque la categoría es nula.
+     */
+    @GetMapping("/categoria/")
+    suspend fun resultCategoriaNula(): ResponseEntity<Flow<ProductoDTO>> =
+        withContext(Dispatchers.IO) {
+            logger.info { "Obteniendo producto por categoria nula" }
+            try{
+                throw ProductoNotFoundException("La categoria que ha introducido es nula.")
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
             }
