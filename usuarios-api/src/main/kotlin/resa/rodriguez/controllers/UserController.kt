@@ -8,10 +8,11 @@ import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.dto.UserDTOlogin
 import resa.rodriguez.dto.UserDTOregister
@@ -108,8 +109,31 @@ class UserController
         }
     }
 
+    @GetMapping("/list/paging")
+    private suspend fun getAllPaging(
+        @RequestHeader token: String,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int = 0,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_SIZE) size: Int = 10,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_SORT) sortBy: String = "created_at",
+    ): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+        log.info { "Buscando usuarios paginados || Pagina: $page" }
+
+        val checked = checkToken(token, UserRole.ADMIN)
+        if (checked != null) return@withContext checked
+
+        val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
+        val pageResponse = userRepositoryCached.findAllPaged(pageRequest).firstOrNull()?.toList()
+
+        if (pageResponse != null) {
+            ResponseEntity(userMapper.toDTO(pageResponse).toString(), HttpStatus.OK)
+        } else ResponseEntity("Page not found", HttpStatus.NOT_FOUND)
+    }
+
     @GetMapping("/list/activity/{active}")
-    private suspend fun listUsersActive(@PathVariable active: Boolean, @RequestHeader token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    private suspend fun listUsersActive(
+        @PathVariable active: Boolean,
+        @RequestHeader token: String
+    ): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios activados" }
 
         val checked = checkToken(token, UserRole.ADMIN)
@@ -126,7 +150,10 @@ class UserController
 
     // "Find One" Methods
     @GetMapping("/username/{username}")
-    private suspend fun findByUsername(@PathVariable username: String, @RequestHeader token: String): ResponseEntity<out Any> =
+    private suspend fun findByUsername(
+        @PathVariable username: String,
+        @RequestHeader token: String
+    ): ResponseEntity<out Any> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con username: $username" }
             val role = getRole(token) ?: return@withContext ResponseEntity("Invalid token.", HttpStatus.UNAUTHORIZED)
@@ -231,26 +258,28 @@ class UserController
 
     // "Find All" Methods
     @GetMapping("/list/address")
-    private suspend fun listAddresses(@RequestHeader token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
-        log.info { "Obteniendo listado de direcciones" }
+    private suspend fun listAddresses(@RequestHeader token: String): ResponseEntity<out Any> =
+        withContext(Dispatchers.IO) {
+            log.info { "Obteniendo listado de direcciones" }
 
-        val checked = checkToken(token, UserRole.ADMIN)
-        if (checked != null) return@withContext checked
+            val checked = checkToken(token, UserRole.ADMIN)
+            if (checked != null) return@withContext checked
 
-        ResponseEntity.ok(addressRepositoryCached.findAll().toList())
-    }
+            ResponseEntity.ok(addressRepositoryCached.findAll().toList())
+        }
 
     @GetMapping("/list/address/user/{userId}")
-    private suspend fun listAddressesByUserId(@PathVariable userId: UUID): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
-        log.info { "Obteniendo direcciones de usuario con id: $userId" }
+    private suspend fun listAddressesByUserId(@PathVariable userId: UUID): ResponseEntity<out Any> =
+        withContext(Dispatchers.IO) {
+            log.info { "Obteniendo direcciones de usuario con id: $userId" }
 
-        val address = addressRepositoryCached.findAllFromUserId(userId).toList()
+            val address = addressRepositoryCached.findAllFromUserId(userId).toList()
 
-        if (address.isEmpty()) return@withContext ResponseEntity(
-            "Addresses with userId: $userId not found",
-            HttpStatus.NOT_FOUND
-        ) else return@withContext ResponseEntity.ok(address)
-    }
+            if (address.isEmpty()) return@withContext ResponseEntity(
+                "Addresses with userId: $userId not found",
+                HttpStatus.NOT_FOUND
+            ) else return@withContext ResponseEntity.ok(address)
+        }
 
     // "Find One" Methods
     @GetMapping("/address/{id}")
@@ -262,7 +291,4 @@ class UserController
 
         return@withContext ResponseEntity.ok(address)
     }
-
-    @GetMapping("/me")
-    private suspend fun findMyself(@RequestHeader token: String):
 }
