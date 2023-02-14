@@ -7,6 +7,7 @@ plugins {
 	kotlin("plugin.spring") version "1.7.22"
 	//Dokka Documentacion Kotlin
 	id("org.jetbrains.dokka") version "1.7.20"
+	kotlin("plugin.serialization") version "1.7.20"
 }
 
 group = "resa.rodriguez"
@@ -52,6 +53,8 @@ dependencies {
 
 	// Para tokens
 	implementation("com.auth0:java-jwt:4.2.1")
+
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 }
 
 tasks.withType<KotlinCompile> {
