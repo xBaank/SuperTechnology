@@ -8,12 +8,12 @@ import io.ktor.util.pipeline.*
 import kotlinx.serialization.*
 import pedidosApi.exceptions.ApiError
 import pedidosApi.exceptions.DomainError
-import pedidosApi.exceptions.PedidoError
 import pedidosApi.json.buildErrorJson
 import pedidosApi.json.buildPagedPedidoJson
 import pedidosApi.json.buildPedidoDto
 import pedidosApi.models.Pedido
 import pedidosApi.repositories.PagedFlow
+import pedidosApi.exceptions.PedidoError
 
 typealias ApplicationCallContext = PipelineContext<*, ApplicationCall>
 

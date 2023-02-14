@@ -9,7 +9,6 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.id.toId
 import pedidosApi.dto.UsuarioDto
 import pedidosApi.exceptions.PedidoError
-import pedidosApi.exceptions.PedidoError.*
 import pedidosApi.extensions.toObjectIdOrNull
 import pedidosApi.models.Pedido
 
@@ -19,6 +18,7 @@ class PedidosRepository(client: CoroutineDatabase) {
     private val collection = client.getCollection<Pedido>()
 
     fun getByPage(page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> {
+    
         validatePage(page, size)
 
         val flow = collection.find().skip(page * size).limit(size).toFlow()
@@ -27,13 +27,14 @@ class PedidosRepository(client: CoroutineDatabase) {
 
     suspend fun getById(id: String): Either<PedidoError, Pedido> {
         val _id = id.toObjectIdOrNull()?.toId<Pedido>()
-            ?: return InvalidPedidoId("id : '$id' format is incorrect").left()
+            ?: return PedidoError.InvalidPedidoId("id : '$id' format is incorrect").left()
 
         return collection.find(Pedido::_id eq _id).first()?.right()
-            ?: PedidoNotFound("Pedido with with id : '${id}' not found").left()
+            ?: PedidoError.PedidoNotFound("Pedido with with id : '${id}' not found").left()
     }
 
     fun getByUserId(id: String, page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> {
+    
         validatePage(page, size)
 
         val flow = collection.find(Pedido::usuario / UsuarioDto::id eq id).skip(page * size).limit(size).toFlow()
@@ -42,16 +43,17 @@ class PedidosRepository(client: CoroutineDatabase) {
 
     suspend fun save(pedido: Pedido): Either<PedidoError, Pedido> {
         val result = collection.save(pedido) ?: return pedido.right()
-        if (!result.wasAcknowledged()) return PedidoSaveError("Couldn't save pedido with id : '${pedido._id}'").left()
+        if (!result.wasAcknowledged()) return PedidoError.PedidoSaveError("Couldn't save pedido with id : '${pedido._id}'")
+            .left()
         return pedido.right()
     }
 
     suspend fun delete(id: String): Either<PedidoError, Unit> {
         val _id = id.toObjectIdOrNull()?.toId<Pedido>()
-            ?: return InvalidPedidoId("id : '$id' format is incorrect").left()
+            ?: return PedidoError.InvalidPedidoId("id : '$id' format is incorrect").left()
 
         val result = collection.deleteOneById(_id)
-        if (!result.wasAcknowledged()) return PedidoSaveError("Couldn't delete pedido with id : '${id}'").left()
+        if (!result.wasAcknowledged()) return PedidoError.PedidoSaveError("Couldn't delete pedido with id : '${id}'").left()
         return Unit.right()
     }
 

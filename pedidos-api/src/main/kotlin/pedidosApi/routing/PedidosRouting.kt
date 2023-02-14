@@ -10,9 +10,9 @@ import org.litote.kmongo.id.toId
 import pedidosApi.clients.ProductosClient
 import pedidosApi.clients.UsuariosClient
 import pedidosApi.dto.CreatePedidoDto
+import pedidosApi.extensions.inject
 import pedidosApi.dto.UpdatePedidoDto
-import pedidosApi.exceptions.PedidoError.InvalidPedidoFormat
-import pedidosApi.exceptions.PedidoError.InvalidPedidoId
+import pedidosApi.exceptions.PedidoError
 import pedidosApi.extensions.inject
 import pedidosApi.extensions.mapToApiError
 import pedidosApi.extensions.receiveOrNull
@@ -42,7 +42,6 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
         handleResult(repository.getByPage(page, size))
     }
-
     get("{id}") {
         val id = call.parameters.getOrFail("id")
         handleResult(repository.getById(id))
@@ -50,7 +49,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
 
     post {
         val pedido = call.receiveOrNull<CreatePedidoDto>()
-            ?: return@post handleError(InvalidPedidoFormat("Invalid body format"))
+            ?: return@post handleError(PedidoError.InvalidPedidoFormat("Invalid body format"))
 
         createPedido(pedido).fold(
             ifLeft = { handleError(it) },
@@ -60,7 +59,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
 
     put("{id}") {
         val id = call.parameters.getOrFail("id").toObjectIdOrNull()?.toId<Pedido>()
-            ?: return@put handleError(InvalidPedidoId("Invalid id format"))
+            ?: return@put handleError(PedidoError.InvalidPedidoId("Invalid id format"))
 
         val pedido = call.receiveOrNull<UpdatePedidoDto>()
 
