@@ -8,11 +8,11 @@ data class ProductoDTO(
     val id: Int? = null,
     val uuid: String? = null,
     val nombre: String,
-    val categoria: Producto.Categoria,
+    val categoria: String,
     val stock: Int,
     val description: String,
     val precio: Double,
-    val activo: Boolean,
+    val activo: String,
     val metadata: MetaData? = null
 ) {
     data class MetaData(
@@ -25,9 +25,9 @@ data class ProductoDTO(
 data class ProductoCreateDto(
     val uuid: String = UUID.randomUUID().toString(),
     val nombre: String,
-    val categoria: Producto.Categoria,
+    val categoria: String,
     val stock: Int,
     val description: String,
     val precio: Double,
-    val activo: Boolean
+    val activo: String
 )
