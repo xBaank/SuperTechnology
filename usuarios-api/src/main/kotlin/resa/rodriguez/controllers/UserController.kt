@@ -73,7 +73,7 @@ class UserController
 
     // -- USERS --
 
-    // Register & Login Methods
+    // Register, Create & Login Methods
     @PostMapping("/register")
     private suspend fun register(@Valid @RequestBody userDto: UserDTOregister): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
@@ -90,10 +90,25 @@ class UserController
                 val addresses = userDto.fromDTOtoAddresses(userSaved.id!!)
                 addresses.forEach { addressRepositoryCached.save(it) }
 
-                ResponseEntity.ok(create(userSaved))
+                ResponseEntity.ok(json.encodeToString(create(userSaved)))
             } catch (e: Exception) {
                 ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
             }
+        }
+
+    @PostMapping("/create")
+    suspend fun createByAdmin(@Valid @RequestBody userDTOcreate: UserDTOcreate): ResponseEntity<String> =
+        withContext(Dispatchers.IO) {
+            log.info { "Creando usuario por parte de un administrador" }
+
+            val user = userDTOcreate.fromDTOtoUser()
+
+            val userSaved = userRepositoryCached.save(user)
+
+            val addresses = userDTOcreate.fromDTOtoAddresses(userSaved.id!!)
+            addresses.forEach { addressRepositoryCached.save(it) }
+
+            ResponseEntity(json.encodeToString(create(userSaved)), HttpStatus.CREATED)
         }
 
     @GetMapping("/login")
@@ -111,7 +126,7 @@ class UserController
                 // hacemos asi, el usuario sabria que el email existe y lo que falla es la contraseña,
                 // por lo que podria iniciar un ataque de fuerza bruta para suplantar a otro usuario.
 
-                ResponseEntity.ok(create(user))
+                ResponseEntity.ok(json.encodeToString(create(user)))
             } catch (e: Exception) {
                 ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
             }
@@ -135,17 +150,17 @@ class UserController
         @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int = 0,
         @RequestParam(defaultValue = APIConfig.PAGINATION_SIZE) size: Int = 10,
         @RequestParam(defaultValue = APIConfig.PAGINATION_SORT) sortBy: String = "created_at",
-    ): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Buscando usuarios paginados || Pagina: $page" }
 
         val checked = checkToken(token, UserRole.ADMIN)
-        if (checked != null) return@withContext checked
+        if (checked != null) return@withContext ResponseEntity(json.encodeToString(checked), HttpStatus.BAD_REQUEST)
 
         val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
         val pageResponse = userRepositoryCached.findAllPaged(pageRequest).firstOrNull()?.toList()
 
         if (pageResponse != null) {
-            ResponseEntity(userMapper.toDTO(pageResponse).toString(), HttpStatus.OK)
+            ResponseEntity(json.encodeToString(userMapper.toDTO(pageResponse)), HttpStatus.OK)
         } else ResponseEntity("Page not found", HttpStatus.NOT_FOUND)
     }
 
@@ -153,15 +168,15 @@ class UserController
     private suspend fun listUsersActive(
         @PathVariable active: Boolean,
         @RequestHeader token: String
-    ): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios activados" }
 
         val checked = checkToken(token, UserRole.ADMIN)
-        if (checked != null) return@withContext checked
+        if (checked != null) return@withContext ResponseEntity(json.encodeToString(checked), HttpStatus.BAD_REQUEST)
 
         val res = userRepositoryCached.findByActivo(active).toList()
 
-        ResponseEntity.ok(userMapper.toDTO(res))
+        ResponseEntity.ok(json.encodeToString(userMapper.toDTO(res)))
     }
 
     // "Find One" Methods
@@ -288,12 +303,12 @@ class UserController
     // "Me" Method
 
     @GetMapping("/me")
-    private suspend fun findMyself(@RequestHeader token: String): String = withContext(Dispatchers.IO) {
+    private suspend fun findMyself(@RequestHeader token: String): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo datos del usuario." }
 
         val user = getUserFromToken(token, userRepositoryCached, userMapper)
-        if (user == null) json.encodeToString(ResponseEntity("User not found", HttpStatus.NOT_FOUND))
-        else json.encodeToString(ResponseEntity(user, HttpStatus.OK))
+        if (user == null) ResponseEntity("User not found", HttpStatus.NOT_FOUND)
+        else ResponseEntity(json.encodeToString(user), HttpStatus.OK)
     }
 
     // -- ADDRESSES --

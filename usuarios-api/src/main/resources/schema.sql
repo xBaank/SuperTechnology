@@ -22,12 +22,3 @@ CREATE TABLE IF NOT EXISTS addresses(
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES USERS(id)
 );
-
--- Datos de muestra --
-INSERT INTO users(id, username, password, email, phone, avatar, role, created_at, active)
-VALUES ('e273e764-a7da-11ed-afa1-0242ac120002', 'TEST_USER', 'TEST_PASS', 'test@test.com', '111111111', 'AVATAR_TEST', 'USER', '1994-10-27', 'true')
-ON CONFLICT DO NOTHING;
-
-INSERT INTO addresses(user_id, address)
-VALUES ('e273e764-a7da-11ed-afa1-0242ac120002', 'TEST_ADDRESS')
-ON CONFLICT DO NOTHING;
