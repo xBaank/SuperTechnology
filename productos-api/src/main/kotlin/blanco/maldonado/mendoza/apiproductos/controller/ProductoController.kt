@@ -87,9 +87,11 @@ class ProductoController
     suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por nombre" }
-
             try {
                 val res = repository.findByNombre(nombre).map { it.toDto() }
+                if (res.toList().isEmpty() || nombre.isEmpty()) {
+                    throw ProductoNotFoundException("No se ha encontrado ningún producto con el nombre $nombre")
+                }
                 return@withContext ResponseEntity.ok(res)
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
@@ -100,21 +102,20 @@ class ProductoController
      * Post : crea un producto
      * @param procuctoDTO : producto
      * @return ResponseEntity<ProductosDTO>
-     * @throws ResponseStatusException con el mensaje 400 si no es valido
+     * @throws ResponseStatusException con el mensaje 400 si no es válido
      */
     @PostMapping("")
-    suspend fun createProduct(@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDTO> =
-        withContext(Dispatchers.IO) {
-            //todo ver si el producto exixtepor id o por nombre, y si no exixte crearlo si existe no posible
-            logger.info { "Creando un producto" }
-            try {
-                val p = productoDto.validate().toModel()
-                val res = repository.save(p).toDto()
-                return@withContext ResponseEntity.status(HttpStatus.CREATED).body(res)
-            } catch (e: ProductoBadRequestExcepcion) {
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
-            }
+    suspend fun createProduct(@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDTO> {
+        logger.info { "Creando un producto" }
+        checkProducto(productoDto)
+        try {
+            val p = productoDto.validate().toModel()
+            val res = repository.save(p).toDto()
+            return ResponseEntity.status(HttpStatus.CREATED).body(res)
+        } catch (e: ProductoBadRequestExcepcion) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
+    }
 
     /**
      * Put : modifica un producto
@@ -157,6 +158,13 @@ class ProductoController
             throw ResponseStatusException(HttpStatus.CONFLICT, e.message)
         }
 
+    }
+
+    private suspend fun checkProducto(producto: ProductoCreateDto) {
+        val existe = repository.findByNombre(producto.nombre)
+        if (existe.toList().isNotEmpty()) {
+            throw ProductoBadRequestExcepcion("El producto con nombre ${producto.nombre} ya existe")
+        }
     }
 
     @GetMapping("/test")
