@@ -10,7 +10,6 @@ import org.litote.kmongo.id.toId
 import pedidosApi.clients.ProductosClient
 import pedidosApi.clients.UsuariosClient
 import pedidosApi.dto.CreatePedidoDto
-import pedidosApi.extensions.inject
 import pedidosApi.dto.UpdatePedidoDto
 import pedidosApi.exceptions.PedidoError
 import pedidosApi.extensions.inject
@@ -62,6 +61,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
             ?: return@put handleError(PedidoError.InvalidPedidoId("Invalid id format"))
 
         val pedido = call.receiveOrNull<UpdatePedidoDto>()
+            ?: return@put handleError(PedidoError.InvalidPedidoFormat("Invalid body format"))
 
         updatePedido(pedido, id).fold(
             ifLeft = { handleError(it) },
