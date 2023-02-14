@@ -74,27 +74,26 @@ class ProductoController
         withContext(Dispatchers.IO) {
             logger.info { "Get productos by categoria" }
             try {
-                if (!categoria.trim().isEmpty())  {
+                if (!categoria.trim().isEmpty()) {
                     try {
-                        var categoriaCorrecta =  Producto.Categoria.valueOf(categoria.trim())
+                        var categoriaCorrecta = Producto.Categoria.valueOf(categoria.trim())
                         val res = repository.findByCategoria(categoria.trim()).map { it.toDto() }
-                        if ( !res.toList().isEmpty())  {
+                        if (!res.toList().isEmpty()) {
                             return@withContext ResponseEntity.ok(res)
-                        }else{
+                        } else {
                             throw ProductoNotFoundException("La categoria $categoria es correcta pero no tiene Prodcutos asociados.")
                         }
-                    }catch (e: IllegalArgumentException){
+                    } catch (e: IllegalArgumentException) {
                         throw ProductoNotFoundException("La categoria $categoria no es correcta.")
                     }
-                }else{
+                } else {
                     throw ProductoNotFoundException("La categoria esta vacia.")
                 }
                 throw ProductoNotFoundException("La categoria $categoria no es correcta")
             } catch (e: ProductoNotFoundException) {
-        throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
-    }
-}
-
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+            }
+        }
 
 
     /**
@@ -129,8 +128,8 @@ class ProductoController
     suspend fun resultNombreNulo(): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por nombre nulo" }
-            try{
-                    throw ProductoNotFoundException("El nombre que ha introducido es nulo.")
+            try {
+                throw ProductoNotFoundException("El nombre que ha introducido es nulo.")
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
             }
@@ -146,7 +145,7 @@ class ProductoController
     suspend fun resultCategoriaNula(): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por categoria nula" }
-            try{
+            try {
                 throw ProductoNotFoundException("La categoria que ha introducido es nula.")
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
@@ -189,6 +188,9 @@ class ProductoController
             val p = productoDto.validate().toModel()
             val res = repository.findById(id)!!.toDto()
             res.let {
+                //antes de introducir cambiar la fecha de modificación update_at
+                //elimina y crea
+                repository.deleteById(id)
                 repository.save(p).toDto()
             }
             return@withContext ResponseEntity.status(HttpStatus.OK).body(res)
@@ -205,7 +207,14 @@ class ProductoController
         //todo ver si el producto exixte, y si no not posible
         logger.info { "Borrando producto" }
         try {
-            repository.deleteById(id)
+            val res = repository.findById(id)!!.toDto()
+            //Arreglar fallo res == null' is always 'false
+            if (res == null) {
+                throw ProductoNotFoundException("Producto no encontrado con este id")
+            } else {
+                repository.deleteById(id)
+            }
+
             return@withContext ResponseEntity.noContent().build()
         } catch (e: ProductoNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
