@@ -1,12 +1,14 @@
 package pedidosApi
 
 import com.typesafe.config.ConfigFactory
+import java.io.File
 import java.lang.System.getenv
 
 object Config {
-    val config = ConfigFactory.load()
-    val connectionString get() = getenv("mongoConnectionString") ?: config.getString("mongo.connectionString")
-    val database get() = getenv("mongoDatabase") ?: config.getString("mongo.database")
-    val usuariosUrl get() = getenv("usuariosUrl") ?: config.getString("usuarios.url")
-    val productosUrl get() = getenv("productosUrl") ?: config.getString("productos.url")
+    val config = getenv("APPLICATION_PATH")?.let { ConfigFactory.parseFile(File(it)) }
+        ?: ConfigFactory.load()
+    val connectionString get() = getenv("MONGO_CONNECTION_STRING") ?: config.getString("mongo.connectionString")
+    val database get() = getenv("MONGO_DATABASE") ?: config.getString("mongo.database")
+    val usuariosUrl get() = getenv("USUARIOS_URL") ?: config.getString("usuarios.url")
+    val productosUrl get() = getenv("PRODUCTOS_URL") ?: config.getString("productos.url")
 }
