@@ -12,7 +12,7 @@ data class ProductoDTO(
     val stock: Int,
     val description: String,
     val precio: Double,
-    val activo: Boolean,
+    val activo: String,
     val metadata: MetaData? = null
 ) {
     data class MetaData(
@@ -29,5 +29,5 @@ data class ProductoCreateDto(
     val stock: Int,
     val description: String,
     val precio: Double,
-    val activo: Boolean
+    val activo: String
 )

@@ -12,7 +12,7 @@ fun Producto.toDto() = ProductoDTO(
     stock = this.stock,
     description = this.description,
     precio = this.precio,
-    activo = this.activo,
+    activo = this.activo.toString(),
     metadata = ProductoDTO.MetaData(
         createdAt = this.createdAt.toString(),
         updateAt = this.updateAt.toString(),
@@ -27,5 +27,5 @@ fun ProductoCreateDto.toModel() = Producto(
     stock = this.stock,
     description = this.description,
     precio = this.precio,
-    activo = this.activo
+    activo =  this.activo.toBoolean()
 )
