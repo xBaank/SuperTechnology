@@ -1,11 +1,12 @@
 package pedidosApi
 
+import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import java.io.File
 import java.lang.System.getenv
 
 object Config {
-    val config = getenv("APPLICATION_PATH")?.let { ConfigFactory.parseFile(File(it)) }
+    val config: Config = getenv("APPLICATION_PATH")?.let { ConfigFactory.parseFile(File(it)) }
         ?: ConfigFactory.load()
     val connectionString get() = getenv("MONGO_CONNECTION_STRING") ?: config.getString("mongo.connectionString")
     val database get() = getenv("MONGO_DATABASE") ?: config.getString("mongo.database")
