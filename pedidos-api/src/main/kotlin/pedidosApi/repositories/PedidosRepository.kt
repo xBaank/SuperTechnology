@@ -41,7 +41,7 @@ class PedidosRepository(client: CoroutineDatabase) {
 
     suspend fun save(pedido: Pedido): Either<PedidoError, Pedido> {
         val result = collection.save(pedido) ?: return pedido.right()
-        if (!result.wasAcknowledged()) return PedidoSaveError("Couldn't save pedido with id : '${pedido._id}'")
+        if (!result.wasAcknowledged()) return PedidoError.PedidoSaveError("Couldn't save pedido with id : '${pedido._id}'")
             .left()
         return pedido.right()
     }
@@ -55,10 +55,10 @@ class PedidosRepository(client: CoroutineDatabase) {
         return Unit.right()
     }
 
-    private fun validatePage(page: Int, size: Int): Either<InvalidPedidoPage, Unit> {
-        if (page < 0) return InvalidPedidoPage("Page must be greater or equal than 0").left()
-        if (size < 1) return InvalidPedidoPage("Size must be greater than 0").left()
-        if (size >= MAX_SIZE) return InvalidPedidoPage("Size must be less or equal than $MAX_SIZE").left()
+    private fun validatePage(page: Int, size: Int): Either<PedidoError.InvalidPedidoPage, Unit> {
+        if (page < 0) return PedidoError.InvalidPedidoPage("Page must be greater or equal than 0").left()
+        if (size < 1) return PedidoError.InvalidPedidoPage("Size must be greater than 0").left()
+        if (size >= MAX_SIZE) return PedidoError.InvalidPedidoPage("Size must be less or equal than $MAX_SIZE").left()
         return Unit.right()
     }
 }

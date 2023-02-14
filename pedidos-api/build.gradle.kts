@@ -29,6 +29,8 @@ val kluentVersion = "1.72"
 dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.mockk:mockk:1.13.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+
     //testing con ktor
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     //testing con ktor
