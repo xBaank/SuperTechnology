@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service
 import resa.rodriguez.dto.UserDTOcreate
 import resa.rodriguez.dto.UserDTOregister
 import resa.rodriguez.dto.UserDTOresponse
-import resa.rodriguez.dto.UserDTOresponseLite
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
@@ -41,24 +40,6 @@ class UserMapper
     suspend fun toDTO(users: List<User>): List<UserDTOresponse> {
         val res = mutableListOf<UserDTOresponse>()
         users.forEach { res.add(toDTO(it)) }
-        return res
-    }
-
-    suspend fun toDTOLite(user: User): UserDTOresponseLite {
-        val addresses = aRepo.findAllByUserId(user.id!!).toSet()
-        val addressesString = mutableSetOf<String>()
-        addresses.forEach { addressesString.add(it.address) }
-        return UserDTOresponseLite(
-            username = user.username,
-            role = user.role,
-            avatar = user.avatar,
-            active = user.active
-        )
-    }
-
-    suspend fun toDTOLite(users: List<User>): List<UserDTOresponseLite> {
-        val res = mutableListOf<UserDTOresponseLite>()
-        users.forEach { res.add(toDTOLite(it)) }
         return res
     }
 }

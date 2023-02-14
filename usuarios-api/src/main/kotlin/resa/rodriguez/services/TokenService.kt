@@ -5,8 +5,11 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.interfaces.DecodedJWT
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import resa.rodriguez.dto.UserDTOresponse
+import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
+import resa.rodriguez.repositories.user.IUserRepositoryCached
 import java.time.Instant
 import java.util.*
 
@@ -64,14 +67,14 @@ fun checkToken(token: String, role: UserRole): ResponseEntity<out Any>? {
     return null
 }
 
-fun getRole(token: String): UserRole? {
+suspend fun getUserFromToken(token: String, repo: IUserRepositoryCached, mapper: UserMapper): UserDTOresponse? {
     val decoded = decode(token) ?: return null
-    return  if (!decoded.getClaim("role").isNull && !decoded.getClaim("role").isMissing) {
-        val claim = decoded.getClaim("role")
-        if (claim.asString().equals(UserRole.SUPER_ADMIN.name)) UserRole.SUPER_ADMIN
-        else if (claim.asString().equals(UserRole.ADMIN.name)) UserRole.ADMIN
-        else if (claim.asString().equals(UserRole.USER.name)) UserRole.USER
-        else null
+    return  if (!decoded.issuer.isNullOrBlank()) {
+        try {
+            repo.findById(UUID.fromString(decoded.issuer))?.let { mapper.toDTO(it) }
+        } catch (e: Exception) {
+            null
+        }
     }
     else null
 }

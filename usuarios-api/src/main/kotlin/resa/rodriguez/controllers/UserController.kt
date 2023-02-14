@@ -6,16 +6,22 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.nullable
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 import resa.rodriguez.config.APIConfig
-import resa.rodriguez.dto.UserDTOlogin
-import resa.rodriguez.dto.UserDTOregister
-import resa.rodriguez.dto.UserDTOresponse
+import resa.rodriguez.dto.*
 import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.mappers.fromDTOtoAddresses
 import resa.rodriguez.mappers.fromDTOtoUser
@@ -24,12 +30,28 @@ import resa.rodriguez.repositories.address.AddressRepositoryCached
 import resa.rodriguez.repositories.user.UserRepositoryCached
 import resa.rodriguez.services.checkToken
 import resa.rodriguez.services.create
-import resa.rodriguez.services.getRole
+import resa.rodriguez.services.getUserFromToken
 import resa.rodriguez.services.matches
 import java.util.UUID
 
 private val log = KotlinLogging.logger {}
 
+private val json = Json {
+    ignoreUnknownKeys = true
+    prettyPrint = true
+    useArrayPolymorphism = true
+    encodeDefaults = true
+    serializersModule = SerializersModule {
+        polymorphic(Any::class) {
+            subclass(String::class, String.serializer())
+            subclass(UserDTOresponse::class)
+            subclass(UserDTOlogin::class)
+            subclass(UserDTOregister::class)
+            subclass(UserDTOcreate::class)
+            subclass(List::class, ListSerializer(PolymorphicSerializer(Any::class).nullable))
+        }
+    }
+}
 /**
  * Controlador para el manejo de distintos repositorios
  *
@@ -99,13 +121,9 @@ class UserController
 
         val checked = checkToken(token, UserRole.ADMIN)
         if (checked != null) return@withContext checked
-        val role = getRole(token) ?: return@withContext ResponseEntity("Invalid token.", HttpStatus.UNAUTHORIZED)
 
         val res = userRepositoryCached.findAll().toList()
-        when (role) {
-            UserRole.USER -> ResponseEntity.ok(userMapper.toDTOLite(res))
-            else -> ResponseEntity.ok(userMapper.toDTO(res))
-        }
+        ResponseEntity.ok(userMapper.toDTO(res))
     }
 
     @GetMapping("/list/activity/{active}")
@@ -114,14 +132,10 @@ class UserController
 
         val checked = checkToken(token, UserRole.ADMIN)
         if (checked != null) return@withContext checked
-        val role = getRole(token) ?: return@withContext ResponseEntity("Invalid token.", HttpStatus.UNAUTHORIZED)
 
         val res = userRepositoryCached.findByActivo(active).toList()
 
-        when (role) {
-            UserRole.USER -> ResponseEntity.ok(userMapper.toDTOLite(res))
-            else -> ResponseEntity.ok(userMapper.toDTO(res))
-        }
+        ResponseEntity.ok(userMapper.toDTO(res))
     }
 
     // "Find One" Methods
@@ -129,36 +143,36 @@ class UserController
     private suspend fun findByUsername(@PathVariable username: String, @RequestHeader token: String): ResponseEntity<out Any> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con username: $username" }
-            val role = getRole(token) ?: return@withContext ResponseEntity("Invalid token.", HttpStatus.UNAUTHORIZED)
+
+            val checked = checkToken(token, UserRole.ADMIN)
+            if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findByUsername(username).firstOrNull()
                 ?: return@withContext ResponseEntity("User with name: $username not found.", HttpStatus.NOT_FOUND)
 
-            when (role) {
-                UserRole.USER -> ResponseEntity.ok(userMapper.toDTOLite(user))
-                else -> {
-                    val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
-                    val addr = mutableSetOf<String>()
-                    addresses.forEach { addr.add(it.address) }
-                    val result = UserDTOresponse(
-                        username = user.username,
-                        email = user.email,
-                        role = user.role,
-                        addresses = addr,
-                        avatar = user.avatar,
-                        createdAt = user.createdAt,
-                        active = user.active
-                    )
+            val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
+            val addr = mutableSetOf<String>()
+            addresses.forEach { addr.add(it.address) }
+            val result = UserDTOresponse(
+                username = user.username,
+                email = user.email,
+                role = user.role,
+                addresses = addr,
+                avatar = user.avatar,
+                createdAt = user.createdAt,
+                active = user.active
+            )
 
-                    ResponseEntity.ok(result)
-                }
-            }
+            ResponseEntity.ok(result)
         }
 
     @GetMapping("/id/{userId}")
-    private suspend fun findByUserId(@PathVariable userId: UUID): ResponseEntity<out Any> =
+    private suspend fun findByUserId(@PathVariable userId: UUID, @RequestHeader token: String): ResponseEntity<out Any> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con id: $userId" }
+
+            val checked = checkToken(token, UserRole.ADMIN)
+            if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findById(userId)
                 ?: return@withContext ResponseEntity("User with id: $userId not found", HttpStatus.NOT_FOUND)
@@ -180,9 +194,12 @@ class UserController
         }
 
     @GetMapping("/email/{userEmail}")
-    private suspend fun findByUserEmail(@PathVariable userEmail: String): ResponseEntity<out Any> =
+    private suspend fun findByUserEmail(@PathVariable userEmail: String, @RequestHeader token: String): ResponseEntity<out Any> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con email: $userEmail" }
+
+            val checked = checkToken(token, UserRole.ADMIN)
+            if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findByEmail(userEmail)
                 ?: return@withContext ResponseEntity("User with email: $userEmail not found", HttpStatus.NOT_FOUND)
@@ -204,9 +221,12 @@ class UserController
         }
 
     @GetMapping("/phone/{userPhone}")
-    private suspend fun findByUserPhone(@PathVariable userPhone: String): ResponseEntity<out Any> =
+    private suspend fun findByUserPhone(@PathVariable userPhone: String, @RequestHeader token: String): ResponseEntity<out Any> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con telefono: $userPhone" }
+
+            val checked = checkToken(token, UserRole.ADMIN)
+            if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findByPhone(userPhone)
                 ?: return@withContext ResponseEntity("User with phone: $userPhone not found", HttpStatus.NOT_FOUND)
@@ -241,28 +261,40 @@ class UserController
     }
 
     @GetMapping("/list/address/user/{userId}")
-    private suspend fun listAddressesByUserId(@PathVariable userId: UUID): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    private suspend fun listAddressesByUserId(@PathVariable userId: UUID, @RequestHeader token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo direcciones de usuario con id: $userId" }
+
+        val checked = checkToken(token, UserRole.ADMIN)
+        if (checked != null) return@withContext checked
 
         val address = addressRepositoryCached.findAllFromUserId(userId).toList()
 
-        if (address.isEmpty()) return@withContext ResponseEntity(
+        if (address.isEmpty()) ResponseEntity(
             "Addresses with userId: $userId not found",
             HttpStatus.NOT_FOUND
-        ) else return@withContext ResponseEntity.ok(address)
+        ) else ResponseEntity.ok(address)
     }
 
     // "Find One" Methods
     @GetMapping("/address/{id}")
-    private suspend fun findById(@PathVariable id: UUID): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    private suspend fun findById(@PathVariable id: UUID, @RequestHeader token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo direccion con id: $id" }
+
+        val checked = checkToken(token, UserRole.ADMIN)
+        if (checked != null) return@withContext checked
 
         val address = addressRepositoryCached.findById(id)
             ?: return@withContext ResponseEntity("Address with id: $id not found", HttpStatus.NOT_FOUND)
 
-        return@withContext ResponseEntity.ok(address)
+        ResponseEntity.ok(address)
     }
 
     @GetMapping("/me")
-    private suspend fun findMyself(@RequestHeader token: String):
+    private suspend fun findMyself(@RequestHeader token: String): String = withContext(Dispatchers.IO) {
+        log.info { "Obteniendo datos del usuario." }
+        
+        val user = getUserFromToken(token, userRepositoryCached, userMapper)
+        if (user == null) json.encodeToString(ResponseEntity("User not found", HttpStatus.NOT_FOUND))
+        else json.encodeToString(ResponseEntity(user, HttpStatus.OK))
+    }
 }
