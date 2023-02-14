@@ -27,6 +27,7 @@ val arrowVersion = "1.1.5"
 
 dependencies {
     testImplementation(kotlin("test"))
+    testImplementation("io.mockk:mockk:1.13.4")
     //testing con ktor
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
