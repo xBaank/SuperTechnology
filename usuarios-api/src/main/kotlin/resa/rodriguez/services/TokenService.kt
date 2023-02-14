@@ -63,3 +63,15 @@ fun checkToken(token: String, role: UserRole): ResponseEntity<out Any>? {
     }
     return null
 }
+
+fun getRole(token: String): UserRole? {
+    val decoded = decode(token) ?: return null
+    return  if (!decoded.getClaim("role").isNull && !decoded.getClaim("role").isMissing) {
+        val claim = decoded.getClaim("role")
+        if (claim.asString().equals(UserRole.SUPER_ADMIN.name)) UserRole.SUPER_ADMIN
+        else if (claim.asString().equals(UserRole.ADMIN.name)) UserRole.ADMIN
+        else if (claim.asString().equals(UserRole.USER.name)) UserRole.USER
+        else null
+    }
+    else null
+}

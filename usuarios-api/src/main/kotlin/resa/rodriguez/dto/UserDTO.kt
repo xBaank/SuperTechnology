@@ -76,3 +76,10 @@ data class UserDTOresponse(
     val createdAt: LocalDate,
     val active: Boolean
 )
+
+data class UserDTOresponseLite(
+    val username: String,
+    val role: UserRole,
+    val avatar: String,
+    val active: Boolean
+)
