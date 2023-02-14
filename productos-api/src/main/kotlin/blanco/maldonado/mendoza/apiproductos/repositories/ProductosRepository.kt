@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProductosRepository : CoroutineCrudRepository<Producto, Int> {
 
-    fun findByNombre(nombre: String): Producto
+    fun findByNombre(nombre: String): Flow<Producto>
     fun findByCategoria(categoria: String): Flow<Producto>
 
 }

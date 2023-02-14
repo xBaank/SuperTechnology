@@ -26,7 +26,7 @@ data class Producto(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column("updated_at")
     val updateAt: LocalDateTime? = null,
-    @Column("delete_at")
+    @Column("deleted_at")
     val deleteAt: LocalDateTime? = null,
     @Min(value = 0, message = "El precio no puede ser negativo")
     val precio: Double,
