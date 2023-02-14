@@ -53,7 +53,7 @@ class ProductoController
      * @throws ResponseStatusException con el mensaje 404 si no lo encuentra
      */
     @GetMapping("/{id}")
-    suspend fun findProductById(@PathVariable id: UUID): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
+    suspend fun findProductById(@PathVariable id: Int): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
 
         logger.info { "Obteniendo producto por id" }
 
@@ -70,7 +70,7 @@ class ProductoController
      * @param categoria : categoria del producto
      * @return ResponseEntity<Flow<ProductosDTO>
      */
-    @GetMapping("/{categoria}")
+    @GetMapping("/categoria/{categoria}")
     suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
             logger.info { "Get productos by categoria" }
@@ -84,8 +84,8 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 si no lo encuentra
      */
-    @GetMapping("/{nombre}")
-    suspend fun findProductById(@PathVariable nombre: String): ResponseEntity<ProductoDTO> =
+    @GetMapping("/nombre/{nombre}")
+    suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<ProductoDTO> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por id" }
 
@@ -126,7 +126,7 @@ class ProductoController
      */
     @PutMapping("/{id}")
     suspend fun updateProduct(
-        @PathVariable id: UUID, @Valid @RequestBody productoDto: ProductoCreateDto
+        @PathVariable id: Int, @Valid @RequestBody productoDto: ProductoCreateDto
     ): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
         //todo ver si el producto exixte, y si no exixte que la respuesta sea not found
         logger.info { "Modificando producto con id $id" }
@@ -146,7 +146,7 @@ class ProductoController
 
     //path modificar o deshabilitar
     @DeleteMapping("/{id}")
-    suspend fun deleteProduct(@PathVariable id: UUID): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
+    suspend fun deleteProduct(@PathVariable id: Int): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
         //todo ver si el producto exixte, y si no not posible
         logger.info { "Borrando producto" }
         try {

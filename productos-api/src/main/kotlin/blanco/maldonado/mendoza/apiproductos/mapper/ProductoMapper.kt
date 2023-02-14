@@ -6,6 +6,7 @@ import blanco.maldonado.mendoza.apiproductos.model.Producto
 
 fun Producto.toDto() = ProductoDTO(
     id = this.id,
+    uuid = this.uuid,
     nombre = this.nombre,
     categoria = this.categoria,
     stock = this.stock,
@@ -20,6 +21,7 @@ fun Producto.toDto() = ProductoDTO(
 )
 
 fun ProductoCreateDto.toModel() = Producto(
+    uuid = this.uuid,
     nombre = this.nombre,
     categoria = this.categoria,
     stock = this.stock,

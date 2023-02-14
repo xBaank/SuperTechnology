@@ -5,7 +5,8 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 data class ProductoDTO(
-    val id: UUID? = null,
+    val id: Int? = null,
+    val uuid: String? = null,
     val nombre: String,
     val categoria: Producto.Categoria,
     val stock: Int,
@@ -16,12 +17,13 @@ data class ProductoDTO(
 ) {
     data class MetaData(
         val createdAt: String = LocalDateTime.now().toString(),
-        val updateAt: String = LocalDateTime.now().toString(),
+        val updateAt: String? = null,
         val deleteAt: String? = null
     )
 }
 
 data class ProductoCreateDto(
+    val uuid: String = UUID.randomUUID().toString(),
     val nombre: String,
     val categoria: Producto.Categoria,
     val stock: Int,
