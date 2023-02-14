@@ -90,9 +90,7 @@ private suspend fun createPedido(pedido: CreatePedidoDto) = either {
 
     Pedido(
         usuario = usuario,
-        tareas = listOf(
-            Tarea(productos = productos, empleado = usuario, createdAt = current)
-        ),
+        tareas = listOf(Tarea(productos = productos, empleado = usuario, createdAt = current)),
         iva = pedido.iva,
         estado = "PENDIENTE",
         createdAt = current
