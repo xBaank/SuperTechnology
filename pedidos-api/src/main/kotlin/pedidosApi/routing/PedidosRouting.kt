@@ -41,6 +41,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
         handleResult(repository.getByPage(page, size))
     }
+
     get("{id}") {
         val id = call.parameters.getOrFail("id")
         handleResult(repository.getById(id))
@@ -61,7 +62,6 @@ fun Routing.pedidosRouting() = route("/pedidos") {
             ?: return@put handleError(PedidoError.InvalidPedidoId("Invalid id format"))
 
         val pedido = call.receiveOrNull<UpdatePedidoDto>()
-            ?: return@put handleError(PedidoError.InvalidPedidoFormat("Invalid body format"))
 
         updatePedido(pedido, id).fold(
             ifLeft = { handleError(it) },

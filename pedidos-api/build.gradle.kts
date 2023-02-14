@@ -24,16 +24,21 @@ val koinKtorVersion = "3.3.0"
 val arrowVersion = "1.1.5"
 val kluentVersion = "1.72"
 val testContainersVersion = "1.17.6"
+val junitVersion = "5.8.1"
 
 
 dependencies {
-    testImplementation(kotlin("test"))
+    //junit 5
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+
     //testing con ktor
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
     // for JVM:
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("org.testcontainers:mongodb:$testContainersVersion")
+    //koin test
+    testImplementation("io.insert-koin:koin-test:$koinVersion")
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")

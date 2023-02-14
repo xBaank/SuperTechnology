@@ -8,6 +8,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.amshove.kluent.shouldBe
 import org.junit.jupiter.api.Test
+import org.koin.core.context.stopKoin
 import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.utility.DockerImageName
 import pedidosApi.dto.PedidoDto
@@ -20,6 +21,7 @@ class PedidosRoutingTest {
     }
 
     init {
+        stopKoin()
         System.setProperty("mongo.connectionString", mongoDBContainer.connectionString)
         System.setProperty("mongo.database", "pedidos")
     }
@@ -98,17 +100,25 @@ class PedidosRoutingTest {
     }
 
     @Test
-    fun `should not update pedido`() = testApplication {
+    fun `should not update incorrect pedido`() = testApplication {
         val responsePut = client.put("/pedidos/63ebb2569be16967bba54c3b") {
             contentType(ContentType.Application.Json)
             setBody(
                 """
                 {
                     "estado": "COMPLETADO",
-                    "iva": 21 asd
+                    "iva": 21
                 }
             """.trimIndent()
             )
+        }
+        responsePut.status.shouldBe(HttpStatusCode.NotFound)
+    }
+
+    @Test
+    fun `should not update unknown pedido`() = testApplication {
+        val responsePut = client.put("/pedidos/63ebb2569be16967bba54c3b") {
+            contentType(ContentType.Application.Json)
         }
         responsePut.status.shouldBe(HttpStatusCode.NotFound)
     }
