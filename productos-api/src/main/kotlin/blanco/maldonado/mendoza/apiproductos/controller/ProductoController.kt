@@ -42,7 +42,6 @@ class ProductoController
     suspend fun findAllProductos(): ResponseEntity<List<Producto>> = withContext(Dispatchers.IO) {
         logger.info { "Get productos" }
         val res = repository.findAll().toList()
-        //val res = flowOf(ProductoDTO(null, "Pepe", Producto.Categoria.PIEZA, 3, "Prueba", 2.13, true))
         return@withContext ResponseEntity.ok(res)
     }
 
@@ -70,7 +69,7 @@ class ProductoController
      * @param categoria : categoria del producto
      * @return ResponseEntity<Flow<ProductosDTO>
      */
-    @GetMapping("/{categoria}")
+    @GetMapping("/categoria/{categoria}")
     suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
             logger.info { "Get productos by categoria" }
@@ -84,13 +83,13 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 si no lo encuentra
      */
-    @GetMapping("/{nombre}")
-    suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<ProductoDTO> =
+    @GetMapping("/nombre/{nombre}")
+    suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
-            logger.info { "Obteniendo producto por id" }
+            logger.info { "Obteniendo producto por nombre" }
 
             try {
-                val res = repository.findByNombre(nombre).toDto()
+                val res = repository.findByNombre(nombre).map { it.toDto() }
                 return@withContext ResponseEntity.ok(res)
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
