@@ -70,7 +70,7 @@ class ProductoController
      * @param categoria : categoria del producto
      * @return ResponseEntity<Flow<ProductosDTO>
      */
-    @GetMapping("/{categoria}")
+    @GetMapping("/categoria/{categoria}")
     suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
             logger.info { "Get productos by categoria" }
@@ -84,7 +84,7 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 si no lo encuentra
      */
-    @GetMapping("/{nombre}")
+    @GetMapping("/nombre/{nombre}")
     suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<ProductoDTO> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por id" }
