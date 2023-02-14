@@ -54,6 +54,7 @@ private val json = Json {
         }
     }
 }
+
 /**
  * Controlador para el manejo de distintos repositorios
  *
@@ -195,7 +196,10 @@ class UserController
         }
 
     @GetMapping("/id/{userId}")
-    private suspend fun findByUserId(@PathVariable userId: UUID, @RequestHeader token: String): ResponseEntity<out Any> =
+    private suspend fun findByUserId(
+        @PathVariable userId: UUID,
+        @RequestHeader token: String
+    ): ResponseEntity<out Any> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con id: $userId" }
 
@@ -222,7 +226,10 @@ class UserController
         }
 
     @GetMapping("/email/{userEmail}")
-    private suspend fun findByUserEmail(@PathVariable userEmail: String, @RequestHeader token: String): ResponseEntity<out Any> =
+    private suspend fun findByUserEmail(
+        @PathVariable userEmail: String,
+        @RequestHeader token: String
+    ): ResponseEntity<out Any> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con email: $userEmail" }
 
@@ -249,7 +256,10 @@ class UserController
         }
 
     @GetMapping("/phone/{userPhone}")
-    private suspend fun findByUserPhone(@PathVariable userPhone: String, @RequestHeader token: String): ResponseEntity<out Any> =
+    private suspend fun findByUserPhone(
+        @PathVariable userPhone: String,
+        @RequestHeader token: String
+    ): ResponseEntity<out Any> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con telefono: $userPhone" }
 
@@ -275,6 +285,17 @@ class UserController
             ResponseEntity.ok(result)
         }
 
+    // "Me" Method
+
+    @GetMapping("/me")
+    private suspend fun findMyself(@RequestHeader token: String): String = withContext(Dispatchers.IO) {
+        log.info { "Obteniendo datos del usuario." }
+
+        val user = getUserFromToken(token, userRepositoryCached, userMapper)
+        if (user == null) json.encodeToString(ResponseEntity("User not found", HttpStatus.NOT_FOUND))
+        else json.encodeToString(ResponseEntity(user, HttpStatus.OK))
+    }
+
     // -- ADDRESSES --
 
     // "Find All" Methods
@@ -290,7 +311,10 @@ class UserController
         }
 
     @GetMapping("/list/address/user/{userId}")
-    private suspend fun listAddressesByUserId(@PathVariable userId: UUID, @RequestHeader token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    private suspend fun listAddressesByUserId(
+        @PathVariable userId: UUID,
+        @RequestHeader token: String
+    ): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo direcciones de usuario con id: $userId" }
 
         val checked = checkToken(token, UserRole.ADMIN)
@@ -306,24 +330,18 @@ class UserController
 
     // "Find One" Methods
     @GetMapping("/address/{id}")
-    private suspend fun findById(@PathVariable id: UUID, @RequestHeader token: String): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
-        log.info { "Obteniendo direccion con id: $id" }
+    private suspend fun findById(@PathVariable id: UUID, @RequestHeader token: String): ResponseEntity<out Any> =
+        withContext(Dispatchers.IO) {
+            log.info { "Obteniendo direccion con id: $id" }
 
-        val checked = checkToken(token, UserRole.ADMIN)
-        if (checked != null) return@withContext checked
+            val checked = checkToken(token, UserRole.ADMIN)
+            if (checked != null) return@withContext checked
 
-        val address = addressRepositoryCached.findById(id)
-            ?: return@withContext ResponseEntity("Address with id: $id not found", HttpStatus.NOT_FOUND)
+            val address = addressRepositoryCached.findById(id)
+                ?: return@withContext ResponseEntity("Address with id: $id not found", HttpStatus.NOT_FOUND)
 
-        ResponseEntity.ok(address)
-    }
+            ResponseEntity.ok(address)
+        }
 
-    @GetMapping("/me")
-    private suspend fun findMyself(@RequestHeader token: String): String = withContext(Dispatchers.IO) {
-        log.info { "Obteniendo datos del usuario." }
-        
-        val user = getUserFromToken(token, userRepositoryCached, userMapper)
-        if (user == null) json.encodeToString(ResponseEntity("User not found", HttpStatus.NOT_FOUND))
-        else json.encodeToString(ResponseEntity(user, HttpStatus.OK))
-    }
+
 }
