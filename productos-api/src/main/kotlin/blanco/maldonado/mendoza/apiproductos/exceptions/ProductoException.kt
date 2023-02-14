@@ -17,7 +17,7 @@ sealed class ProductoException(mensage : String): RuntimeException(mensage)
  * @see HttpStatus not_foun
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
-class ProductoNotFoundException(mensage: String): ProductoException(mensage)
+class ProductoNotFoundException(mensaje: String): ProductoException(mensaje)
 
 /**
  * Producto Bad Recuest Exception
