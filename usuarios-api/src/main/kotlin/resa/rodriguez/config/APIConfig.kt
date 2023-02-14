@@ -11,5 +11,11 @@ class APIConfig {
         const val API_PATH = "/usuarios"
 
         const val API_VERSION = "1.0"
+
+        const val PAGINATION_INIT = "0"
+
+        const val PAGINATION_SIZE = "10"
+
+        const val PAGINATION_SORT = "id"
     }
 }
