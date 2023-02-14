@@ -85,12 +85,12 @@ class ProductoController
      * @throws ResponseStatusException con el mensaje 404 si no lo encuentra
      */
     @GetMapping("/nombre/{nombre}")
-    suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<ProductoDTO> =
+    suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por id" }
 
             try {
-                val res = repository.findByNombre(nombre).toDto()
+                val res = repository.findByNombre(nombre).map { it.toDto() }
                 return@withContext ResponseEntity.ok(res)
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
