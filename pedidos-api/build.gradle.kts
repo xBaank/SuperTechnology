@@ -22,6 +22,7 @@ val configVersion = "1.4.2"
 val koinVersion = "3.3.2"
 val koinKtorVersion = "3.3.0"
 val arrowVersion = "1.1.5"
+val kluentVersion = "1.72"
 
 
 
@@ -30,6 +31,8 @@ dependencies {
     //testing con ktor
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
+    // for JVM:
+    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
