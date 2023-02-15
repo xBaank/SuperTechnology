@@ -10,7 +10,6 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
 }
 
 val ktorVersion = "2.2.3"
@@ -31,6 +30,8 @@ val junitVersion = "5.8.1"
 dependencies {
     //junit 5
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+
+    testImplementation("io.mockk:mockk:1.13.4")
 
     //testing con ktor
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
@@ -70,6 +71,7 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koinKtorVersion")
     //arrow core
     implementation("io.arrow-kt:arrow-core:$arrowVersion")
+
     implementation("io.arrow-kt:arrow-core-retrofit:1.1.5")
 
     //swagger

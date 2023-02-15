@@ -12,6 +12,7 @@ import org.litote.kmongo.reactivestreams.KMongo
 import pedidosApi.Config
 import pedidosApi.fakes.fakeProductosClient
 import pedidosApi.fakes.fakeUserClient
+import pedidosApi.models.Pedido
 import pedidosApi.repositories.PedidosRepository
 import retrofit2.Retrofit
 
@@ -21,7 +22,9 @@ val retrofit = Retrofit.Builder()
 
 @OptIn(ExperimentalSerializationApi::class)
 val mainModule = module {
-    single { KMongo.createClient(Config.connectionString).coroutine.getDatabase(Config.database) }
+    single {
+        KMongo.createClient(Config.connectionString).coroutine.getDatabase(Config.database).getCollection<Pedido>()
+    }
     singleOf(::PedidosRepository)
     singleOf(::fakeUserClient)
     singleOf(::fakeProductosClient)
