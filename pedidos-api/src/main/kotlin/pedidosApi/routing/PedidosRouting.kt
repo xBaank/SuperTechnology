@@ -1,17 +1,17 @@
 package pedidosApi.routing
 
 import arrow.core.continuations.either
+import io.github.smiley4.ktorswaggerui.dsl.OpenApiRoute
+import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
-import org.litote.kmongo.Id
 import org.litote.kmongo.id.toId
 import pedidosApi.clients.ProductosClient
 import pedidosApi.clients.UsuariosClient
-import pedidosApi.dto.CreatePedidoDto
-import pedidosApi.extensions.inject
-import pedidosApi.dto.UpdatePedidoDto
+import pedidosApi.dto.requests.CreatePedidoDto
+import pedidosApi.dto.requests.UpdatePedidoDto
 import pedidosApi.exceptions.PedidoError
 import pedidosApi.extensions.inject
 import pedidosApi.extensions.mapToApiError
@@ -19,6 +19,7 @@ import pedidosApi.extensions.receiveOrNull
 import pedidosApi.extensions.toObjectIdOrNull
 import pedidosApi.handlers.handleError
 import pedidosApi.handlers.handleResult
+import pedidosApi.models.EstadoPedido
 import pedidosApi.models.Pedido
 import pedidosApi.models.Tarea
 import pedidosApi.repositories.PedidosRepository
@@ -37,11 +38,12 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         handleResult(repository.getByUserId(usuarioId, page, size))
     }
 
-    get {
+    get(builder = OpenApiRoute::getAll) {
         val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
         val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
         handleResult(repository.getByPage(page, size))
     }
+
     get("{id}") {
         val id = call.parameters.getOrFail("id")
         handleResult(repository.getById(id))
@@ -58,9 +60,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
     }
 
     put("{id}") {
-        val id = call.parameters.getOrFail("id").toObjectIdOrNull()?.toId<Pedido>()
-            ?: return@put handleError(PedidoError.InvalidPedidoId("Invalid id format"))
-
+        val id = call.parameters.getOrFail("id")
         val pedido = call.receiveOrNull<UpdatePedidoDto>()
 
         updatePedido(pedido, id).fold(
@@ -82,17 +82,22 @@ private suspend fun createPedido(pedido: CreatePedidoDto) = either {
 
     val usuario = userClient.getUsuario(pedido.usuario).mapToApiError().bind()
 
-    val productos = pedido.productos.map {
-        productClient.getProducto(it).mapToApiError().bind()
+    val current = System.currentTimeMillis()
+
+    val tareas = pedido.tareas.map { tarea ->
+        Tarea(
+            producto = productClient.getProducto(tarea.producto).mapToApiError().bind(),
+            empleado = usuario,
+            createdAt = current
+        )
     }
 
-    val current = System.currentTimeMillis()
 
     Pedido(
         usuario = usuario,
-        tareas = listOf(Tarea(productos = productos, empleado = usuario, createdAt = current)),
+        tareas = tareas,
         iva = pedido.iva,
-        estado = "PENDIENTE",
+        estado = EstadoPedido.EN_PROCESO,
         createdAt = current
     )
 }
@@ -100,11 +105,14 @@ private suspend fun createPedido(pedido: CreatePedidoDto) = either {
 /**
  * Update user, iva and estado
  */
-private suspend fun updatePedido(updatePedidoDto: UpdatePedidoDto?, id: Id<Pedido>) = either {
+private suspend fun updatePedido(updatePedidoDto: UpdatePedidoDto?, id: String) = either {
     val userClient by inject<UsuariosClient>()
     val pedidosRepository by inject<PedidosRepository>()
 
-    val pedidoToUpdate = pedidosRepository.getById(id.toString()).bind()
+    val _id = id.toObjectIdOrNull()?.toId<Pedido>()
+        ?: shift(PedidoError.InvalidPedidoId("Invalid id format"))
+
+    val pedidoToUpdate = pedidosRepository.getById(_id.toString()).bind()
     val usuario = userClient.getUsuario(pedidoToUpdate.usuario.id).mapToApiError().bind()
 
     pedidoToUpdate.copy(

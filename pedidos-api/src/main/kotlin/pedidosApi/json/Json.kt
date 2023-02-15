@@ -2,9 +2,10 @@ package pedidosApi.json
 
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import kotlinx.serialization.json.*
-import pedidosApi.dto.PedidoDto
-import pedidosApi.dto.TareaDto
+import pedidosApi.dto.responses.ErrorDto
+import pedidosApi.dto.responses.PagedFlowDto
+import pedidosApi.dto.responses.PedidoDto
+import pedidosApi.dto.responses.TareaDto
 import pedidosApi.models.Pedido
 import pedidosApi.models.Tarea
 import pedidosApi.repositories.PagedFlow
@@ -20,20 +21,15 @@ fun buildPedidoDto(pedido: Pedido) = PedidoDto(
 
 fun buildTareaDto(tarea: Tarea) = TareaDto(
     id = tarea._id.toString(),
-    productos = tarea.productos,
+    producto = tarea.producto,
     empleado = tarea.empleado,
     createdAt = tarea.createdAt
 )
 
 
-suspend fun buildPagedPedidoJson(pedidos: PagedFlow<Pedido>) = buildJsonObject {
-    val pedidosList = pedidos.map(::buildPedidoDto).toList()
-    put("page", pedidos.page)
-    put("size", pedidosList.size)
-    put("result", Json.encodeToJsonElement(pedidosList))
+suspend fun buildPagedPedidoDto(pedidos: PagedFlow<Pedido>): PagedFlowDto<PedidoDto> {
+    val result = pedidos.map(::buildPedidoDto).toList()
+    return PagedFlowDto(pedidos.page, result.size.toLong(), result)
 }
 
-fun buildErrorJson(error: String, code: Int) = buildJsonObject {
-    put("error", JsonPrimitive(error))
-    put("code", code)
-}
+fun buildErrorDto(error: String, code: Int) = ErrorDto(error, code)

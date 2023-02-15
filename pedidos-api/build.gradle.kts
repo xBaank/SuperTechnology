@@ -23,21 +23,24 @@ val koinVersion = "3.3.2"
 val koinKtorVersion = "3.3.0"
 val arrowVersion = "1.1.5"
 val kluentVersion = "1.72"
-
+val testContainersVersion = "1.17.6"
+val junitVersion = "5.8.1"
 
 
 dependencies {
-    testImplementation(kotlin("test"))
-    testImplementation("io.mockk:mockk:1.13.4")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    //junit 5
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
 
-    //testing con ktor
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("io.mockk:mockk:1.13.4")
+
     //testing con ktor
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
     // for JVM:
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation("org.testcontainers:mongodb:$testContainersVersion")
+    //koin test
+    testImplementation("io.insert-koin:koin-test:$koinVersion")
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
@@ -45,7 +48,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-request-validation:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-cors:$ktorVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
 
@@ -70,6 +73,9 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:$arrowVersion")
 
     implementation("io.arrow-kt:arrow-core-retrofit:1.1.5")
+
+    //swagger
+    implementation("io.github.smiley4:ktor-swagger-ui:1.1.0")
 
 }
 

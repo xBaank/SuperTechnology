@@ -8,19 +8,19 @@ import io.ktor.util.pipeline.*
 import kotlinx.serialization.*
 import pedidosApi.exceptions.ApiError
 import pedidosApi.exceptions.DomainError
-import pedidosApi.json.buildErrorJson
-import pedidosApi.json.buildPagedPedidoJson
+import pedidosApi.exceptions.PedidoError
+import pedidosApi.json.buildErrorDto
+import pedidosApi.json.buildPagedPedidoDto
 import pedidosApi.json.buildPedidoDto
 import pedidosApi.models.Pedido
 import pedidosApi.repositories.PagedFlow
-import pedidosApi.exceptions.PedidoError
 
 typealias ApplicationCallContext = PipelineContext<*, ApplicationCall>
 
 
 @JvmName("handleResultPagedFlow")
 suspend fun ApplicationCallContext.handleResult(pedidoResult: Either<DomainError, PagedFlow<Pedido>>) =
-    pedidoResult.fold(ifLeft = { handleError(it) }, ifRight = { call.respond(buildPagedPedidoJson(it)) })
+    pedidoResult.fold(ifLeft = { handleError(it) }, ifRight = { call.respond(buildPagedPedidoDto(it)) })
 
 @JvmName("handleResultPedido")
 suspend fun ApplicationCallContext.handleResult(pedidoResult: Either<DomainError, Pedido>) =
@@ -33,36 +33,36 @@ suspend fun ApplicationCallContext.handleResult(pedidoResult: Either<DomainError
 suspend fun ApplicationCallContext.handleError(error: DomainError) = when (error) {
     is PedidoError.PedidoNotFound -> call.respond(
         HttpStatusCode.NotFound,
-        buildErrorJson(error.message, HttpStatusCode.NotFound.value)
+        buildErrorDto(error.message, HttpStatusCode.NotFound.value)
     )
 
     is PedidoError.InvalidPedidoId -> call.respond(
         HttpStatusCode.BadRequest,
-        buildErrorJson(error.message, HttpStatusCode.BadRequest.value)
+        buildErrorDto(error.message, HttpStatusCode.BadRequest.value)
     )
 
     is PedidoError.PedidoSaveError -> call.respond(
         HttpStatusCode.InternalServerError,
-        buildErrorJson(error.message, HttpStatusCode.InternalServerError.value)
+        buildErrorDto(error.message, HttpStatusCode.InternalServerError.value)
     )
 
     is PedidoError.InvalidPedidoPage -> call.respond(
         HttpStatusCode.BadRequest,
-        buildErrorJson(error.message, HttpStatusCode.BadRequest.value)
+        buildErrorDto(error.message, HttpStatusCode.BadRequest.value)
     )
 
     is PedidoError.InvalidPedidoFormat -> call.respond(
         HttpStatusCode.BadRequest,
-        buildErrorJson(error.message, HttpStatusCode.BadRequest.value)
+        buildErrorDto(error.message, HttpStatusCode.BadRequest.value)
     )
 
     is PedidoError.MissingPedidoId -> call.respond(
         HttpStatusCode.BadRequest,
-        buildErrorJson(error.message, HttpStatusCode.BadRequest.value)
+        buildErrorDto(error.message, HttpStatusCode.BadRequest.value)
     )
 
     is ApiError -> call.respond(
         HttpStatusCode.FailedDependency,
-        buildErrorJson(error.message, HttpStatusCode.FailedDependency.value)
+        buildErrorDto(error.message, HttpStatusCode.FailedDependency.value)
     )
 }

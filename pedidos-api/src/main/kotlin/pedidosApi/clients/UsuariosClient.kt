@@ -2,7 +2,7 @@ package pedidosApi.clients
 
 import arrow.core.Either
 import arrow.retrofit.adapter.either.networkhandling.CallError
-import pedidosApi.dto.UsuarioDto
+import pedidosApi.dto.responses.UsuarioDto
 import retrofit2.http.*
 
 interface UsuariosClient {

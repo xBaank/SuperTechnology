@@ -7,7 +7,7 @@ import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.div
 import org.litote.kmongo.eq
 import org.litote.kmongo.id.toId
-import pedidosApi.dto.UsuarioDto
+import pedidosApi.dto.responses.UsuarioDto
 import pedidosApi.exceptions.PedidoError
 import pedidosApi.extensions.toObjectIdOrNull
 import pedidosApi.models.Pedido

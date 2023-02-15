@@ -2,16 +2,15 @@ package pedidosApi.models
 
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import pedidosApi.dto.ProductoDto
-import pedidosApi.dto.UsuarioDto
+import pedidosApi.dto.responses.ProductoDto
+import pedidosApi.dto.responses.UsuarioDto
 
 
 data class Tarea(
     val _id: Id<Tarea> = newId(),
-    val productos: List<ProductoDto>,
+    val producto: ProductoDto,
     val empleado: UsuarioDto,
     val createdAt: Long
 )
 
-val Tarea.precio: Double get() = productos.sumOf(ProductoDto::precio)
-val Tarea.cantidad: Int get() = productos.size
+val Tarea.precio: Double get() = producto.precio
