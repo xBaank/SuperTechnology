@@ -1,6 +1,7 @@
 package pedidosApi.dto
 
 import kotlinx.serialization.Serializable
+import pedidosApi.models.EstadoPedido
 
 @Serializable
 data class PedidoDto(
@@ -8,6 +9,6 @@ data class PedidoDto(
     val usuario: UsuarioDto,
     val tareas: List<TareaDto>,
     val iva: Double,
-    val estado: String,
+    val estado: EstadoPedido,
     val createdAt: Long
 )

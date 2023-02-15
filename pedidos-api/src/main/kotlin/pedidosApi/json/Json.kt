@@ -20,7 +20,7 @@ fun buildPedidoDto(pedido: Pedido) = PedidoDto(
 
 fun buildTareaDto(tarea: Tarea) = TareaDto(
     id = tarea._id.toString(),
-    productos = tarea.productos,
+    producto = tarea.producto,
     empleado = tarea.empleado,
     createdAt = tarea.createdAt
 )

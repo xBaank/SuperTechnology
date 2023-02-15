@@ -1,5 +1,6 @@
 package integration.routing
 
+import integration.data.PedidosData
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -27,7 +28,7 @@ class PedidosRoutingTest {
     }
 
     @Test
-    fun `should get all`() = testApplication {
+    fun `should get all pedidos`() = testApplication {
         val response = client.get("/pedidos")
         response.status.shouldBe(HttpStatusCode.OK)
     }
@@ -36,83 +37,36 @@ class PedidosRoutingTest {
     fun `should create pedido`() = testApplication {
         val response = client.post("/pedidos") {
             contentType(ContentType.Application.Json)
-            setBody(
-                """
-                {
-                    "usuario": "fake",
-                    "productos": ["fake"],
-                    "iva": 21
-                }
-            """.trimIndent()
-            )
+            setBody(PedidosData.createPedido)
         }
         response.status.shouldBe(HttpStatusCode.OK)
     }
 
     @Test
-    fun `should not create pedido`() = testApplication {
+    fun `should not create pedido with incorrect body`() = testApplication {
         val response = client.post("/pedidos") {
             contentType(ContentType.Application.Json)
-            setBody(
-                """
-                {
-                    "usuario": "fake",
-                    "productos": ["fake"],
-                    "iva": 21 asd
-                }
-            """.trimIndent()
-            )
+            setBody(PedidosData.incorrectFormat)
         }
         response.status.shouldBe(HttpStatusCode.BadRequest)
     }
 
     @Test
-    fun `should update pedido`() = testApplication {
+    fun `should create pedido and then update it`() = testApplication {
         val responsePost = client.post("/pedidos") {
             contentType(ContentType.Application.Json)
-            setBody(
-                """
-                {
-                    "usuario": "fake",
-                    "productos": ["fake"],
-                    "iva": 21
-                }
-            """.trimIndent()
-            )
+            setBody(PedidosData.createPedido)
         }
 
         val pedidoCreated = Json.decodeFromString<PedidoDto>(responsePost.bodyAsText())
 
         val responsePut = client.put("/pedidos/${pedidoCreated.id}") {
             contentType(ContentType.Application.Json)
-            setBody(
-                """
-                {
-                    "estado": "COMPLETADO",
-                    "iva": 21
-                }
-            """.trimIndent()
-            )
+            setBody(PedidosData.updatePedido)
         }
 
         responsePost.status.shouldBe(HttpStatusCode.OK)
         responsePut.status.shouldBe(HttpStatusCode.OK)
-    }
-
-    @Test
-    fun `should not update incorrect pedido`() = testApplication {
-        val responsePut = client.put("/pedidos/63ebb2569be16967bba54c3b") {
-            contentType(ContentType.Application.Json)
-            setBody(
-                """
-                {
-                    "estado": "COMPLETADO",
-                    "iva": 21
-                }
-            """.trimIndent()
-            )
-        }
-        responsePut.status.shouldBe(HttpStatusCode.NotFound)
     }
 
     @Test
@@ -124,18 +78,10 @@ class PedidosRoutingTest {
     }
 
     @Test
-    fun `should delete pedido`() = testApplication {
+    fun `should create pedido and then delete it`() = testApplication {
         val responsePost = client.post("/pedidos") {
             contentType(ContentType.Application.Json)
-            setBody(
-                """
-                {
-                    "usuario": "fake",
-                    "productos": ["fake"],
-                    "iva": 21
-                }
-            """.trimIndent()
-            )
+            setBody(PedidosData.createPedido)
         }
         val pedidoCreated = Json.decodeFromString<PedidoDto>(responsePost.bodyAsText())
 

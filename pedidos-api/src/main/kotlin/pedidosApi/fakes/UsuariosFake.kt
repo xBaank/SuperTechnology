@@ -6,6 +6,7 @@ import arrow.core.right
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import arrow.retrofit.adapter.either.networkhandling.HttpError
 import pedidosApi.clients.UsuariosClient
+import pedidosApi.dto.Role
 import pedidosApi.dto.UsuarioDto
 
 //pa testear por ahora
@@ -13,7 +14,8 @@ fun fakeUserClient() = object : UsuariosClient {
     val user = UsuarioDto(
         id = "fake",
         username = "Fake User",
-        email = "test@gmail.com"
+        email = "test@gmail.com",
+        role = Role.USER
     )
     val users = mutableMapOf(user.id to user)
 

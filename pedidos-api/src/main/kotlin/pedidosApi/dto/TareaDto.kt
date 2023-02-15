@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TareaDto(
     val id: String,
-    val productos: List<ProductoDto>,
+    val producto: ProductoDto,
     val empleado: UsuarioDto,
     val createdAt: Long
 )
+
