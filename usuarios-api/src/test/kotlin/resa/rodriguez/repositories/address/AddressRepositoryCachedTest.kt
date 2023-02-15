@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
@@ -24,6 +25,7 @@ import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
+//@SpringBootTest
 class UserRepositoryCachedTest {
     private val address = Address(
         UUID.randomUUID(),
@@ -225,7 +227,7 @@ class UserRepositoryCachedTest {
             { Assertions.assertEquals(address.id, result[0].id) }
         )
 
-        coVerify { repo.deleteAll(allAny()) }
+        coVerify { repo.findAllByUserId(any()) }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
