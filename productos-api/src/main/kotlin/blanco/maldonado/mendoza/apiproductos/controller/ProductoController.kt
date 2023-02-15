@@ -12,6 +12,9 @@ import blanco.maldonado.mendoza.apiproductos.model.Producto
 import blanco.maldonado.mendoza.apiproductos.model.TestDto
 import blanco.maldonado.mendoza.apiproductos.repositories.ProductosRepository
 import blanco.maldonado.mendoza.apiproductos.validator.validate
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.Valid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -38,6 +41,8 @@ class ProductoController
      * Get all : Lista de productos
      * @return ResponseEntity<Flow<ProductosDTO>>
      */
+    @Operation(summary = "Get all Test", description = "Obtiene una lista de productos", tags = ["Productos"])
+    @ApiResponse(responseCode = "200", description = "Lista de Producto")
     @GetMapping("")
     suspend fun findAllProductos(): ResponseEntity<List<Producto>> = withContext(Dispatchers.IO) {
         logger.info { "Get productos" }
@@ -51,6 +56,14 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 si no lo encuentra
      */
+    @Operation(summary = "Get Producto by ID", description = "Obtiene un objeto Test por su ID", tags = ["Test"])
+    @Parameter(name = "id", description = "ID del Producto", required = true, example = "1")
+    @ApiResponse(responseCode = "200", description = "Producto encontrado")
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado por su id")
+    @ApiResponse(responseCode = "403", description = "No tienes permisos con ese id")
+    @ApiResponse(responseCode = "401", description = "No autorizado con ese id")
+    @ApiResponse(responseCode = "500", description = "Error interno con ese id")
+    @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
     @GetMapping("/{id}")
     suspend fun findProductById(@PathVariable id: Int): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
 
@@ -69,6 +82,14 @@ class ProductoController
      * @param categoria : categoria del producto
      * @return ResponseEntity<Flow<ProductosDTO>
      */
+    @Operation(summary = "Get Producto by Category", description = "Modifica un objeto Producto", tags = ["Producto"])
+    @Parameter(name = "categoria", description = "ID de la categoría", required = true, example = "1")
+    @ApiResponse(responseCode = "200", description = "Producto encontrado")
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado por su id")
+    @ApiResponse(responseCode = "403", description = "No tienes permisos con ese id")
+    @ApiResponse(responseCode = "401", description = "No autorizado con ese id")
+    @ApiResponse(responseCode = "500", description = "Error interno con ese id")
+    @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
     @GetMapping("/categoria/{categoria}")
     suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
@@ -102,6 +123,14 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 si no lo encuentra
      */
+    @Operation(summary = "Get Producto by Nombre", description = "Obtiene un objeto Producto por el nombre", tags = ["Producto"])
+    @Parameter(name = "nombre", description = "ID del nombre", required = true, example = "1")
+    @ApiResponse(responseCode = "200", description = "Producto encontrado")
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado por su id")
+    @ApiResponse(responseCode = "403", description = "No tienes permisos con ese id")
+    @ApiResponse(responseCode = "401", description = "No autorizado con ese id")
+    @ApiResponse(responseCode = "500", description = "Error interno con ese id")
+    @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
     @GetMapping("/nombre/{nombre}")
     suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
@@ -124,6 +153,8 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 porque el mensaje es nulo.
      */
+    @Operation(summary = "Name is null", description = "Obtiene una excepción porque el nombre del producto introducido no existe", tags = ["Producto"])
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado por nombre nulo")
     @GetMapping("/nombre/")
     suspend fun resultNombreNulo(): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
@@ -141,6 +172,8 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 porque la categoría es nula.
      */
+    @Operation(summary = "Categoria is null", description = "Obtiene una excepción porque la categoría introducida del producto no existe", tags = ["Producto"])
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado por categoria nula")
     @GetMapping("/categoria/")
     suspend fun resultCategoriaNula(): ResponseEntity<Flow<ProductoDTO>> =
         withContext(Dispatchers.IO) {
@@ -158,6 +191,8 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 400 si no es válido
      */
+    @Operation(summary = "Create Product", description = "Crea un objeto Producto", tags = ["Producto"])
+    @ApiResponse(responseCode = "201", description = "Producto creado")
     @PostMapping("")
     suspend fun createProduct(@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDTO> {
         logger.info { "Creando un producto" }
@@ -178,6 +213,10 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 400 si no es válido
      */
+    @Operation(summary = "Update Product", description = "Modifica un objeto Product", tags = ["Product"])
+    @Parameter(name = "id", description = "ID del Producto", required = true, example = "1")
+    @ApiResponse(responseCode = "200", description = "Test modificado")
+    @ApiResponse(responseCode = "404", description = "Test no encontrado con ese id")
     @PutMapping("/{id}")
     suspend fun updateProduct(
         @PathVariable id: Int, @Valid @RequestBody productoDto: ProductoCreateDto
@@ -201,7 +240,12 @@ class ProductoController
         }
     }
 
+
     //path modificar o deshabilitar
+    @Operation(summary = "Delete Product", description = "Elimina un objeto Producto", tags = ["Product"])
+    @Parameter(name = "id", description = "ID del Producto", required = true, example = "1")
+    @ApiResponse(responseCode = "204", description = "Producto eliminado")
+    @ApiResponse(responseCode = "404", description = "Producto eliminado con ese id")
     @DeleteMapping("/{id}")
     suspend fun deleteProduct(@PathVariable id: Int): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
         //todo ver si el producto exixte, y si no not posible
