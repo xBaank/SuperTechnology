@@ -14,9 +14,12 @@ import org.junit.jupiter.api.Test
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.div
 import org.litote.kmongo.eq
-import pedidosApi.dto.ProductoDto
-import pedidosApi.dto.UsuarioDto
+import pedidosApi.dto.responses.Categoria
+import pedidosApi.dto.responses.ProductoDto
+import pedidosApi.dto.responses.Role
+import pedidosApi.dto.responses.UsuarioDto
 import pedidosApi.exceptions.PedidoError
+import pedidosApi.models.EstadoPedido
 import pedidosApi.models.Pedido
 import pedidosApi.models.Tarea
 import pedidosApi.repositories.PedidosRepository
@@ -30,16 +33,16 @@ class PedidosRepositoryTest {
 
 
     private val userId = UUID.randomUUID().toString()
-    private val usuario = UsuarioDto(userId, "Nombre", "correo@email.com")
+    private val usuario = UsuarioDto(userId, "Nombre", "correo@email.com", Role.USER)
 
     private val producto = ProductoDto(
         UUID.randomUUID().toString(),
-        "NombreProd", "categoriaProd", 5, "descrProd", 12.2, ""
+        "NombreProd", Categoria.COMPONENTES, 5, "descrProd", 12.2, ""
     )
 
     private val tarea = Tarea(
-        productos = listOf(producto),
-        empleado = UsuarioDto(UUID.randomUUID().toString(), "empleadoUsername", "emp@email.com"),
+        producto = producto,
+        empleado = UsuarioDto(UUID.randomUUID().toString(), "empleadoUsername", "emp@email.com", Role.USER),
         createdAt = 12356L
     )
 
@@ -47,7 +50,7 @@ class PedidosRepositoryTest {
         usuario = usuario,
         tareas = listOf(tarea),
         iva = 0.21,
-        estado = "PENDIENTE",
+        estado = EstadoPedido.EN_PROCESO,
         createdAt = 1234L
     )
 
