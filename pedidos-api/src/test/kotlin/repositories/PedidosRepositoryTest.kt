@@ -1,21 +1,20 @@
 package repositories
 
 import arrow.core.Either
-import com.mongodb.reactivestreams.client.MongoDatabase
+import com.mongodb.client.result.DeleteResult
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.*
-import org.litote.kmongo.coroutine.CoroutineDatabase
-import org.litote.kmongo.newId
-import org.litote.kmongo.reactivestreams.getCollection
-import org.litote.kmongo.reactivestreams.save
-import pedidosApi.dto.CreatePedidoDto
+import org.amshove.kluent.shouldBeEqualTo
+import org.junit.jupiter.api.Test
+import org.litote.kmongo.coroutine.CoroutineCollection
+import org.litote.kmongo.div
+import org.litote.kmongo.eq
 import pedidosApi.dto.ProductoDto
-import pedidosApi.dto.TareaDto
 import pedidosApi.dto.UsuarioDto
 import pedidosApi.exceptions.PedidoError
 import pedidosApi.models.Pedido
@@ -23,15 +22,15 @@ import pedidosApi.models.Tarea
 import pedidosApi.repositories.PedidosRepository
 import java.util.*
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@OptIn(ExperimentalCoroutinesApi::class)
 class PedidosRepositoryTest {
-    private val mongo = mockk<CoroutineDatabase>("pedidos")
-    private val pedidosRepository = PedidosRepository(mongo)
+    private val collectionMock = mockk<CoroutineCollection<Pedido>>()
+
+    @MockK
+    private val pedidosRepository = PedidosRepository(collectionMock)
 
 
-
-    private val usuario = UsuarioDto(UUID.randomUUID().toString(), "Nombre", "correo@email.com")
+    private val userId = UUID.randomUUID().toString()
+    private val usuario = UsuarioDto(userId, "Nombre", "correo@email.com")
 
     private val producto = ProductoDto(
         UUID.randomUUID().toString(),
@@ -52,29 +51,53 @@ class PedidosRepositoryTest {
         createdAt = 1234L
     )
 
-    companion object{
-        @JvmStatic
-        @BeforeAll
-        fun initialize() = runBlocking {
-            val x = mockk<MongoDatabase>("pedidos").getCollection<Pedido>().drop()
-        }
-    }
-
-    @BeforeEach
-    fun data() = runBlocking {
-        val x = mockk<MongoDatabase>("pedidos").getCollection<Pedido>().save(pedido)
-    }
-
-    @AfterAll
-    fun tearDown() = runBlocking {
-        val x = mockk<MongoDatabase>("pedidos").getCollection<Pedido>().drop()
+    @Test
+    fun save() = runBlocking {
+        coEvery { collectionMock.save(pedido) } returns null
+        val result: Either<PedidoError, Pedido> = pedidosRepository.save(pedido)
+        result.getOrNull() shouldBeEqualTo pedido
+        coVerify { collectionMock.save(pedido) }
     }
 
     @Test
-    @Order(1)
-    fun save() = runTest {
-        var result: Either<PedidoError, Pedido>? = null
-        launch { result = pedidosRepository.save(pedido) }
+    fun getByPage() = runBlocking {
+        coEvery { collectionMock.find().skip(0).limit(1).toFlow() } returns flowOf(pedido)
+        val result = pedidosRepository.getByPage(0, 1)
+        result.getOrNull()?.first() shouldBeEqualTo pedido
+        result.getOrNull()?.size shouldBeEqualTo 1
+        result.getOrNull()?.page shouldBeEqualTo 0
 
+        coVerify(exactly = 1) {
+            collectionMock.find().skip(0).limit(1).toFlow()
+        }
+    }
+
+    @Test
+    fun getById(): Unit = runBlocking {
+        coEvery { collectionMock.find(Pedido::_id eq pedido._id).first() } returns pedido
+        val result = pedidosRepository.getById(pedido._id.toString())
+        result.getOrNull() shouldBeEqualTo pedido
+        coVerify { collectionMock.find(Pedido::_id eq pedido._id).first() }
+    }
+
+    @Test
+    fun getByUserId(): Unit = runBlocking {
+        coEvery {
+            collectionMock.find(Pedido::usuario / UsuarioDto::id eq userId).skip(0).limit(10).toFlow()
+        } returns flowOf(pedido)
+        val result = pedidosRepository.getByUserId(userId, 0, 10)
+        result.getOrNull()?.first() shouldBeEqualTo pedido
+        result.getOrNull()?.size shouldBeEqualTo 10
+        result.getOrNull()?.page shouldBeEqualTo 0
+
+        coVerify { collectionMock.find(Pedido::usuario / UsuarioDto::id eq userId).skip(0).limit(10).toFlow() }
+    }
+
+    @Test
+    fun delete(): Unit = runBlocking {
+        coEvery { collectionMock.deleteOneById(pedido._id) } returns DeleteResult.acknowledged(1)
+        val result = pedidosRepository.delete(pedido._id.toString())
+        result.getOrNull() shouldBeEqualTo Unit
+        coVerify { collectionMock.deleteOneById(pedido._id) }
     }
 }

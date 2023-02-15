@@ -3,7 +3,7 @@ package pedidosApi.repositories
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.div
 import org.litote.kmongo.eq
 import org.litote.kmongo.id.toId
@@ -14,8 +14,7 @@ import pedidosApi.models.Pedido
 
 const val MAX_SIZE = 500
 
-class PedidosRepository(client: CoroutineDatabase) {
-    private val collection = client.getCollection<Pedido>()
+class PedidosRepository(private val collection: CoroutineCollection<Pedido>) {
 
     fun getByPage(page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> {
         validatePage(page, size)
@@ -51,7 +50,8 @@ class PedidosRepository(client: CoroutineDatabase) {
             ?: return PedidoError.InvalidPedidoId("id : '$id' format is incorrect").left()
 
         val result = collection.deleteOneById(_id)
-        if (!result.wasAcknowledged()) return PedidoError.PedidoSaveError("Couldn't delete pedido with id : '${id}'").left()
+        if (!result.wasAcknowledged()) return PedidoError.PedidoSaveError("Couldn't delete pedido with id : '${id}'")
+            .left()
         return Unit.right()
     }
 

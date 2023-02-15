@@ -1,12 +1,12 @@
 package routing
 
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.config.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.server.testing.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.config.*
+import io.ktor.server.testing.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
@@ -18,6 +18,7 @@ import kotlin.test.assertEquals
 
 
 private val json = Json { ignoreUnknownKeys = true }
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class PedidosRoutingTest {
@@ -26,24 +27,29 @@ class PedidosRoutingTest {
 
     private val usuario = UsuarioDto(UUID.randomUUID().toString(), "Nombre", "correo@email.com")
 
-    private val producto = ProductoDto(UUID.randomUUID().toString(),
-        "NombreProd", "categoriaProd",5 ,"descrProd", 12.2, "")
+    private val producto = ProductoDto(
+        UUID.randomUUID().toString(),
+        "NombreProd", "categoriaProd", 5, "descrProd", 12.2, ""
+    )
 
     private val tarea = TareaDto(
         id = newId<Tarea>().toString(),
         productos = listOf(producto),
-        empleado = UsuarioDto(UUID.randomUUID().toString(), "empleadoUsername", "emp@email.com"))
+        empleado = UsuarioDto(UUID.randomUUID().toString(), "empleadoUsername", "emp@email.com"),
+        createdAt = 1234L
+    )
 
     private val pedido = CreatePedidoDto(
         //id = newId<Pedido>().toString(),
         usuario = usuario.username,
-        productos = listOf(producto.toString())
+        productos = listOf(producto.toString()),
+        iva = 0.21
     )
 
     //prueba doc ktor
     @Test
     @Order(1)
-    fun testPedidosGet() = testApplication  {
+    fun testPedidosGet() = testApplication {
         environment { config }
         val response = client.get("/pedidos")/*{
             header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
@@ -58,11 +64,11 @@ class PedidosRoutingTest {
     fun testPedidoPost() = testApplication {
         environment { config }
         val client = createClient {
-            install(ContentNegotiation){
+            install(ContentNegotiation) {
                 json()
             }
         }
-        val response = client.post("/pedidos"){
+        val response = client.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(pedido)
         }
@@ -73,7 +79,7 @@ class PedidosRoutingTest {
         var dto = json.decodeFromString<PedidoDto>(result)
         assertAll(
             // Devuelve Fake User en vez del usuario de pedido
-            { assertEquals(pedido.usuario, dto.usuario.username)}
+            { assertEquals(pedido.usuario, dto.usuario.username) }
         )
     }
 
@@ -87,7 +93,7 @@ class PedidosRoutingTest {
             }
         }
 
-        var response = client.post("/pedidos"){
+        var response = client.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(pedido)
         }
@@ -103,7 +109,7 @@ class PedidosRoutingTest {
         dto = json.decodeFromString(result)
 
         assertAll(
-            {assertEquals(pedido.usuario, dto.usuario.username)}
+            { assertEquals(pedido.usuario, dto.usuario.username) }
         )
     }
 
