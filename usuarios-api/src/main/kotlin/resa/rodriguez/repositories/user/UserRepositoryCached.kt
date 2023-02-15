@@ -49,11 +49,11 @@ class UserRepositoryCached
 
     @Cacheable("usuarios")
     override suspend fun findByEmail(email: String): User? = withContext(Dispatchers.IO) {
-        repo.findFirstByEmailContaining(email).firstOrNull()
+        repo.findFirstByEmail(email).firstOrNull()
     }
 
-    override suspend fun findByUsername(username: String): Flow<User> = withContext(Dispatchers.IO) {
-        repo.findByUsernameContaining(username)
+    override suspend fun findByUsername(username: String): User? = withContext(Dispatchers.IO) {
+        repo.findByUsername(username).firstOrNull()
     }
 
     @Cacheable("usuarios")
