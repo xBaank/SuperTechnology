@@ -83,3 +83,8 @@ data class UserDTOresponse(
     val createdAt: LocalDate,
     val active: Boolean
 )
+
+data class UserDTOUpdated(
+    val password: String,
+    val avatar: String
+)
