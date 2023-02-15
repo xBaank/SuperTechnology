@@ -8,7 +8,7 @@ IES Luis Vives (Leganés) curso 22/23.
 
 - [Diseño](#diseño)
 - [Estructura del proyecto](#estructura-del-proyecto)
-- [Funcionamiento de la aplicación](#funcionamiento-de-la-aplicacin)
+- [Funcionamiento de la aplicación](#funcionamiento-de-la-aplicación)
 - [Tests](#tests)
 
 # Diseño

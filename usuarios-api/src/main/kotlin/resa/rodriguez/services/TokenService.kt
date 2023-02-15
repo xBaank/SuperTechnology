@@ -26,7 +26,7 @@ fun create(user: User): String {
         .withClaim("email", user.email)
         .withClaim("role", user.role.name)
         .withClaim("active", user.active)
-        .withExpiresAt(Date(System.currentTimeMillis() + (24*60*60*1_000)))
+        .withExpiresAt(Date(System.currentTimeMillis() + (24 * 60 * 60 * 1_000)))
         .sign(algorithm)
 }
 
@@ -41,12 +41,13 @@ fun decode(token: String): DecodedJWT? {
     }
 }
 
-fun checkToken(token: String, role: UserRole): ResponseEntity<out Any>? {
+fun checkToken(token: String, role: UserRole): ResponseEntity<String>? {
     val decoded = decode(token)
         ?: return ResponseEntity("No token detected.", HttpStatus.UNAUTHORIZED)
     if (decoded.getClaim("role").isMissing || decoded.getClaim("active").isMissing ||
         decoded.getClaim("role").isNull || decoded.getClaim("active").isNull ||
-        decoded.getClaim("active").asBoolean() == false)
+        decoded.getClaim("active").asBoolean() == false
+    )
         return ResponseEntity("Invalid token.", HttpStatus.UNAUTHORIZED)
     if (decoded.expiresAtAsInstant.isBefore(Instant.now()))
         return ResponseEntity("Token expired.", HttpStatus.UNAUTHORIZED)
@@ -56,25 +57,39 @@ fun checkToken(token: String, role: UserRole): ResponseEntity<out Any>? {
                 return ResponseEntity("You are not allowed to to this.", HttpStatus.FORBIDDEN)
             }
         }
+
         UserRole.ADMIN -> {
             if (!(decoded.getClaim("role").asString().equals(UserRole.SUPER_ADMIN.name) ||
-                        decoded.getClaim("role").asString().equals(UserRole.ADMIN.name))) {
+                        decoded.getClaim("role").asString().equals(UserRole.ADMIN.name))
+            ) {
                 return ResponseEntity("You are not allowed to to this.", HttpStatus.FORBIDDEN)
             }
         }
+
         UserRole.USER -> {}
     }
     return null
 }
 
-suspend fun getUserFromToken(token: String, repo: IUserRepositoryCached, mapper: UserMapper): UserDTOresponse? {
+suspend fun getUserDTOFromToken(token: String, repo: IUserRepositoryCached, mapper: UserMapper): UserDTOresponse? {
     val decoded = decode(token) ?: return null
-    return  if (!decoded.issuer.isNullOrBlank()) {
+    return if (!decoded.issuer.isNullOrBlank()) {
         try {
             repo.findById(UUID.fromString(decoded.issuer))?.let { mapper.toDTO(it) }
         } catch (e: Exception) {
             null
         }
-    }
-    else null
+    } else null
+}
+
+suspend fun getUserFromToken(token: String, repo: IUserRepositoryCached): User? {
+    val decoded = decode(token) ?: return null
+
+    return if (!decoded.issuer.isNullOrBlank()) {
+        try {
+            repo.findById(UUID.fromString(decoded.issuer))
+        } catch (e: Exception) {
+            null
+        }
+    } else null
 }
