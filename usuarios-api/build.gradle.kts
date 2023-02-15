@@ -42,7 +42,9 @@ dependencies {
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
 
 	// Test
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+		exclude(module = "mockito-core")
+	}
 	testImplementation("io.projectreactor:reactor-test")
 
 	// Dokka Documentación Kotlin
@@ -56,7 +58,7 @@ dependencies {
 
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
-	testImplementation("io.mockk:mockk:1.13.4")
+	testImplementation("com.ninja-squad:springmockk:4.0.0")
 	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 }
 
