@@ -14,7 +14,7 @@ interface IUserRepositoryCached {
     suspend fun findByActivo(activo: Boolean) : Flow<User>
     suspend fun findById(id: UUID) : User?
     suspend fun findByEmail(email: String) : User?
-    suspend fun findByUsername(username: String) : Flow<User>
+    suspend fun findByUsername(username: String) : User?
     suspend fun findByPhone(phone: String) : User?
     suspend fun save(user: User) : User
     suspend fun deleteById(id: UUID) : User?

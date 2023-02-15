@@ -191,7 +191,7 @@ class UserController
             val checked = checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
-            val user = userRepositoryCached.findByUsername(username).firstOrNull()
+            val user = userRepositoryCached.findByUsername(username)
                 ?: return@withContext ResponseEntity("User with name: $username not found.", HttpStatus.NOT_FOUND)
 
             val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()

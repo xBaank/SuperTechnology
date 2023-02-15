@@ -9,7 +9,6 @@ import java.util.UUID
 
 /**
  * Modelo para usuarios
- *
  * @property id Identificador principal, UUID
  * @property username Nombre de usuario, String
  * @property email Correo electronico del usuario, String
