@@ -2,8 +2,8 @@ package pedidosApi.models
 
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import pedidosApi.dto.ProductoDto
-import pedidosApi.dto.UsuarioDto
+import pedidosApi.dto.responses.ProductoDto
+import pedidosApi.dto.responses.UsuarioDto
 
 
 data class Tarea(

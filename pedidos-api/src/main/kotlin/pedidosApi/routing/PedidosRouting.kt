@@ -1,6 +1,8 @@
 package pedidosApi.routing
 
 import arrow.core.continuations.either
+import io.github.smiley4.ktorswaggerui.dsl.OpenApiRoute
+import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
@@ -8,8 +10,8 @@ import org.koin.ktor.ext.inject
 import org.litote.kmongo.id.toId
 import pedidosApi.clients.ProductosClient
 import pedidosApi.clients.UsuariosClient
-import pedidosApi.dto.CreatePedidoDto
-import pedidosApi.dto.UpdatePedidoDto
+import pedidosApi.dto.requests.CreatePedidoDto
+import pedidosApi.dto.requests.UpdatePedidoDto
 import pedidosApi.exceptions.PedidoError
 import pedidosApi.extensions.inject
 import pedidosApi.extensions.mapToApiError
@@ -36,7 +38,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         handleResult(repository.getByUserId(usuarioId, page, size))
     }
 
-    get {
+    get(builder = OpenApiRoute::getAll) {
         val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
         val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
         handleResult(repository.getByPage(page, size))

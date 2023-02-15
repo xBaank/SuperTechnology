@@ -10,6 +10,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 val ktorVersion = "2.2.3"
@@ -46,6 +47,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-request-validation:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-cors:$ktorVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
 
@@ -68,8 +70,10 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koinKtorVersion")
     //arrow core
     implementation("io.arrow-kt:arrow-core:$arrowVersion")
-
     implementation("io.arrow-kt:arrow-core-retrofit:1.1.5")
+
+    //swagger
+    implementation("io.github.smiley4:ktor-swagger-ui:1.1.0")
 
 }
 

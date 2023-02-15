@@ -2,7 +2,7 @@ package pedidosApi.models
 
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import pedidosApi.dto.UsuarioDto
+import pedidosApi.dto.responses.UsuarioDto
 
 data class Pedido(
     val _id: Id<Pedido> = newId(),

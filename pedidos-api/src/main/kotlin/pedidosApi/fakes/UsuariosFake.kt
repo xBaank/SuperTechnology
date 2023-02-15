@@ -6,8 +6,8 @@ import arrow.core.right
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import arrow.retrofit.adapter.either.networkhandling.HttpError
 import pedidosApi.clients.UsuariosClient
-import pedidosApi.dto.Role
-import pedidosApi.dto.UsuarioDto
+import pedidosApi.dto.responses.Role
+import pedidosApi.dto.responses.UsuarioDto
 
 //pa testear por ahora
 fun fakeUserClient() = object : UsuariosClient {

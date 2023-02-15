@@ -6,8 +6,8 @@ import arrow.core.right
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import arrow.retrofit.adapter.either.networkhandling.HttpError
 import pedidosApi.clients.ProductosClient
-import pedidosApi.dto.Categoria
-import pedidosApi.dto.ProductoDto
+import pedidosApi.dto.responses.Categoria
+import pedidosApi.dto.responses.ProductoDto
 
 fun fakeProductosClient() = object : ProductosClient {
     val producto = ProductoDto(

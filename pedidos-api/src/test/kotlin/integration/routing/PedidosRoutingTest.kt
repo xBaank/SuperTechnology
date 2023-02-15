@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import org.koin.core.context.stopKoin
 import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.utility.DockerImageName
-import pedidosApi.dto.PedidoDto
+import pedidosApi.dto.responses.PedidoDto
 
 
 class PedidosRoutingTest {

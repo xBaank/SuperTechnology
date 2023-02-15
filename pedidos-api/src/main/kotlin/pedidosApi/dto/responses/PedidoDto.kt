@@ -1,4 +1,4 @@
-package pedidosApi.dto
+package pedidosApi.dto.responses
 
 import kotlinx.serialization.Serializable
 import pedidosApi.models.EstadoPedido

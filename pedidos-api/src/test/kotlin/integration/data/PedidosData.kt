@@ -2,9 +2,9 @@ package integration.data
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import pedidosApi.dto.CreatePedidoDto
-import pedidosApi.dto.CreateTareaDto
-import pedidosApi.dto.UpdatePedidoDto
+import pedidosApi.dto.requests.CreatePedidoDto
+import pedidosApi.dto.requests.CreateTareaDto
+import pedidosApi.dto.requests.UpdatePedidoDto
 
 object PedidosData {
     val createPedido = Json.encodeToString(
