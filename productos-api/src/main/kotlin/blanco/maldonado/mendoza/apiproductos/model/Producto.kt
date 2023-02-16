@@ -2,6 +2,7 @@ package blanco.maldonado.mendoza.apiproductos.model
 
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotEmpty
+import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
@@ -9,7 +10,8 @@ import java.util.*
 
 @Table(name = "productos")
 data class Producto(
-    val uuid: String = UUID.randomUUID().toString(),
+    @Id
+    val id: String = UUID.randomUUID().toString(),
     @NotEmpty(message = "El nombre no puede estar vacío")
     val nombre: String,
     @NotEmpty(message = "La categoría no puede estar vacía")
