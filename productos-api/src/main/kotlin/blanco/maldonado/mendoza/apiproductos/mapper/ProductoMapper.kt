@@ -5,13 +5,13 @@ import blanco.maldonado.mendoza.apiproductos.dto.ProductoDto
 import blanco.maldonado.mendoza.apiproductos.model.Producto
 
 fun Producto.toDto() = ProductoDto(
-    uuid = this.uuid,
+    id = this.id,
     nombre = this.nombre,
     categoria = this.categoria.toString(),
     stock = this.stock,
     description = this.description,
     precio = this.precio,
-    activo = this.activo,
+    activo = this.activo.toString(),
     metadata = ProductoDto.MetaData(
         createdAt = this.createdAt.toString(),
         updateAt = this.updateAt.toString(),
@@ -20,11 +20,11 @@ fun Producto.toDto() = ProductoDto(
 )
 
 fun ProductoCreateDto.toModel() = Producto(
-    uuid = this.uuid!!,
+    id = this.id!!,
     nombre = this.nombre,
     categoria = Producto.Categoria.valueOf(this.categoria),
     stock = this.stock,
     description = this.description,
     precio = this.precio,
-    activo =  this.activo.toBoolean()
+    activo = this.activo.toBoolean()
 )

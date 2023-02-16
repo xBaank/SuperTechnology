@@ -26,41 +26,41 @@ class ProductoCachedRepositoryImpl
         logger.info { "Iniciando Repositorio caché de Productos" }
     }
 
-    override suspend fun findAll(): Flow<Producto> = withContext(Dispatchers.IO) {
+    override suspend fun findAll(): Flow<Producto> {
         logger.info { "Repositorio de productos findAll" }
-        return@withContext productosRepository.findAll()
+        return productosRepository.findAll()
     }
 
     @Cacheable("productos")
-    override suspend fun findByUUID(uuid: String): Flow<Producto> = withContext(Dispatchers.IO) {
-        logger.info { "Repositorio de productos findById con id $uuid" }
-        return@withContext productosRepository.findByUuid(uuid)
+    override suspend fun findById(id: String): Producto? {
+        logger.info { "Repositorio de productos findById con id $id" }
+        return productosRepository.findById(id)
     }
 
-    override suspend fun findByCategoria(categoria: String): Flow<Producto> = withContext(Dispatchers.IO) {
+    override suspend fun findByCategoria(categoria: String): Flow<Producto> {
         logger.info { "Repositorio de productos findByCategoria con categoría $categoria" }
-        return@withContext productosRepository.findByCategoria(categoria)
+        return productosRepository.findByCategoria(categoria)
     }
 
     @Cacheable("productos")
-    override suspend fun findByNombre(nombre: String): Flow<Producto> = withContext(Dispatchers.IO) {
+    override suspend fun findByNombre(nombre: String): Flow<Producto> {
         logger.info { "Repositorio de productos findByNombre con nombre $nombre" }
-        return@withContext productosRepository.findByNombre(nombre)
+        return productosRepository.findByNombre(nombre)
     }
 
     @CachePut("productos")
-    override suspend fun save(producto: Producto): Producto = withContext(Dispatchers.IO) {
+    override suspend fun save(producto: Producto): Producto {
         logger.info { "Repositorio de productos save: $producto" }
-        return@withContext productosRepository.save(producto)
+        return productosRepository.save(producto)
     }
 
     @CachePut("productos")
-    override suspend fun update(uuid: String, producto: Producto): Producto? = withContext(Dispatchers.IO) {
+    override suspend fun update(id: String, producto: Producto): Producto? {
         logger.info { "Repositorio de productos update " }
-        val productoUUID = productosRepository.findByUuid(uuid).firstOrNull()
+        val productoUUID = productosRepository.findById(id)
         productoUUID?.let {
             val updated = it.copy(
-                uuid = it.uuid,
+                id = it.id,
                 nombre = producto.nombre,
                 categoria = producto.categoria,
                 stock = producto.stock,
@@ -71,19 +71,18 @@ class ProductoCachedRepositoryImpl
                 precio = producto.precio,
                 activo = producto.activo
             )
-            return@withContext productosRepository.save(updated)
+            return productosRepository.save(updated)
         }
-        return@withContext null
+        return null
     }
 
     @CacheEvict("productos")
-    override suspend fun delete(uuid: String): Producto? = withContext(Dispatchers.IO) {
+    override suspend fun delete(id: String): Producto? {
         logger.info { "Repositorio de productos delete" }
-        val productoDelete = productosRepository.findByUuid(uuid).firstOrNull()
+        val productoDelete = productosRepository.findById(id)
         productoDelete?.let {
-            productosRepository.deleteByUuid(it.uuid)
-            return@withContext it
+            productosRepository.deleteById(it.id)
         }
-        return@withContext null
+        return null
     }
 }

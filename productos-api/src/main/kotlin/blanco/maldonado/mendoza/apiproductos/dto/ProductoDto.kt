@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 data class ProductoDto(
-    val uuid: String? = UUID.randomUUID().toString(),
+    val id: String? = UUID.randomUUID().toString(),
     val nombre: String,
     val categoria: String,
     val stock: Int,
@@ -22,7 +22,7 @@ data class ProductoDto(
 }
 
 data class ProductoCreateDto(
-    val uuid: String? = UUID.randomUUID().toString(),
+    val id: String? = UUID.randomUUID().toString(),
     val nombre: String,
     val categoria: String,
     val stock: Int,

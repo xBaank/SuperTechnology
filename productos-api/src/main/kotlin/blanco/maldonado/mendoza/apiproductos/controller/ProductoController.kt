@@ -66,11 +66,11 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Error interno con ese id")
     @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
     @GetMapping("/{id}")
-    suspend fun findProductById(@PathVariable id: String): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun findProductById(@PathVariable id: String): ResponseEntity<ProductoDto> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por id" }
             try {
-                val res = repository.findByUUID(id).map { it.toDto() }
+                val res = repository.findById(id)!!.toDto()
                 return@withContext ResponseEntity.ok(res)
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
@@ -123,7 +123,11 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 si no lo encuentra
      */
-    @Operation(summary = "Get Producto by Nombre", description = "Obtiene un objeto Producto por el nombre", tags = ["Producto"])
+    @Operation(
+        summary = "Get Producto by Nombre",
+        description = "Obtiene un objeto Producto por el nombre",
+        tags = ["Producto"]
+    )
     @Parameter(name = "nombre", description = "ID del nombre", required = true, example = "1")
     @ApiResponse(responseCode = "200", description = "Producto encontrado")
     @ApiResponse(responseCode = "404", description = "Producto no encontrado por su id")
@@ -153,10 +157,14 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 porque el mensaje es nulo.
      */
-    @Operation(summary = "Name is null", description = "Obtiene una excepción porque el nombre del producto introducido no existe", tags = ["Producto"])
+    @Operation(
+        summary = "Name is null",
+        description = "Obtiene una excepción porque el nombre del producto introducido no existe",
+        tags = ["Producto"]
+    )
     @ApiResponse(responseCode = "404", description = "Producto no encontrado por nombre nulo")
     @GetMapping("/nombre/")
-    suspend fun resultNombreNulo(): ResponseEntity<Flow<ProductoDTO>> =
+    suspend fun resultNombreNulo(): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por nombre nulo" }
             try {
@@ -172,10 +180,14 @@ class ProductoController
      * @return ResponseEntity<ProductosDTO>
      * @throws ResponseStatusException con el mensaje 404 porque la categoría es nula.
      */
-    @Operation(summary = "Categoria is null", description = "Obtiene una excepción porque la categoría introducida del producto no existe", tags = ["Producto"])
+    @Operation(
+        summary = "Categoria is null",
+        description = "Obtiene una excepción porque la categoría introducida del producto no existe",
+        tags = ["Producto"]
+    )
     @ApiResponse(responseCode = "404", description = "Producto no encontrado por categoria nula")
     @GetMapping("/categoria/")
-    suspend fun resultCategoriaNula(): ResponseEntity<Flow<ProductoDTO>> =
+    suspend fun resultCategoriaNula(): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por categoria nula" }
             try {
@@ -194,8 +206,9 @@ class ProductoController
     @Operation(summary = "Create Product", description = "Crea un objeto Producto", tags = ["Producto"])
     @ApiResponse(responseCode = "201", description = "Producto creado")
     @PostMapping("")
-    suspend fun createProduct(@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDTO> {
+    suspend fun createProduct(@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDto> {
         logger.info { "Creando un producto" }
+        productoDto.activo.lowercase()
         checkProducto(productoDto)
         try {
             val p = productoDto.validate().toModel()
@@ -221,17 +234,11 @@ class ProductoController
     suspend fun updateProduct(
         @PathVariable id: String, @Valid @RequestBody productoDto: ProductoCreateDto
     ): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
-        //todo ver si el producto exixte, y si no exixte que la respuesta sea not found
         logger.info { "Modificando producto con id $id" }
         try {
             val p = productoDto.validate().toModel()
-            val res = repository.findByUUID(id).map { it.toDto() }.firstOrNull()
-            res.let {
-                //antes de introducir cambiar la fecha de modificación update_at
-                //elimina y crea
-                repository.deleteById(id)
-                repository.save(p).toDto()
-            }
+            repository.delete(id)
+            val res = repository.update(id, p)!!.toDto()
             return@withContext ResponseEntity.status(HttpStatus.OK).body(res)
         } catch (e: ProductoNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
@@ -247,18 +254,10 @@ class ProductoController
     @ApiResponse(responseCode = "204", description = "Producto eliminado")
     @ApiResponse(responseCode = "404", description = "Producto eliminado con ese id")
     @DeleteMapping("/{id}")
-    suspend fun deleteProduct(@PathVariable id: Int): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
-        //todo ver si el producto exixte, y si no not posible
+    suspend fun deleteProduct(@PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
         logger.info { "Borrando producto" }
         try {
-            val res = repository.findById(id)!!.toDto()
-            //Arreglar fallo res == null' is always 'false
-            if (res == null) {
-                throw ProductoNotFoundException("Producto no encontrado con este id")
-            } else {
-                repository.deleteById(id)
-            }
-
+            repository.delete(id)
             return@withContext ResponseEntity.noContent().build()
         } catch (e: ProductoNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
