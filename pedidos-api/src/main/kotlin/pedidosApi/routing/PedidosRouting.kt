@@ -30,7 +30,7 @@ const val DEFAULT_SIZE = 10
 fun Routing.pedidosRouting() = route("/pedidos") {
     val repository by inject<PedidosRepository>()
 
-    get("/usuario/{id}") {
+    get("/usuario/{id}", builder = OpenApiRoute::getByUsuarioId) {
         val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
         val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
 
@@ -44,7 +44,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         handleResult(repository.getByPage(page, size))
     }
 
-    get("{id}") {
+    get("{id}", builder = OpenApiRoute::getById) {
         val id = call.parameters.getOrFail("id")
         handleResult(repository.getById(id))
     }

@@ -2,8 +2,9 @@ package pedidosApi.routing
 
 import io.github.smiley4.ktorswaggerui.dsl.OpenApiRoute
 import io.ktor.http.*
+import pedidosApi.dto.responses.ErrorDto
 import pedidosApi.dto.responses.PagedFlowDto
-import pedidosApi.models.Pedido
+import pedidosApi.dto.responses.PedidoDto
 
 fun OpenApiRoute.getAll() {
     description = "Get pedidos paged"
@@ -20,7 +21,56 @@ fun OpenApiRoute.getAll() {
     response {
         HttpStatusCode.OK to {
             description = "Paged result"
-            body<PagedFlowDto<Pedido>>()
+            body<PagedFlowDto<PedidoDto>>()
+        }
+    }
+}
+
+fun OpenApiRoute.getByUsuarioId() {
+    description = "Get pedidos paged by user id"
+    request {
+        queryParameter<Int>("page") {
+            description = "Page number, Default: 0"
+            required = false
+        }
+        queryParameter<Int>("size") {
+            description = "Page size, Default: 10, Max: 500"
+            required = false
+        }
+        pathParameter<String>("id") {
+            description = "user id"
+            required = true
+        }
+    }
+    response {
+        HttpStatusCode.OK to {
+            description = "Paged result"
+            body<PagedFlowDto<PedidoDto>>()
+        }
+        HttpStatusCode.NotFound to {
+            description = "User not found"
+            body<ErrorDto>()
+        }
+    }
+}
+
+fun OpenApiRoute.getById() {
+    description = "Get pedido by id"
+
+    request {
+        pathParameter<String>("id") {
+            description = "pedido id"
+            required = true
+        }
+    }
+    response {
+        HttpStatusCode.OK to {
+            description = "Pedido"
+            body<PedidoDto>()
+        }
+        HttpStatusCode.NotFound to {
+            description = "Pedido not found"
+            body<ErrorDto>()
         }
     }
 }

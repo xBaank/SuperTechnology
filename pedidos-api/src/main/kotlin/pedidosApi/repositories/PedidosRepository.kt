@@ -1,6 +1,7 @@
 package pedidosApi.repositories
 
 import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import org.litote.kmongo.coroutine.CoroutineCollection
@@ -16,11 +17,11 @@ const val MAX_SIZE = 500
 
 class PedidosRepository(private val collection: CoroutineCollection<Pedido>) {
 
-    fun getByPage(page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> {
-        validatePage(page, size)
+    suspend fun getByPage(page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> = either {
+        validatePage(page, size).bind()
 
         val flow = collection.find().skip(page * size).limit(size).toFlow()
-        return PagedFlow(page, size, flow).right()
+        PagedFlow(page, size, flow)
     }
 
     suspend fun getById(id: String): Either<PedidoError, Pedido> {
@@ -31,11 +32,11 @@ class PedidosRepository(private val collection: CoroutineCollection<Pedido>) {
             ?: PedidoError.PedidoNotFound("Pedido with with id : '${id}' not found").left()
     }
 
-    fun getByUserId(id: String, page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> {
-        validatePage(page, size)
+    suspend fun getByUserId(id: String, page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> = either {
+        validatePage(page, size).bind()
 
         val flow = collection.find(Pedido::usuario / UsuarioDto::id eq id).skip(page * size).limit(size).toFlow()
-        return PagedFlow(page, size, flow).right()
+        PagedFlow(page, size, flow)
     }
 
     suspend fun save(pedido: Pedido): Either<PedidoError, Pedido> {
@@ -50,8 +51,13 @@ class PedidosRepository(private val collection: CoroutineCollection<Pedido>) {
             ?: return PedidoError.InvalidPedidoId("id : '$id' format is incorrect").left()
 
         val result = collection.deleteOneById(_id)
-        if (!result.wasAcknowledged()) return PedidoError.PedidoSaveError("Couldn't delete pedido with id : '${id}'")
-            .left()
+
+        if (!result.wasAcknowledged())
+            return PedidoError.PedidoSaveError("Couldn't delete pedido with id : '${id}'").left()
+
+        if (result.deletedCount == 0L)
+            return PedidoError.PedidoSaveError("No pedidos deleted with id : '${id}'").left()
+
         return Unit.right()
     }
 

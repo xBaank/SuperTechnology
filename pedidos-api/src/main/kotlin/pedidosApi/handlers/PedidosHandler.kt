@@ -42,8 +42,8 @@ suspend fun ApplicationCallContext.handleError(error: DomainError) = when (error
     )
 
     is PedidoError.PedidoSaveError -> call.respond(
-        HttpStatusCode.InternalServerError,
-        buildErrorDto(error.message, HttpStatusCode.InternalServerError.value)
+        HttpStatusCode.NotFound,
+        buildErrorDto(error.message, HttpStatusCode.NotFound.value)
     )
 
     is PedidoError.InvalidPedidoPage -> call.respond(
