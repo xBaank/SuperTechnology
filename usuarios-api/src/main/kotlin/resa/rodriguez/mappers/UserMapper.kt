@@ -3,6 +3,7 @@ package resa.rodriguez.mappers
 import kotlinx.coroutines.flow.toSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import resa.rodriguez.dto.UserDTOUpdated
 import resa.rodriguez.dto.UserDTOcreate
 import resa.rodriguez.dto.UserDTOregister
 import resa.rodriguez.dto.UserDTOresponse
@@ -93,4 +94,24 @@ fun UserDTOcreate.fromDTOtoAddresses(id: UUID): Set<Address> {
         )
     }
     return result.toSet()
+}
+
+fun UserDTOUpdated.fromDTOtoAddresses(id: UUID): Set<Address> {
+    val result = mutableSetOf<Address>()
+    addresses.forEach {
+        result.add(
+            Address(
+                userId = id,
+                address = it
+            )
+        )
+    }
+    return result.toSet()
+}
+
+fun toAddress(id: UUID, address: String): Address {
+    return Address(
+        userId = id,
+        address = address
+    )
 }
