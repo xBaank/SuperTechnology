@@ -2,7 +2,10 @@ package pedidosApi.routing
 
 import arrow.core.continuations.either
 import io.github.smiley4.ktorswaggerui.dsl.OpenApiRoute
+import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
@@ -49,7 +52,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         handleResult(repository.getById(id))
     }
 
-    post {
+    post(builder = OpenApiRoute::post) {
         val pedido = call.receiveOrNull<CreatePedidoDto>()
             ?: return@post handleError(PedidoError.InvalidPedidoFormat("Invalid body format"))
 
@@ -59,7 +62,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         )
     }
 
-    put("{id}") {
+    put("{id}", builder = OpenApiRoute::put) {
         val id = call.parameters.getOrFail("id")
         val pedido = call.receiveOrNull<UpdatePedidoDto>()
 
@@ -69,7 +72,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         )
     }
 
-    delete("{id}") {
+    delete("{id}", builder = OpenApiRoute::delete) {
         val id = call.parameters.getOrFail("id")
         handleResult(repository.delete(id))
     }
