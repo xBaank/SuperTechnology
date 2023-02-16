@@ -21,7 +21,7 @@ class UsuariosApiApplication
         // Datos iniciales
 
         getUsersInit().forEach {
-            controller.createByAdmin(it)
+            controller.createByAdminInitializer(it)
         }
     }
 }
