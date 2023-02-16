@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
  * ProductosException
  * @param mensaje : String mensaje que da la excepcion
  */
-sealed class ProductoException(mensage : String): RuntimeException(mensage)
+sealed class ProductoException(mensaje : String): RuntimeException(mensaje)
 
 /**
  * Producto Not Found Exception
@@ -27,7 +27,7 @@ class ProductoNotFoundException(mensaje: String): ProductoException(mensaje)
  * @see HttpStatus bad_recuest
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-class ProductoBadRequestExcepcion(mensage: String): ProductoException(mensage)
+class ProductoBadRequestException(mensaje: String): ProductoException(mensaje)
 
 /**
  * Producto Conflictin integrity Exception
@@ -37,4 +37,4 @@ class ProductoBadRequestExcepcion(mensage: String): ProductoException(mensage)
  * @see HttpStatus conflicting
  */
 @ResponseStatus(HttpStatus.CONFLICT)
-class  ProductoConflictIntegrutyException(mensage: String): ProductoException(mensage)
+class  ProductoConflictIntegrityException(mensaje: String): ProductoException(mensaje)

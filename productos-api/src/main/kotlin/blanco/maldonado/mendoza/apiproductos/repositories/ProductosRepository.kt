@@ -7,10 +7,10 @@ import org.springframework.stereotype.Repository
 
 
 @Repository
-interface ProductosRepository : CoroutineCrudRepository<Producto, Int> {
-
+interface ProductosRepository : CoroutineCrudRepository<Producto, String> {
     fun findByNombre(nombre: String): Flow<Producto>
     fun findByCategoria(categoria: String): Flow<Producto>
-
+    fun findByUuid(uuid: String): Flow<Producto>
+    fun deleteByUuid(uuid: String)
 }
 
