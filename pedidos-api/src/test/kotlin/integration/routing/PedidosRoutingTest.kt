@@ -65,7 +65,7 @@ class PedidosRoutingTest {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.createPedido)
         }
-        response.status.shouldBe(HttpStatusCode.OK)
+        response.status.shouldBe(HttpStatusCode.Created)
     }
 
     @Test
@@ -91,7 +91,7 @@ class PedidosRoutingTest {
             setBody(PedidosData.updatePedido)
         }
 
-        responsePost.status.shouldBe(HttpStatusCode.OK)
+        responsePost.status.shouldBe(HttpStatusCode.Created)
         responsePut.status.shouldBe(HttpStatusCode.OK)
     }
 
@@ -106,7 +106,7 @@ class PedidosRoutingTest {
 
         val responsePut = client.get("/pedidos/${pedidoCreated.id}")
 
-        responsePost.status.shouldBe(HttpStatusCode.OK)
+        responsePost.status.shouldBe(HttpStatusCode.Created)
         responsePut.status.shouldBe(HttpStatusCode.OK)
     }
 
@@ -121,7 +121,7 @@ class PedidosRoutingTest {
 
         val responseGet = client.get("/pedidos/usuario/${pedidoCreated.usuario.id}")
 
-        responsePost.status.shouldBe(HttpStatusCode.OK)
+        responsePost.status.shouldBe(HttpStatusCode.Created)
         responseGet.status.shouldBe(HttpStatusCode.OK)
     }
 
@@ -136,7 +136,7 @@ class PedidosRoutingTest {
 
         val responseGet = client.get("/pedidos/usuario/${pedidoCreated.usuario.id}?page=-5&size=10")
 
-        responsePost.status.shouldBe(HttpStatusCode.OK)
+        responsePost.status.shouldBe(HttpStatusCode.Created)
         responseGet.status.shouldBe(HttpStatusCode.BadRequest)
     }
 
@@ -158,7 +158,7 @@ class PedidosRoutingTest {
 
         val responseDelete = client.delete("/pedidos/${pedidoCreated.id}")
 
-        responsePost.status.shouldBe(HttpStatusCode.OK)
+        responsePost.status.shouldBe(HttpStatusCode.Created)
         responseDelete.status.shouldBe(HttpStatusCode.NoContent)
     }
 
