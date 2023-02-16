@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.Valid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
@@ -45,9 +44,9 @@ class ProductoController
     @Operation(summary = "Get all Test", description = "Obtiene una lista de productos", tags = ["Productos"])
     @ApiResponse(responseCode = "200", description = "Lista de Producto")
     @GetMapping("")
-    suspend fun findAllProductos(): ResponseEntity<List<Producto>> = withContext(Dispatchers.IO) {
+    suspend fun findAllProductos(): ResponseEntity<Flow<ProductoDto>> = withContext(Dispatchers.IO) {
         logger.info { "Get productos" }
-        val res = repository.findAll().toList()
+        val res = repository.findAll().map { it.toDto() }
         return@withContext ResponseEntity.ok(res)
     }
 
@@ -97,12 +96,12 @@ class ProductoController
             try {
                 if (!categoria.trim().isEmpty()) {
                     try {
-                        var categoriaCorrecta = Producto.Categoria.valueOf(categoria.trim())
+                        Producto.Categoria.valueOf(categoria.trim())
                         val res = repository.findByCategoria(categoria.trim()).map { it.toDto() }
                         if (!res.toList().isEmpty()) {
                             return@withContext ResponseEntity.ok(res)
                         } else {
-                            throw ProductoNotFoundException("La categoria $categoria es correcta pero no tiene Prodcutos asociados.")
+                            throw ProductoNotFoundException("La categoria $categoria es correcta pero no tiene productos asociados.")
                         }
                     } catch (e: IllegalArgumentException) {
                         throw ProductoNotFoundException("La categoria $categoria no es correcta.")
@@ -110,7 +109,6 @@ class ProductoController
                 } else {
                     throw ProductoNotFoundException("La categoria esta vacia.")
                 }
-                throw ProductoNotFoundException("La categoria $categoria no es correcta")
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
             }
@@ -237,7 +235,6 @@ class ProductoController
         logger.info { "Modificando producto con id $id" }
         try {
             val p = productoDto.validate().toModel()
-            repository.delete(id)
             val res = repository.update(id, p)!!.toDto()
             return@withContext ResponseEntity.status(HttpStatus.OK).body(res)
         } catch (e: ProductoNotFoundException) {
@@ -247,8 +244,6 @@ class ProductoController
         }
     }
 
-
-    //path modificar o deshabilitar
     @Operation(summary = "Delete Product", description = "Elimina un objeto Producto", tags = ["Product"])
     @Parameter(name = "id", description = "ID del Producto", required = true, example = "1")
     @ApiResponse(responseCode = "204", description = "Producto eliminado")
