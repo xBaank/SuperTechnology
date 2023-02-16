@@ -7,11 +7,11 @@ import java.util.UUID
 data class ProductoDto(
     val uuid: String? = UUID.randomUUID().toString(),
     val nombre: String,
-    val categoria: Producto.Categoria,
+    val categoria: String,
     val stock: Int,
     val description: String,
     val precio: Double,
-    val activo: Boolean,
+    val activo: String,
     val metadata: MetaData? = null
 ) {
     data class MetaData(
@@ -24,9 +24,9 @@ data class ProductoDto(
 data class ProductoCreateDto(
     val uuid: String? = UUID.randomUUID().toString(),
     val nombre: String,
-    val categoria: Producto.Categoria,
+    val categoria: String,
     val stock: Int,
     val description: String,
     val precio: Double,
-    val activo: Boolean
+    val activo: String
 )
