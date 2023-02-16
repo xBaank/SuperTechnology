@@ -4,9 +4,8 @@ import blanco.maldonado.mendoza.apiproductos.model.Producto
 import java.time.LocalDateTime
 import java.util.UUID
 
-data class ProductoDTO(
-    val id: Int? = null,
-    val uuid: String? = null,
+data class ProductoDto(
+    val uuid: String? = UUID.randomUUID().toString(),
     val nombre: String,
     val categoria: String,
     val stock: Int,
@@ -23,7 +22,7 @@ data class ProductoDTO(
 }
 
 data class ProductoCreateDto(
-    val uuid: String = UUID.randomUUID().toString(),
+    val uuid: String? = UUID.randomUUID().toString(),
     val nombre: String,
     val categoria: String,
     val stock: Int,

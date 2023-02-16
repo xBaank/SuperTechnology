@@ -2,15 +2,15 @@ package blanco.maldonado.mendoza.apiproductos.controller
 
 import blanco.maldonado.mendoza.apiproductos.config.APIConfig
 import blanco.maldonado.mendoza.apiproductos.dto.ProductoCreateDto
-import blanco.maldonado.mendoza.apiproductos.dto.ProductoDTO
-import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoBadRequestExcepcion
-import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoConflictIntegrutyException
+import blanco.maldonado.mendoza.apiproductos.dto.ProductoDto
+import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoBadRequestException
+import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoConflictIntegrityException
 import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoNotFoundException
 import blanco.maldonado.mendoza.apiproductos.mapper.toDto
 import blanco.maldonado.mendoza.apiproductos.mapper.toModel
 import blanco.maldonado.mendoza.apiproductos.model.Producto
 import blanco.maldonado.mendoza.apiproductos.model.TestDto
-import blanco.maldonado.mendoza.apiproductos.repositories.ProductosRepository
+import blanco.maldonado.mendoza.apiproductos.repositories.ProductoCachedRepositoryImpl
 import blanco.maldonado.mendoza.apiproductos.validator.validate
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.Valid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
@@ -35,7 +36,7 @@ private val logger = KotlinLogging.logger { }
 @RequestMapping(APIConfig.API_PATH + "/productos")
 class ProductoController
 @Autowired constructor(
-    private val repository: ProductosRepository
+    private val repository: ProductoCachedRepositoryImpl
 ) {
     /**
      * Get all : Lista de productos
@@ -65,17 +66,16 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Error interno con ese id")
     @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
     @GetMapping("/{id}")
-    suspend fun findProductById(@PathVariable id: Int): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
-
-        logger.info { "Obteniendo producto por id" }
-
-        try {
-            val res = repository.findById(id)?.toDto()
-            return@withContext ResponseEntity.ok(res)
-        } catch (e: ProductoNotFoundException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+    suspend fun findProductById(@PathVariable id: String): ResponseEntity<Flow<ProductoDto>> =
+        withContext(Dispatchers.IO) {
+            logger.info { "Obteniendo producto por id" }
+            try {
+                val res = repository.findByUUID(id).map { it.toDto() }
+                return@withContext ResponseEntity.ok(res)
+            } catch (e: ProductoNotFoundException) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+            }
         }
-    }
 
     /**
      * Get {categoria} : productos por su categoria
@@ -91,7 +91,7 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Error interno con ese id")
     @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
     @GetMapping("/categoria/{categoria}")
-    suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDTO>> =
+    suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Get productos by categoria" }
             try {
@@ -132,7 +132,7 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Error interno con ese id")
     @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
     @GetMapping("/nombre/{nombre}")
-    suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<Flow<ProductoDTO>> =
+    suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por nombre" }
             try {
@@ -201,7 +201,7 @@ class ProductoController
             val p = productoDto.validate().toModel()
             val res = repository.save(p).toDto()
             return ResponseEntity.status(HttpStatus.CREATED).body(res)
-        } catch (e: ProductoBadRequestExcepcion) {
+        } catch (e: ProductoBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
@@ -219,13 +219,13 @@ class ProductoController
     @ApiResponse(responseCode = "404", description = "Test no encontrado con ese id")
     @PutMapping("/{id}")
     suspend fun updateProduct(
-        @PathVariable id: Int, @Valid @RequestBody productoDto: ProductoCreateDto
-    ): ResponseEntity<ProductoDTO> = withContext(Dispatchers.IO) {
+        @PathVariable id: String, @Valid @RequestBody productoDto: ProductoCreateDto
+    ): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
         //todo ver si el producto exixte, y si no exixte que la respuesta sea not found
         logger.info { "Modificando producto con id $id" }
         try {
             val p = productoDto.validate().toModel()
-            val res = repository.findById(id)!!.toDto()
+            val res = repository.findByUUID(id).map { it.toDto() }.firstOrNull()
             res.let {
                 //antes de introducir cambiar la fecha de modificación update_at
                 //elimina y crea
@@ -235,7 +235,7 @@ class ProductoController
             return@withContext ResponseEntity.status(HttpStatus.OK).body(res)
         } catch (e: ProductoNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
-        } catch (e: ProductoBadRequestExcepcion) {
+        } catch (e: ProductoBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
@@ -262,7 +262,7 @@ class ProductoController
             return@withContext ResponseEntity.noContent().build()
         } catch (e: ProductoNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
-        } catch (e: ProductoConflictIntegrutyException) {
+        } catch (e: ProductoConflictIntegrityException) {
             throw ResponseStatusException(HttpStatus.CONFLICT, e.message)
         }
 
@@ -271,7 +271,7 @@ class ProductoController
     private suspend fun checkProducto(producto: ProductoCreateDto) {
         val existe = repository.findByNombre(producto.nombre)
         if (existe.toList().isNotEmpty()) {
-            throw ProductoBadRequestExcepcion("El producto con nombre ${producto.nombre} ya existe")
+            throw ProductoBadRequestException("El producto con nombre ${producto.nombre} ya existe")
         }
     }
 

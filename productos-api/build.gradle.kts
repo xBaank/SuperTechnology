@@ -38,8 +38,10 @@ dependencies {
     dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
     //Validation
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    //Swagger
+    // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+    // Cache
+    implementation("org.springframework.boot:spring-boot-starter-cache")
 }
 
 tasks.withType<KotlinCompile> {
