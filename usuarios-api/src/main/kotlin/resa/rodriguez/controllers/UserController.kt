@@ -453,4 +453,27 @@ class UserController
 
             ResponseEntity(address.address, HttpStatus.OK)
         }
+
+    // "Delete" Methods
+
+    @DeleteMapping("/address/{name}")
+    private suspend fun deleteAddress(
+        @PathVariable name: String,
+        @RequestHeader token: String
+    ): ResponseEntity<String>? = withContext(Dispatchers.IO) {
+        log.info { "Eliminando direccion: $" }
+
+        val user = getUserDTOFromToken(token, userRepositoryCached, userMapper) ?: return@withContext null
+
+        val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
+        val u = userRepositoryCached.findByEmail(user.email)
+        if (address == null) return@withContext null
+        if (u == null) return@withContext null
+        val addresses = addressRepositoryCached.findAllFromUserId(u.id!!).toSet()
+        if (address.userId == u.id && addresses.size > 1) {
+            addressRepositoryCached.deleteById(address.id!!)
+        } else return@withContext ResponseEntity("No ha sido posible eliminar la direccion", HttpStatus.BAD_REQUEST)
+
+        return@withContext ResponseEntity("Direccion eliminado", HttpStatus.OK)
+    }
 }

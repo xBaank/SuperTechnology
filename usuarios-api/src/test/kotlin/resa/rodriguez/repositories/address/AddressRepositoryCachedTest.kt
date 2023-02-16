@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
@@ -25,8 +24,7 @@ import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
-//@SpringBootTest
-class UserRepositoryCachedTest {
+internal class AddressRepositoryCachedTest {
     private val address = Address(
         UUID.randomUUID(),
         UUID.randomUUID(),
@@ -218,7 +216,7 @@ class UserRepositoryCachedTest {
     fun deleteAllByUserId() = runTest {
         coEvery { uRepo.findById(any()) } returns user
         coEvery { repo.findAllByUserId(any()) } returns flowOf(address)
-        coEvery { repo.deleteAll(allAny()) } returns Unit
+        coEvery { repo.deleteAll(any()) } returns Unit
 
         val result = repository.deleteAllByUserId(address.userId).toList()
 

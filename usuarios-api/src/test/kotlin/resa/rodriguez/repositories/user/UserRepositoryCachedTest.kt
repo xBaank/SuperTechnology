@@ -20,7 +20,7 @@ import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
-class UserRepositoryCachedTest {
+internal class UserRepositoryCachedTest {
     private val user = User(
         UUID.randomUUID(),
         "UserTest",
