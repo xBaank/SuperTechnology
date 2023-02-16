@@ -8,6 +8,6 @@ import java.util.*
 
 @Repository
 interface AddressRepository : CoroutineCrudRepository<Address, UUID> {
-    fun findFirstByAddress(direccion: String) : Flow<Address>
-    fun findAllByUserId(id: UUID) : Flow<Address>
+    fun findFirstByAddress(direccion: String): Flow<Address>
+    fun findAllByUserId(id: UUID): Flow<Address>
 }

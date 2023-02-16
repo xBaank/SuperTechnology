@@ -21,7 +21,6 @@ import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.mappers.fromDTOtoAddresses
 import resa.rodriguez.mappers.fromDTOtoUser
 import resa.rodriguez.mappers.toAddress
-import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.address.AddressRepositoryCached
@@ -95,9 +94,32 @@ class UserController
         }
 
     @PostMapping("/create")
-    suspend fun createByAdmin(@Valid @RequestBody userDTOcreate: UserDTOcreate): ResponseEntity<String> =
+    private suspend fun create(
+        @Valid @RequestBody userDTOcreate: UserDTOcreate,
+        @RequestHeader token: String
+    ): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
             log.info { "Creando usuario por parte de un administrador" }
+
+            val checked = checkToken(token, UserRole.ADMIN)
+            if (checked != null) return@withContext checked
+
+            val user = userDTOcreate.fromDTOtoUser()
+
+            val userSaved = userRepositoryCached.save(user)
+
+            val addresses = userDTOcreate.fromDTOtoAddresses(userSaved.id!!)
+            addresses.forEach { addressRepositoryCached.save(it) }
+
+            ResponseEntity(create(userSaved), HttpStatus.OK)
+        }
+
+    // El createByAdmin que se usara por parte del cliente es el superior, este simplemente es para la carga de datos inicial
+    suspend fun createByAdminInitializer(
+        @Valid @RequestBody userDTOcreate: UserDTOcreate,
+    ): ResponseEntity<String> =
+        withContext(Dispatchers.IO) {
+            log.info { "Creando usuario por parte de un administrador || Carga de datos inicial" }
 
             val user = userDTOcreate.fromDTOtoUser()
 
@@ -318,16 +340,14 @@ class UserController
                 val addresses = mutableSetOf<String>()
                 addresses.addAll(userDTOUpdated.addresses)
                 addressRepositoryCached.findAllFromUserId(user.id!!).toSet().forEach { addresses.add(it.address) }
-                addressRepositoryCached.deleteAllByUserId(user.id!!)
+                addressRepositoryCached.deleteAllByUserId(user.id)
 
-                addresses.forEach { addressRepositoryCached.save(toAddress(user.id!!, it)) }
+                addresses.forEach { addressRepositoryCached.save(toAddress(user.id, it)) }
             }
 
-            val updatedAvatar = if (userDTOUpdated.avatar.isNotBlank()) {
-                //TODO: ACTUALIZAR EL AVATAR
-                userDTOUpdated.avatar
+            val updatedAvatar = userDTOUpdated.avatar.ifBlank {
+                user.avatar
             }
-            else user.avatar
 
             val userUpdated = User(
                 id = user.id,
@@ -377,11 +397,52 @@ class UserController
             ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
         }
 
+    @PutMapping("/role/{email}")
+    private suspend fun updateRoleByEmail(
+        @Valid @RequestBody userDTORoleUpdated: UserDTORoleUpdated,
+        @RequestHeader token: String
+    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+        log.info { "Actualizando rol de usuario con email: ${userDTORoleUpdated.email}" }
+
+        val checked = checkToken(token, UserRole.SUPER_ADMIN)
+        if (checked != null) return@withContext checked
+
+        val user = userRepositoryCached.findByEmail(userDTORoleUpdated.email)
+            ?: return@withContext ResponseEntity(
+                "User with email: ${userDTORoleUpdated.email} not found",
+                HttpStatus.NOT_FOUND
+            )
+
+        val updatedRole =
+            if (userDTORoleUpdated.role.name.uppercase() != (UserRole.USER.name) ||
+                userDTORoleUpdated.role.name.uppercase() != (UserRole.ADMIN.name) ||
+                userDTORoleUpdated.role.name.uppercase() != (UserRole.SUPER_ADMIN.name)
+            ) {
+                user.role
+            } else userDTORoleUpdated.role
+
+        val userUpdated = User(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            password = user.password,
+            phone = user.phone,
+            avatar = user.avatar,
+            role = updatedRole,
+            createdAt = user.createdAt,
+            active = user.active
+        )
+
+        val userSaved = userRepositoryCached.save(userUpdated)
+
+        ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
+    }
+
     // "Delete" Methods
     @DeleteMapping("/delete/{email}")
     private suspend fun deleteUser(@PathVariable email: String, @RequestHeader token: String): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
-            log.info { "Eliminando al usuario de forma definitiva" }
+            log.info { "Eliminando al usuario de forma definitiva junto a sus direcciones asociadas" }
 
             val checked = checkToken(token, UserRole.SUPER_ADMIN)
             if (checked != null) return@withContext checked
@@ -391,7 +452,7 @@ class UserController
 
             addressRepositoryCached.deleteAllByUserId(user.id!!)
 
-            userRepositoryCached.deleteById(user.id!!)
+            userRepositoryCached.deleteById(user.id)
 
             ResponseEntity("User with email: $email deleted successfully", HttpStatus.OK)
         }
@@ -473,20 +534,24 @@ class UserController
     private suspend fun deleteAddress(
         @PathVariable name: String,
         @RequestHeader token: String
-    ): ResponseEntity<String>? = withContext(Dispatchers.IO) {
+    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Eliminando direccion: $" }
 
-        val user = getUserDTOFromToken(token, userRepositoryCached, userMapper) ?: return@withContext null
+        val userDto = getUserDTOFromToken(token, userRepositoryCached, userMapper)
+            ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
 
         val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
-        val u = userRepositoryCached.findByEmail(user.email)
-        if (address == null) return@withContext null
-        if (u == null) return@withContext null
-        val addresses = addressRepositoryCached.findAllFromUserId(u.id!!).toSet()
-        if (address.userId == u.id && addresses.size > 1) {
+        val user = userRepositoryCached.findByEmail(userDto.email)
+
+        if (address == null) return@withContext ResponseEntity("Address not found", HttpStatus.NOT_FOUND)
+        if (user == null) return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
+
+        val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
+
+        if (address.userId == user.id && addresses.size > 1) {
             addressRepositoryCached.deleteById(address.id!!)
         } else return@withContext ResponseEntity("No ha sido posible eliminar la direccion", HttpStatus.BAD_REQUEST)
 
-        return@withContext ResponseEntity("Direccion eliminado", HttpStatus.OK)
+        return@withContext ResponseEntity("Direccion eliminada", HttpStatus.OK)
     }
 }

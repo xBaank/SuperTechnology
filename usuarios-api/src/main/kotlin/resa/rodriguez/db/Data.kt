@@ -4,7 +4,7 @@ import resa.rodriguez.dto.UserDTOcreate
 import resa.rodriguez.models.UserRole
 
 /**
- * Datos de prueba introducidos como SUPER_ADMIN
+ * Datos iniciales que se cargaran la primera vez que se lance el microservicio
  *
  */
 fun getUsersInit() = listOf(

@@ -22,7 +22,7 @@ import java.util.UUID
 @Table(name = "users")
 data class User(
     @Id
-    var id: UUID? = null,
+    val id: UUID? = null,
     @NotEmpty(message = "El usuario debe tener un username.")
     val username: String,
     @NotEmpty(message = "El usuario debe tener un email.")

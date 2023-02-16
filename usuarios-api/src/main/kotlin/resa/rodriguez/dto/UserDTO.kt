@@ -84,8 +84,22 @@ data class UserDTOresponse(
     val active: Boolean
 )
 
+/**
+ * Dto usada para los campos que permitimos que sean actualizados.
+ *
+ * @property password
+ * @property addresses
+ * @property avatar
+ */
+@Serializable
 data class UserDTOUpdated(
     val password: String,
     val addresses: Set<String>,
     val avatar: String
+)
+
+@Serializable
+data class UserDTORoleUpdated(
+    val email: String,
+    val role: UserRole
 )
