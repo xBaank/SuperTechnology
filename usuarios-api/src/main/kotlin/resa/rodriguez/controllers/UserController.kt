@@ -20,6 +20,8 @@ import resa.rodriguez.dto.*
 import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.mappers.fromDTOtoAddresses
 import resa.rodriguez.mappers.fromDTOtoUser
+import resa.rodriguez.mappers.toAddress
+import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.address.AddressRepositoryCached
@@ -309,28 +311,39 @@ class UserController
             val user = getUserFromToken(token, userRepositoryCached)
                 ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
 
-            if (userDTOUpdated.password.isBlank()) {
-                return@withContext ResponseEntity(
-                    "Password incorrect: Is Empty || User not updated ",
-                    HttpStatus.BAD_REQUEST
-                )
-            } else {
-                val userUpdated = User(
-                    id = user.id,
-                    username = user.username,
-                    email = user.email,
-                    password = cipher(userDTOUpdated.password),
-                    phone = user.phone,
-                    avatar = userDTOUpdated.avatar,
-                    role = user.role,
-                    createdAt = user.createdAt,
-                    active = user.active
-                )
+            val updatedPassword = if (userDTOUpdated.password.isBlank()) user.password
+            else cipher(userDTOUpdated.password)
 
-                val userSaved = userRepositoryCached.save(userUpdated)
+            if (userDTOUpdated.addresses.isNotEmpty()) {
+                val addresses = mutableSetOf<String>()
+                addresses.addAll(userDTOUpdated.addresses)
+                addressRepositoryCached.findAllFromUserId(user.id!!).toSet().forEach { addresses.add(it.address) }
+                addressRepositoryCached.deleteAllByUserId(user.id!!)
 
-                return@withContext ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
+                addresses.forEach { addressRepositoryCached.save(toAddress(user.id!!, it)) }
             }
+
+            val updatedAvatar = if (userDTOUpdated.avatar.isNotBlank()) {
+                //TODO: ACTUALIZAR EL AVATAR
+                userDTOUpdated.avatar
+            }
+            else user.avatar
+
+            val userUpdated = User(
+                id = user.id,
+                username = user.username,
+                email = user.email,
+                password = updatedPassword,
+                phone = user.phone,
+                avatar = updatedAvatar,
+                role = user.role,
+                createdAt = user.createdAt,
+                active = user.active
+            )
+
+            val userSaved = userRepositoryCached.save(userUpdated)
+
+            return@withContext ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
         }
 
     @PutMapping("/activity/{email}")

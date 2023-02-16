@@ -86,5 +86,6 @@ data class UserDTOresponse(
 
 data class UserDTOUpdated(
     val password: String,
+    val addresses: Set<String>,
     val avatar: String
 )
