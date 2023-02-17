@@ -1,11 +1,8 @@
 package pedidosApi.routing
 
 import arrow.core.continuations.either
-import io.github.smiley4.ktorswaggerui.dsl.OpenApiRoute
-import io.github.smiley4.ktorswaggerui.dsl.delete
-import io.github.smiley4.ktorswaggerui.dsl.get
-import io.github.smiley4.ktorswaggerui.dsl.post
-import io.github.smiley4.ktorswaggerui.dsl.put
+import io.github.smiley4.ktorswaggerui.dsl.*
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
@@ -49,7 +46,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
 
     get("{id}", builder = OpenApiRoute::getById) {
         val id = call.parameters.getOrFail("id")
-        handleResult(repository.getById(id))
+        handleResult(repository.getById(id), HttpStatusCode.OK)
     }
 
     post(builder = OpenApiRoute::post) {
@@ -58,7 +55,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
 
         createPedido(pedido).fold(
             ifLeft = { handleError(it) },
-            ifRight = { handleResult(repository.save(it)) }
+            ifRight = { handleResult(repository.save(it), HttpStatusCode.Created) }
         )
     }
 
@@ -68,7 +65,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
 
         updatePedido(pedido, id).fold(
             ifLeft = { handleError(it) },
-            ifRight = { handleResult(repository.save(it)) }
+            ifRight = { handleResult(repository.save(it), HttpStatusCode.OK) }
         )
     }
 

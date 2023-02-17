@@ -23,8 +23,8 @@ suspend fun ApplicationCallContext.handleResult(pedidoResult: Either<DomainError
     pedidoResult.fold(ifLeft = { handleError(it) }, ifRight = { call.respond(buildPagedPedidoDto(it)) })
 
 @JvmName("handleResultPedido")
-suspend fun ApplicationCallContext.handleResult(pedidoResult: Either<DomainError, Pedido>) =
-    pedidoResult.fold(ifLeft = { handleError(it) }, ifRight = { call.respond(buildPedidoDto(it)) })
+suspend fun ApplicationCallContext.handleResult(pedidoResult: Either<DomainError, Pedido>, code: HttpStatusCode) =
+    pedidoResult.fold(ifLeft = { handleError(it) }, ifRight = { call.respond(code, buildPedidoDto(it)) })
 
 @JvmName("handleResultUnit")
 suspend fun ApplicationCallContext.handleResult(pedidoResult: Either<DomainError, Unit>) =
