@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProductoCacheRepository {
     suspend fun findAll(): Flow<Producto>
-    suspend fun findById(id: String): Producto?
+    suspend fun findById(uuid: String): Producto?
     suspend fun findByCategoria(categoria: String): Flow<Producto>
     suspend fun findByNombre(nombre: String): Flow<Producto>
     suspend fun save(producto: Producto): Producto
-    suspend fun update(id: String, producto: Producto): Producto?
-    suspend fun delete(id: String): Producto?
+    suspend fun update(uuid: String, producto: Producto): Producto?
+    suspend fun delete(uuid: String): Producto?
 }

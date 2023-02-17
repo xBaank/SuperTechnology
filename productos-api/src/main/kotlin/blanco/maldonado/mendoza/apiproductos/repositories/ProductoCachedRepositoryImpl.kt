@@ -1,10 +1,8 @@
 package blanco.maldonado.mendoza.apiproductos.repositories
 
 import blanco.maldonado.mendoza.apiproductos.model.Producto
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.CacheEvict
@@ -32,9 +30,9 @@ class ProductoCachedRepositoryImpl
     }
 
     @Cacheable("productos")
-    override suspend fun findById(id: String): Producto? {
-        logger.info { "Repositorio de productos findById con id $id" }
-        return productosRepository.findById(id)
+    override suspend fun findById(uuid: String): Producto? {
+        logger.info { "Repositorio de productos findById con id $uuid" }
+        return productosRepository.findByUuid(uuid).firstOrNull()
     }
 
     override suspend fun findByCategoria(categoria: String): Flow<Producto> {
@@ -55,12 +53,12 @@ class ProductoCachedRepositoryImpl
     }
 
     @CachePut("productos")
-    override suspend fun update(id: String, producto: Producto): Producto? {
+    override suspend fun update(uuid: String, producto: Producto): Producto? {
         logger.info { "Repositorio de productos update " }
-        val productoUUID = productosRepository.findById(id)
+        val productoUUID = productosRepository.findByUuid(uuid).firstOrNull()
         productoUUID?.let {
             val updated = it.copy(
-                id = it.id,
+                uuid = it.uuid,
                 nombre = producto.nombre,
                 categoria = producto.categoria,
                 stock = producto.stock,
@@ -77,11 +75,11 @@ class ProductoCachedRepositoryImpl
     }
 
     @CacheEvict("productos")
-    override suspend fun delete(id: String): Producto? {
+    override suspend fun delete(uuid: String): Producto? {
         logger.info { "Repositorio de productos delete" }
-        val productoDelete = productosRepository.findById(id)
-        productoDelete?.let {
-            productosRepository.deleteById(it.id)
+        val productoDelete = productosRepository.findByUuid(uuid).firstOrNull()
+        productoDelete.let {
+            productosRepository.delete(it!!)
         }
         return null
     }

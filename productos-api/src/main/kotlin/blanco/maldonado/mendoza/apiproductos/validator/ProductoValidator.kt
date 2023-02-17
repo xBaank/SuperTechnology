@@ -3,21 +3,20 @@ package blanco.maldonado.mendoza.apiproductos.validator
 import blanco.maldonado.mendoza.apiproductos.dto.ProductoCreateDto
 import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoBadRequestException
 import blanco.maldonado.mendoza.apiproductos.model.Producto
-import java.util.*
 
 fun ProductoCreateDto.validate(): ProductoCreateDto {
-    if (this.id!!.trim().isBlank()) {
-        throw ProductoBadRequestException("El  uuid no puede estar vacío")
-    } else {
-        println("entra en validar el uuid")
-        try {
-            UUID.fromString(this.id.trim())
-            println("entra en validar el pero se pasa el cath por ahí ")
-        } catch (e: IllegalArgumentException) {
-            println("entra en validar el uuid y ademas entra en el cath")
-            throw ProductoBadRequestException("El Uuid no es un UUid valido")
-        }
-    }
+//    if (this.id!!.trim().isBlank()) {
+//        throw ProductoBadRequestException("El  uuid no puede estar vacío")
+//    } else {
+//        println("entra en validar el uuid")
+//        try {
+//            UUID.fromString(this.id.trim())
+//            println("entra en validar el pero se pasa el cath por ahí ")
+//        } catch (e: IllegalArgumentException) {
+//            println("entra en validar el uuid y ademas entra en el cath")
+//            throw ProductoBadRequestException("El Uuid no es un UUid valido")
+//        }
+//    }
     if (this.nombre.trim().isBlank()) {
         throw ProductoBadRequestException("El nombre no puede estar vacío")
     } else if (this.categoria.trim().isBlank()) {

@@ -11,7 +11,8 @@ import java.util.*
 @Table(name = "productos")
 data class Producto(
     @Id
-    val id: String = UUID.randomUUID().toString(),
+    val id: Long? = null,
+    val uuid: String? = null,
     @NotEmpty(message = "El nombre no puede estar vacío")
     val nombre: String,
     @NotEmpty(message = "La categoría no puede estar vacía")
