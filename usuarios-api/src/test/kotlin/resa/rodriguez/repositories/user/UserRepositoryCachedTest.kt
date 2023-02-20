@@ -13,10 +13,13 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
 import java.time.LocalDate
 import java.util.*
+import kotlin.streams.toList
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
@@ -67,6 +70,38 @@ internal class UserRepositoryCachedTest {
             { assertTrue(result.isEmpty()) }
         )
         coVerify { repo.findAll() }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun findAllPaged() = runTest {
+        coEvery { repo.findAllBy(any()) } returns flowOf(user)
+        coEvery { repo.count() } returns 1
+
+        val pageRequest = PageRequest.of(0, 10, Sort.Direction.ASC, "created_at")
+        val result = repository.findAllPaged(pageRequest).toList()
+
+        assertAll(
+            { Assertions.assertNotNull(result) },
+            { assertEquals(user.id, result[0].get().toList()[0].id) }
+        )
+        coVerify { repo.findAllBy(any()) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun findAllPagedNF() = runTest {
+        coEvery { repo.findAllBy(any()) } returns flowOf()
+        coEvery { repo.count() } returns 0
+
+        val pageRequest = PageRequest.of(0, 10, Sort.Direction.ASC, "created_at")
+        val result = repository.findAllPaged(pageRequest).toList()
+
+        assertAll(
+            { Assertions.assertNotNull(result) },
+            { assertTrue(result.isEmpty()) }
+        )
+        coVerify { repo.findAllBy(any()) }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -218,6 +253,37 @@ internal class UserRepositoryCachedTest {
         )
 
         coVerify { repo.save(any()) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun update() = runTest {
+        coEvery { repo.findById(any()) } returns user
+        coEvery { repo.save(any()) } returns user
+
+        val result = repository.update(user.id!!, user)
+
+        assertAll(
+            { assertEquals(user.id, result?.id) },
+            { assertEquals(user.username, result?.username) },
+        )
+
+        coVerify { repo.findById(any()) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun updateNF() = runTest {
+        coEvery { repo.findById(any()) } returns null
+        coEvery { repo.save(any()) } returns user
+
+        val result = repository.update(user.id!!, user)
+
+        assertAll(
+            { assertNull(result) }
+        )
+
+        coVerify { repo.findById(any()) }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
