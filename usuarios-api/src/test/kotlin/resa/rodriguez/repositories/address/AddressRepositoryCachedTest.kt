@@ -216,7 +216,7 @@ internal class AddressRepositoryCachedTest {
     fun deleteAllByUserId() = runTest {
         coEvery { uRepo.findById(any()) } returns user
         coEvery { repo.findAllByUserId(any()) } returns flowOf(address)
-        coEvery { repo.deleteAll(any()) } returns Unit
+        coEvery { repo.delete(any()) } returns Unit
 
         val result = repository.deleteAllByUserId(address.userId).toList()
 

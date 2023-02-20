@@ -3,6 +3,7 @@ package resa.rodriguez.repositories.address
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.CacheEvict
@@ -57,7 +58,7 @@ class AddressRepositoryCached
     override suspend fun deleteAllByUserId(id: UUID): Flow<Address> = withContext(Dispatchers.IO) {
         uRepo.findById(id) ?: return@withContext flowOf()
         val addresses = aRepo.findAllByUserId(id)
-        aRepo.deleteAll(addresses)
+        addresses.toList().forEach { aRepo.delete(it) }
         addresses
     }
 
