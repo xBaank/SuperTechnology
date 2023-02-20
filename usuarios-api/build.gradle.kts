@@ -25,6 +25,9 @@ dependencies {
 	// Validaciones de Spring Boot
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
+	// Spring Security
+	implementation("org.springframework.boot:spring-boot-starter-security")
+
 	// Websocket
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 
