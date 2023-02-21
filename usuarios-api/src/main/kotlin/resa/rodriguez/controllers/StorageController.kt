@@ -26,7 +26,7 @@ class StorageController
     @ResponseBody
     fun serveFile(@PathVariable filename: String?, request: HttpServletRequest): ResponseEntity<Resource> = runBlocking {
         val file: Resource = CoroutineScope(Dispatchers.IO).async { storageService.loadAsResource(filename.toString()) }.await()
-        var contentType: String? = null
+        var contentType: String?
         contentType = try {
             request.servletContext.getMimeType(file.file.absolutePath)
         } catch (ex: IOException) {
