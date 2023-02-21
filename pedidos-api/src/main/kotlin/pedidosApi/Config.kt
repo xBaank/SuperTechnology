@@ -10,4 +10,8 @@ object Config {
     val database get() = getenv("MONGO_DATABASE") ?: config.getString("mongo.database")
     val usuariosUrl get() = getenv("USUARIOS_URL") ?: config.getString("usuarios.url")
     val productosUrl get() = getenv("PRODUCTOS_URL") ?: config.getString("productos.url")
+
+    fun reload() {
+        config = ConfigFactory.load()
+    }
 }
