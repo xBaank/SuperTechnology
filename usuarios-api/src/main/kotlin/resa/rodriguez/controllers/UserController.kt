@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
-import resa.rodriguez.exceptions.StorageExceptionBadRequest
 import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.mappers.fromDTOtoAddresses
 import resa.rodriguez.mappers.fromDTOtoUser
