@@ -94,8 +94,7 @@ data class UserDTOresponse(
 @Serializable
 data class UserDTOUpdated(
     val password: String,
-    val addresses: Set<String>,
-    val avatar: String
+    val addresses: Set<String>
 )
 
 @Serializable

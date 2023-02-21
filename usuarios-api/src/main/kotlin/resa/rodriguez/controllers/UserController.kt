@@ -13,10 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.StorageExceptionBadRequest
 import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.mappers.fromDTOtoAddresses
 import resa.rodriguez.mappers.fromDTOtoUser
@@ -50,7 +53,8 @@ class UserController
 @Autowired constructor(
     private val userMapper: UserMapper,
     private val userRepositoryCached: UserRepositoryCached,
-    private val addressRepositoryCached: AddressRepositoryCached
+    private val addressRepositoryCached: AddressRepositoryCached,
+    private val storageController: StorageController
 ) {
 
     // -- GET DEFAULT --
@@ -326,45 +330,40 @@ class UserController
     private suspend fun updateMySelf(
         @RequestHeader token: String,
         @Valid @RequestBody userDTOUpdated: UserDTOUpdated
-    ): ResponseEntity<String> =
-        withContext(Dispatchers.IO) {
-            log.info { "Actualizando usuario" }
+    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+        log.info { "Actualizando usuario" }
 
-            val user = getUserFromToken(token, userRepositoryCached)
-                ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
+        val user = getUserFromToken(token, userRepositoryCached)
+            ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
 
-            val updatedPassword = if (userDTOUpdated.password.isBlank()) user.password
-            else cipher(userDTOUpdated.password)
+        val updatedPassword = if (userDTOUpdated.password.isBlank()) user.password
+        else cipher(userDTOUpdated.password)
 
-            if (userDTOUpdated.addresses.isNotEmpty()) {
-                val addresses = mutableSetOf<String>()
-                addresses.addAll(userDTOUpdated.addresses)
-                addressRepositoryCached.findAllFromUserId(user.id!!).toSet().forEach { addresses.add(it.address) }
-                addressRepositoryCached.deleteAllByUserId(user.id)
+        if (userDTOUpdated.addresses.isNotEmpty()) {
+            val addresses = mutableSetOf<String>()
+            addresses.addAll(userDTOUpdated.addresses)
+            addressRepositoryCached.findAllFromUserId(user.id!!).toSet().forEach { addresses.add(it.address) }
+            addressRepositoryCached.deleteAllByUserId(user.id)
 
-                addresses.forEach { addressRepositoryCached.save(toAddress(user.id, it)) }
-            }
-
-            val updatedAvatar = userDTOUpdated.avatar.ifBlank {
-                user.avatar
-            }
-
-            val userUpdated = User(
-                id = user.id,
-                username = user.username,
-                email = user.email,
-                password = updatedPassword,
-                phone = user.phone,
-                avatar = updatedAvatar,
-                role = user.role,
-                createdAt = user.createdAt,
-                active = user.active
-            )
-
-            val userSaved = userRepositoryCached.save(userUpdated)
-
-            return@withContext ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
+            addresses.forEach { addressRepositoryCached.save(toAddress(user.id, it)) }
         }
+
+        val userUpdated = User(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            password = updatedPassword,
+            phone = user.phone,
+            avatar = user.avatar,
+            role = user.role,
+            createdAt = user.createdAt,
+            active = user.active
+        )
+
+        val userSaved = userRepositoryCached.save(userUpdated)
+
+        return@withContext ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
+    }
 
     @PutMapping("/activity/{email}")
     private suspend fun switchActivityByEmail(
@@ -553,5 +552,32 @@ class UserController
         } else return@withContext ResponseEntity("No ha sido posible eliminar la direccion", HttpStatus.BAD_REQUEST)
 
         return@withContext ResponseEntity("Direccion eliminada", HttpStatus.OK)
+    }
+
+    @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    private suspend fun updateAvatar(@RequestHeader token: String, @RequestPart("file") file: MultipartFile): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+        val user = getUserFromToken(token, userRepositoryCached)
+            ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
+
+        val response = storageController.uploadFile(file)
+        if (!response.statusCode.is2xxSuccessful) return@withContext response
+        val avatarUrl = response.body?.get("url")
+            ?: return@withContext ResponseEntity("Url not found.", HttpStatus.NOT_FOUND)
+
+        val userUpdated = User(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            password = user.password,
+            phone = user.phone,
+            avatar = avatarUrl,
+            role = user.role,
+            createdAt = user.createdAt,
+            active = user.active
+        )
+
+        val userSaved = userRepositoryCached.save(userUpdated)
+
+        ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
     }
 }
