@@ -13,7 +13,7 @@ import java.time.LocalDate
  */
 @Serializable
 data class UserDTOlogin(
-    val email: String,
+    val username: String,
     val password: String
 )
 

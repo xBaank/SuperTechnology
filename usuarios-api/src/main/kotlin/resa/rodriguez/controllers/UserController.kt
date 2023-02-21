@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
+import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
 import resa.rodriguez.exceptions.StorageExceptionBadRequest
 import resa.rodriguez.mappers.UserMapper
@@ -54,6 +55,7 @@ class UserController
     private val userMapper: UserMapper,
     private val userRepositoryCached: UserRepositoryCached,
     private val addressRepositoryCached: AddressRepositoryCached,
+    private val jwtTokenUtils: JwtTokensUtils,
     private val storageController: StorageController
 ) {
 
@@ -91,7 +93,7 @@ class UserController
                 val addresses = userDto.fromDTOtoAddresses(userSaved.id!!)
                 addresses.forEach { addressRepositoryCached.save(it) }
 
-                ResponseEntity.ok(create(userSaved))
+                ResponseEntity.ok(jwtTokenUtils.create(userSaved))
             } catch (e: Exception) {
                 ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
             }
@@ -105,7 +107,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Creando usuario por parte de un administrador" }
 
-            val checked = checkToken(token, UserRole.ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
             val user = userDTOcreate.fromDTOtoUser()
@@ -115,7 +117,7 @@ class UserController
             val addresses = userDTOcreate.fromDTOtoAddresses(userSaved.id!!)
             addresses.forEach { addressRepositoryCached.save(it) }
 
-            ResponseEntity(create(userSaved), HttpStatus.OK)
+            ResponseEntity(jwtTokenUtils.create(userSaved), HttpStatus.OK)
         }
 
     // El createByAdmin que se usara por parte del cliente es el superior, este simplemente es para la carga de datos inicial
@@ -132,16 +134,16 @@ class UserController
             val addresses = userDTOcreate.fromDTOtoAddresses(userSaved.id!!)
             addresses.forEach { addressRepositoryCached.save(it) }
 
-            ResponseEntity(create(userSaved), HttpStatus.OK)
+            ResponseEntity(jwtTokenUtils.create(userSaved), HttpStatus.OK)
         }
 
     @GetMapping("/login")
     private suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
-            log.info { "Login de usuario: ${userDto.email}" }
+            log.info { "Login de usuario: ${userDto.username}" }
 
             try {
-                val user = userRepositoryCached.findByEmail(userDto.email)
+                val user = userRepositoryCached.findByUsername(userDto.username)
                     ?: return@withContext ResponseEntity("Incorrect fields.", HttpStatus.NOT_FOUND)
 
                 if (!matches(userDto.password, user.password.encodeToByteArray()))
@@ -150,7 +152,7 @@ class UserController
                 // hacemos asi, el usuario sabria que el email existe y lo que falla es la contraseña,
                 // por lo que podria iniciar un ataque de fuerza bruta para suplantar a otro usuario.
 
-                ResponseEntity(create(user), HttpStatus.OK)
+                ResponseEntity(jwtTokenUtils.create(user), HttpStatus.OK)
             } catch (e: Exception) {
                 ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
             }
@@ -161,7 +163,7 @@ class UserController
     private suspend fun listUsers(@RequestHeader token: String): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios" }
 
-        val checked = checkToken(token, UserRole.ADMIN)
+        val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
         if (checked != null) return@withContext checked
 
         val res = userRepositoryCached.findAll().toList()
@@ -177,7 +179,7 @@ class UserController
     ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Buscando usuarios paginados || Pagina: $page" }
 
-        val checked = checkToken(token, UserRole.ADMIN)
+        val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
         if (checked != null) return@withContext checked
 
         val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
@@ -195,7 +197,7 @@ class UserController
     ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios activados" }
 
-        val checked = checkToken(token, UserRole.ADMIN)
+        val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
         if (checked != null) return@withContext checked
 
         val res = userRepositoryCached.findByActivo(active).toList()
@@ -212,7 +214,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con username: $username" }
 
-            val checked = checkToken(token, UserRole.ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findByUsername(username)
@@ -242,7 +244,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con id: $userId" }
 
-            val checked = checkToken(token, UserRole.ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findById(userId)
@@ -272,7 +274,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con email: $userEmail" }
 
-            val checked = checkToken(token, UserRole.ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findByEmail(userEmail)
@@ -302,7 +304,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con telefono: $userPhone" }
 
-            val checked = checkToken(token, UserRole.ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findByPhone(userPhone)
@@ -333,7 +335,7 @@ class UserController
     ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Actualizando usuario" }
 
-        val user = getUserFromToken(token, userRepositoryCached)
+        val user = jwtTokenUtils.getUserFromToken(token, userRepositoryCached)
             ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
 
         val updatedPassword = if (userDTOUpdated.password.isBlank()) user.password
@@ -373,7 +375,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Cambio de actividad por email" }
 
-            val checked = checkToken(token, UserRole.ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findByEmail(email)
@@ -403,7 +405,7 @@ class UserController
     ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Actualizando rol de usuario con email: ${userDTORoleUpdated.email}" }
 
-        val checked = checkToken(token, UserRole.SUPER_ADMIN)
+        val checked = jwtTokenUtils.checkToken(token, UserRole.SUPER_ADMIN)
         if (checked != null) return@withContext checked
 
         val user = userRepositoryCached.findByEmail(userDTORoleUpdated.email)
@@ -443,7 +445,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Eliminando al usuario de forma definitiva junto a sus direcciones asociadas" }
 
-            val checked = checkToken(token, UserRole.SUPER_ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.SUPER_ADMIN)
             if (checked != null) return@withContext checked
 
             val user = userRepositoryCached.findByEmail(email)
@@ -461,7 +463,7 @@ class UserController
     private suspend fun findMySelf(@RequestHeader token: String): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo datos del usuario." }
 
-        val user = getUserDTOFromToken(token, userRepositoryCached, userMapper)
+        val user = jwtTokenUtils.getUserDTOFromToken(token, userRepositoryCached, userMapper)
         if (user == null) ResponseEntity("User not found", HttpStatus.NOT_FOUND)
         else ResponseEntity(json.encodeToString(user), HttpStatus.OK)
     }
@@ -474,7 +476,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo listado de direcciones" }
 
-            val checked = checkToken(token, UserRole.ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
             ResponseEntity(json.encodeToString(addressRepositoryCached.findAll().toList()), HttpStatus.OK)
@@ -487,7 +489,7 @@ class UserController
     ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo direcciones de usuario con id: $userId" }
 
-        val checked = checkToken(token, UserRole.ADMIN)
+        val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
         if (checked != null) return@withContext checked
 
         val address = addressRepositoryCached.findAllFromUserId(userId).toList()
@@ -504,7 +506,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo direccion con id: $id" }
 
-            val checked = checkToken(token, UserRole.ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
             val address = addressRepositoryCached.findById(id)
@@ -518,7 +520,7 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Buscando direccion con nombre: $name" }
 
-            val checked = checkToken(token, UserRole.ADMIN)
+            val checked = jwtTokenUtils.checkToken(token, UserRole.ADMIN)
             if (checked != null) return@withContext checked
 
             val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
@@ -536,7 +538,7 @@ class UserController
     ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Eliminando direccion: $" }
 
-        val userDto = getUserDTOFromToken(token, userRepositoryCached, userMapper)
+        val userDto = jwtTokenUtils.getUserDTOFromToken(token, userRepositoryCached, userMapper)
             ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
 
         val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
@@ -556,7 +558,7 @@ class UserController
 
     @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     private suspend fun updateAvatar(@RequestHeader token: String, @RequestPart("file") file: MultipartFile): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
-        val user = getUserFromToken(token, userRepositoryCached)
+        val user = jwtTokenUtils.getUserFromToken(token, userRepositoryCached)
             ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
 
         val response = storageController.uploadFile(file)
