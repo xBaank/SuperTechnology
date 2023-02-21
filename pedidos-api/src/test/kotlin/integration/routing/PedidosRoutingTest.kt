@@ -44,12 +44,12 @@ class PedidosRoutingTest {
     fun setUp() {
         mongoDBContainer.start()
         stopKoin()
-        Config.reload()
         System.setProperty("mongo.connectionString", mongoDBContainer.connectionString)
         System.setProperty("mongo.database", "pedidos")
+        Config.reload()
     }
 
-    fun ApplicationTestBuilder.createJsonClient(): HttpClient = createClient {
+    private fun ApplicationTestBuilder.createJsonClient(): HttpClient = createClient {
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
