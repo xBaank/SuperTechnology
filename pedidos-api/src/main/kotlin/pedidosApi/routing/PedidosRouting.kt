@@ -4,6 +4,8 @@ import arrow.core.continuations.either
 import io.github.smiley4.ktorswaggerui.dsl.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
@@ -29,49 +31,58 @@ const val DEFAULT_SIZE = 10
 
 fun Routing.pedidosRouting() = route("/pedidos") {
     val repository by inject<PedidosRepository>()
-
-    get("/usuario/{id}", builder = OpenApiRoute::getByUsuarioId) {
-        val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
-        val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
-
-        val usuarioId = call.parameters.getOrFail("id")
-        handleResult(repository.getByUserId(usuarioId, page, size))
+    authenticate("user") {
+        get("/usuario/me", builder = OpenApiRoute::getByUsuarioId) {
+            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
+            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
+            val userId = call.principal<JWTPrincipal>()?.getClaim("id", String::class) ?: ""
+            handleResult(repository.getByUserId(userId, page, size))
+        }
     }
+    authenticate("admin") {
+        get("/usuario/{id}", builder = OpenApiRoute::getByUsuarioId) {
+            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
+            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
 
-    get(builder = OpenApiRoute::getAll) {
-        val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
-        val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
-        handleResult(repository.getByPage(page, size))
-    }
+            val usuarioId = call.parameters.getOrFail("id")
+            handleResult(repository.getByUserId(usuarioId, page, size))
+        }
 
-    get("{id}", builder = OpenApiRoute::getById) {
-        val id = call.parameters.getOrFail("id")
-        handleResult(repository.getById(id), HttpStatusCode.OK)
-    }
+        get(builder = OpenApiRoute::getAll) {
+            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
+            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
+            handleResult(repository.getByPage(page, size))
+        }
 
-    post(builder = OpenApiRoute::post) {
-        val pedido = call.receiveOrNull<CreatePedidoDto>()
-            ?: return@post handleError(PedidoError.InvalidPedidoFormat("Invalid body format"))
+        get("{id}", builder = OpenApiRoute::getById) {
+            val id = call.parameters.getOrFail("id")
+            handleResult(repository.getById(id), HttpStatusCode.OK)
+        }
 
-        createPedido(pedido).fold(
-            ifLeft = { handleError(it) },
-            ifRight = { handleResult(repository.save(it), HttpStatusCode.Created) }
-        )
-    }
+        post(builder = OpenApiRoute::post) {
+            val pedido = call.receiveOrNull<CreatePedidoDto>()
+                ?: return@post handleError(PedidoError.InvalidPedidoFormat("Invalid body format"))
 
-    put("{id}", builder = OpenApiRoute::put) {
-        val id = call.parameters.getOrFail("id")
-        val pedido = call.receiveOrNull<UpdatePedidoDto>()
+            createPedido(pedido).fold(
+                ifLeft = { handleError(it) },
+                ifRight = { handleResult(repository.save(it), HttpStatusCode.Created) }
+            )
+        }
 
-        updatePedido(pedido, id).fold(
-            ifLeft = { handleError(it) },
-            ifRight = { handleResult(repository.save(it), HttpStatusCode.OK) }
-        )
-    }
+        put("{id}", builder = OpenApiRoute::put) {
+            val id = call.parameters.getOrFail("id")
+            val pedido = call.receiveOrNull<UpdatePedidoDto>()
 
-    delete("{id}", builder = OpenApiRoute::delete) {
-        val id = call.parameters.getOrFail("id")
-        handleResult(repository.delete(id))
+            updatePedido(pedido, id).fold(
+                ifLeft = { handleError(it) },
+                ifRight = { handleResult(repository.save(it), HttpStatusCode.OK) }
+            )
+        }
+
+        delete("{id}", builder = OpenApiRoute::delete) {
+            val id = call.parameters.getOrFail("id")
+            handleResult(repository.delete(id))
+        }
     }
 }
 
