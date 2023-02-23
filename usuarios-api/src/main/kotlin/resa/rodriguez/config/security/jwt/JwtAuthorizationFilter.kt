@@ -27,12 +27,14 @@ class JwtAuthorizationFilter(
     ) {
         logger.info { "Filtrando" }
         val header = req.getHeader(AUTHORIZATION)
+
         if (header == null || !header.startsWith(JwtTokensUtils.TOKEN_PREFIX)) {
             chain.doFilter(req, res)
             return
         }
         getAuthentication(header.substring(7))?.also {
             SecurityContextHolder.getContext().authentication = it
+            println(it)
         }
         chain.doFilter(req, res)
     }
@@ -43,7 +45,9 @@ class JwtAuthorizationFilter(
         val tokenDecoded = jwtTokensUtils.decode(token) ?: return@runBlocking null
 
         val username = tokenDecoded.getClaim("username").toString().replace("\"", "")
+
         val user = controller.loadUserByUsername(username)
+
         return@runBlocking UsernamePasswordAuthenticationToken(
             user,
             null,
