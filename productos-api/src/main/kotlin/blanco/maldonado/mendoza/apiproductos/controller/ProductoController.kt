@@ -171,7 +171,7 @@ class ProductoController
      */
     @Operation(
         summary = "Name is null",
-        description = "Throw exception because the name od the product is null.",
+        description = "Throw exception because the name of the product is null.",
         tags = ["Producto"]
     )
     @ApiResponse(responseCode = "404", description = "Product not found because the name is null")
@@ -286,7 +286,7 @@ class ProductoController
      *
      * @param producto
      */
-    private suspend fun checkProducto(producto: ProductoCreateDto) {
+    suspend fun checkProducto(producto: ProductoCreateDto) {
         val existe = repository.findByNombre(producto.nombre)
         if (existe.toList().isNotEmpty()) {
             throw ProductoBadRequestException("El producto con nombre ${producto.nombre} ya existe")
