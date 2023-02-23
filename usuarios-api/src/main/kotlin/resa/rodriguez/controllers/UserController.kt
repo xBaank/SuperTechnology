@@ -366,6 +366,33 @@ class UserController
         return@withContext ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
     }
 
+    @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    private suspend fun updateAvatar(@RequestHeader token: String, @RequestPart("file") file: MultipartFile): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+        val user = jwtTokenUtils.getUserFromToken(token, userRepositoryCached)
+            ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
+
+        val response = storageController.uploadFile(file)
+        if (!response.statusCode.is2xxSuccessful) return@withContext response
+        val avatarUrl = response.body?.get("url")
+            ?: return@withContext ResponseEntity("Url not found.", HttpStatus.NOT_FOUND)
+
+        val userUpdated = User(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            password = user.password,
+            phone = user.phone,
+            avatar = avatarUrl,
+            role = user.role,
+            createdAt = user.createdAt,
+            active = user.active
+        )
+
+        val userSaved = userRepositoryCached.save(userUpdated)
+
+        ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
+    }
+
     @PutMapping("/activity/{email}")
     private suspend fun switchActivityByEmail(
         @PathVariable email: String,
@@ -553,32 +580,5 @@ class UserController
         } else return@withContext ResponseEntity("No ha sido posible eliminar la direccion", HttpStatus.BAD_REQUEST)
 
         return@withContext ResponseEntity("Direccion eliminada", HttpStatus.OK)
-    }
-
-    @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    private suspend fun updateAvatar(@RequestHeader token: String, @RequestPart("file") file: MultipartFile): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
-        val user = jwtTokenUtils.getUserFromToken(token, userRepositoryCached)
-            ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
-
-        val response = storageController.uploadFile(file)
-        if (!response.statusCode.is2xxSuccessful) return@withContext response
-        val avatarUrl = response.body?.get("url")
-            ?: return@withContext ResponseEntity("Url not found.", HttpStatus.NOT_FOUND)
-
-        val userUpdated = User(
-            id = user.id,
-            username = user.username,
-            email = user.email,
-            password = user.password,
-            phone = user.phone,
-            avatar = avatarUrl,
-            role = user.role,
-            createdAt = user.createdAt,
-            active = user.active
-        )
-
-        val userSaved = userRepositoryCached.save(userUpdated)
-
-        ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
     }
 }

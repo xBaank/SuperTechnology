@@ -23,16 +23,12 @@ import java.util.stream.Stream
 @Service
 class StorageService(
     @Value("\${upload.root-location}") path: String,
-    @Value("\${spring.profiles.active}") mode: String
 ): IStorageService {
     private val rootLocation: Path
 
     init {
         rootLocation = Paths.get(path)
-        // Si el perfil de la app es dev borramos all, si es prod, nada
-        if (mode == "dev") {
-            this.deleteAll()
-        }
+        //this.deleteAll()
         this.init()
     }
 
