@@ -48,7 +48,7 @@ data class User(
     val active: Boolean
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        val authority = SimpleGrantedAuthority("ROLE_" + role.name)
+        val authority = SimpleGrantedAuthority("ROLE_${role.name}")
         return mutableListOf<GrantedAuthority>(authority)
         //return role.name.map { SimpleGrantedAuthority("ROLE_${it.uppercase()}") }.toMutableList()
     }

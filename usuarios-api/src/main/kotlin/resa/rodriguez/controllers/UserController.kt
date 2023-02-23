@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -16,6 +15,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -37,7 +37,7 @@ import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.address.AddressRepositoryCached
 import resa.rodriguez.repositories.user.UserRepositoryCached
 import resa.rodriguez.services.*
-import java.util.UUID
+import java.util.*
 
 private val log = KotlinLogging.logger {}
 /**
@@ -155,8 +155,9 @@ class UserController
         }
 
     // "Find All" Methods
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
-    private suspend fun listUsers(@RequestHeader token: String): ResponseEntity<List<UserDTOresponse>> = withContext(Dispatchers.IO) {
+    private suspend fun listUsers(@AuthenticationPrincipal user: User): ResponseEntity<List<UserDTOresponse>> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios" }
 
         val res = userRepositoryCached.findAll().toList()

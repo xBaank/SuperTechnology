@@ -14,7 +14,7 @@ import resa.rodriguez.repositories.user.IUserRepositoryCached
 import java.time.Instant
 import java.util.*
 
-private val algorithm: Algorithm = Algorithm.HMAC256("Zanahoria turbopropulsada")
+private val algorithm: Algorithm = Algorithm.HMAC512("Zanahoria turbopropulsada")
 
 /**
  * @author Daniel Rodriguez Muñoz
@@ -25,6 +25,7 @@ class JwtTokensUtils {
     fun create(user: User): String {
         return JWT.create()
             .withIssuer(user.id.toString())
+            .withHeader(mapOf("typ" to TOKEN_TYPE))
             .withClaim("username", user.username)
             .withClaim("email", user.email)
             .withClaim("role", user.role.name)

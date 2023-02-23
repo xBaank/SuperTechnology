@@ -52,8 +52,12 @@ class SecurityConfig
             // Spring desplaza a esta ruta todos los errores y excepciones, asi podemos mostrarlas en vez de un Forbidden
             .requestMatchers("/error/**").permitAll()
 
+            .requestMatchers("/**").permitAll()
+
             // Permitimos el acceso sin autenticacion ni verificacion a las siguientes rutas
             .requestMatchers("/usuarios", "/usuarios/", "/usuarios/login", "/usuarios/register").permitAll()
+
+            .requestMatchers("/usuarios/me").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
 
             .requestMatchers(
                 "/usuarios/create", "/usuarios/list", "/usuarios/list/paging",
@@ -66,7 +70,7 @@ class SecurityConfig
 
             .requestMatchers(
                 "/usuarios/role/{email}", "/usuarios/delete/{email}"
-            ).hasAnyRole("SUPER_ADMIN")
+            ).hasRole("SUPER_ADMIN")
 
             // El resto, se necesitara autenticacion estandar
             .anyRequest().authenticated()
