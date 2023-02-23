@@ -1,3 +1,7 @@
+/**
+ * @since 16/02/2023
+ * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ */
 package blanco.maldonado.mendoza.apiproductos.repositories
 
 import blanco.maldonado.mendoza.apiproductos.model.Producto

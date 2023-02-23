@@ -1,3 +1,7 @@
+/**
+ * @since 16/02/2023
+ * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ */
 package blanco.maldonado.mendoza.apiproductos.controller
 
 import blanco.maldonado.mendoza.apiproductos.config.APIConfig
@@ -35,7 +39,7 @@ private val logger = KotlinLogging.logger { }
  * @author Azahara Blanco, Sebastian Mendoza y Alfredo Maldonado
  * @since 20/02/2023
  *
- * Producto controller: Controlador de los endpoints de la api.
+ * Producto controller: api endpoint controller.
  *
  * @property repository
  * @constructor Create empty Producto controller.
@@ -47,11 +51,11 @@ class ProductoController
     private val repository: ProductoCachedRepositoryImpl
 ) {
     /**
-     * Find all productos: Encuentra todos los productos.
+     * Find all productos: Find all the products.
      *
-     * @return Devuelve todos los productos.
+     * @return Return all the products.
      */
-    @Operation(summary = "Get all productos", description = "Obtiene una lista de productos", tags = ["Productos"])
+    @Operation(summary = "Get all productos", description = "Get the products list", tags = ["Products"])
     @ApiResponse(responseCode = "200", description = "Lista de Producto")
     @GetMapping("")
     suspend fun findAllProductos(): ResponseEntity<Flow<ProductoDto>> = withContext(Dispatchers.IO) {
@@ -61,19 +65,19 @@ class ProductoController
     }
 
     /**
-     * Find product by id: Encuentra un producto si el id del producto existe.
+     * Find product by id: Find the product if the id of the product is exists.
      *
      * @param id
-     * @return Devuelve un producto.
+     * @return The product.
      */
-    @Operation(summary = "Get Producto by ID", description = "Obtiene un objeto Test por su ID", tags = ["Test"])
+    @Operation(summary = "Get Producto by ID", description = "Get product by ID", tags = ["Product"])
     @Parameter(name = "id", description = "ID del Producto", required = true, example = "1")
-    @ApiResponse(responseCode = "200", description = "Producto encontrado")
-    @ApiResponse(responseCode = "404", description = "Producto no encontrado por su id")
-    @ApiResponse(responseCode = "403", description = "No tienes permisos con ese id")
-    @ApiResponse(responseCode = "401", description = "No autorizado con ese id")
-    @ApiResponse(responseCode = "500", description = "Error interno con ese id")
-    @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
+    @ApiResponse(responseCode = "200", description = "Product found")
+    @ApiResponse(responseCode = "404", description = "Product not found with this id.")
+    @ApiResponse(responseCode = "403", description = "You don`t have permission with this id.")
+    @ApiResponse(responseCode = "401", description = "You are not authorized with this id.")
+    @ApiResponse(responseCode = "500", description = "Intern error with this id.")
+    @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/{id}")
     suspend fun findProductById(@PathVariable id: String): ResponseEntity<ProductoDto> =
         withContext(Dispatchers.IO) {
@@ -87,19 +91,19 @@ class ProductoController
         }
 
     /**
-     * Find product by categoria: Encuentra un producto por su categoría si el id de la categoría existe.
+     * Find product by categoria: Find one product by category if the id of category is exists.
      *
      * @param categoria
-     * @return Devuelve un producto.
+     * @return Return the product.
      */
     @Operation(summary = "Get Producto by Category", description = "Modifica un objeto Producto", tags = ["Producto"])
-    @Parameter(name = "categoria", description = "ID de la categoría", required = true, example = "1")
-    @ApiResponse(responseCode = "200", description = "Producto encontrado")
-    @ApiResponse(responseCode = "404", description = "Producto no encontrado por su id")
-    @ApiResponse(responseCode = "403", description = "No tienes permisos con ese id")
-    @ApiResponse(responseCode = "401", description = "No autorizado con ese id")
-    @ApiResponse(responseCode = "500", description = "Error interno con ese id")
-    @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
+    @Parameter(name = "category", description = "ID de la categoría", required = true, example = "1")
+    @ApiResponse(responseCode = "200", description = "Product found")
+    @ApiResponse(responseCode = "404", description = "Product not found with this id.")
+    @ApiResponse(responseCode = "403", description = "You don`t have permission with this id.")
+    @ApiResponse(responseCode = "401", description = "You are not authorized with this id.")
+    @ApiResponse(responseCode = "500", description = "Intern error with this id.")
+    @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/categoria/{categoria}")
     suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
@@ -127,23 +131,23 @@ class ProductoController
 
 
     /**
-     * Find product by nombre: Encuentra un producto por su nombre si el id del nombre existe en la base de datos.
+     * Find product by nombre: Find the product by name if the name is exists in the database.
      *
      * @param nombre
-     * @return Devuelve un producto.
+     * @return The product.
      */
     @Operation(
         summary = "Get Producto by Nombre",
-        description = "Obtiene un objeto Producto por el nombre",
+        description = "Get the product by name",
         tags = ["Producto"]
     )
-    @Parameter(name = "nombre", description = "ID del nombre", required = true, example = "1")
-    @ApiResponse(responseCode = "200", description = "Producto encontrado")
-    @ApiResponse(responseCode = "404", description = "Producto no encontrado por su id")
-    @ApiResponse(responseCode = "403", description = "No tienes permisos con ese id")
-    @ApiResponse(responseCode = "401", description = "No autorizado con ese id")
-    @ApiResponse(responseCode = "500", description = "Error interno con ese id")
-    @ApiResponse(responseCode = "400", description = "Petición incorrecta con ese id")
+    @Parameter(name = "name", description = "ID of name", required = true, example = "1")
+    @ApiResponse(responseCode = "200", description = "Product found")
+    @ApiResponse(responseCode = "404", description = "Product not found with this id.")
+    @ApiResponse(responseCode = "403", description = "You don`t have permission with this id.")
+    @ApiResponse(responseCode = "401", description = "You are not authorized with this id.")
+    @ApiResponse(responseCode = "500", description = "Intern error with this id.")
+    @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/nombre/{nombre}")
     suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
@@ -161,16 +165,16 @@ class ProductoController
 
 
     /**
-     * Result nombre nulo: Función que lanza una excepción 404 cuando no se introduce ningún nombre.
+     * Result nombre nulo: Function tht throw 404 exception when name is null.
      *
-     * @return Devuelve una excepción 404 porque el producto introducido no existe.
+     * @return Return exception 404 because product is not exists.
      */
     @Operation(
         summary = "Name is null",
-        description = "Obtiene una excepción porque el nombre del producto introducido no existe",
+        description = "Throw exception because the name od the product is null.",
         tags = ["Producto"]
     )
-    @ApiResponse(responseCode = "404", description = "Producto no encontrado por nombre nulo")
+    @ApiResponse(responseCode = "404", description = "Product not found because the name is null")
     @GetMapping("/nombre/")
     suspend fun resultNombreNulo(): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
@@ -183,16 +187,16 @@ class ProductoController
         }
 
     /**
-     * Result categoria nula: Función que lanza una excepción 404 cuando no se introduce ninguna categoría.
+     * Result categoria nula: Function that throw 404 exception when the category is null.
      *
-     * @return Devuelve una excepción 404 porque la categoría introducida no existe.
+     * @return Return the exception 404 because the category is not exists.
      */
     @Operation(
         summary = "Categoria is null",
-        description = "Obtiene una excepción porque la categoría introducida del producto no existe",
+        description = "Throw exception because the category of the product is not exists.",
         tags = ["Producto"]
     )
-    @ApiResponse(responseCode = "404", description = "Producto no encontrado por categoria nula")
+    @ApiResponse(responseCode = "404", description = "Producto not found because the category was null")
     @GetMapping("/categoria/")
     suspend fun resultCategoriaNula(): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
@@ -205,13 +209,13 @@ class ProductoController
         }
 
     /**
-     * Create product: Crea un producto si el producto no existe en la base de datos con código 201.
+     * Create product: Create the product if the product is no exists in the database with code 201.
      *
      * @param productoDto
-     * @return Devuelve el producto añadido con código 201.
+     * @return Return the product that was created with code 201.
      */
-    @Operation(summary = "Create Product", description = "Crea un objeto Producto", tags = ["Producto"])
-    @ApiResponse(responseCode = "201", description = "Producto creado")
+    @Operation(summary = "Create Product", description = "Create the product object", tags = ["Producto"])
+    @ApiResponse(responseCode = "201", description = "Product created")
     @PostMapping("")
     suspend fun createProduct(@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDto> {
         logger.info { "Creando un producto" }
@@ -233,10 +237,10 @@ class ProductoController
      * @param productoDto
      * @return Devuelve el producto modificado.
      */
-    @Operation(summary = "Update Product", description = "Modifica un objeto Product", tags = ["Product"])
-    @Parameter(name = "id", description = "ID del Producto", required = true, example = "1")
-    @ApiResponse(responseCode = "200", description = "Producto modificado")
-    @ApiResponse(responseCode = "404", description = "Producto no encontrado con ese id")
+    @Operation(summary = "Update Product", description = "update the product object", tags = ["Product"])
+    @Parameter(name = "id", description = "Product ID", required = true, example = "1")
+    @ApiResponse(responseCode = "200", description = "Product modified")
+    @ApiResponse(responseCode = "404", description = "Product not found with this id.")
     @PutMapping("/{id}")
     suspend fun updateProduct(
         @PathVariable id: String, @Valid @RequestBody productoDto: ProductoCreateDto
@@ -254,15 +258,15 @@ class ProductoController
     }
 
     /**
-     * Delete product: Borra el producto si el id existe en la base de datos.
+     * Delete product: Delete the product if the product id is existe in the database.
      *
      * @param id
-     * @return Devuelve el producto borrado.
+     * @return Return the deleted product.
      */
-    @Operation(summary = "Delete Product", description = "Elimina un objeto Producto", tags = ["Product"])
-    @Parameter(name = "id", description = "ID del Producto", required = true, example = "1")
-    @ApiResponse(responseCode = "204", description = "Producto eliminado")
-    @ApiResponse(responseCode = "404", description = "Error al eliminar el producto con ese id")
+    @Operation(summary = "Delete Product", description = "Delete the product object.", tags = ["Product"])
+    @Parameter(name = "id", description = "ID of Product", required = true, example = "1")
+    @ApiResponse(responseCode = "204", description = "Product deleted.")
+    @ApiResponse(responseCode = "404", description = "Error to delete product with this id.")
     @DeleteMapping("/{id}")
     suspend fun deleteProduct(@PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
         logger.info { "Borrando producto" }
@@ -278,7 +282,7 @@ class ProductoController
     }
 
     /**
-     * Check producto: Función que comprueba si el nombre del producto ya existe en la base de datos.
+     * Check producto: Function that check if the name of product is exists in the database.
      *
      * @param producto
      */

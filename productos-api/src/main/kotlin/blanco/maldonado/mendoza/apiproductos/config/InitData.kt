@@ -1,3 +1,7 @@
+/**
+ * @since 16/02/2023
+ * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ */
 package blanco.maldonado.mendoza.apiproductos.config
 
 import io.r2dbc.spi.ConnectionFactory
