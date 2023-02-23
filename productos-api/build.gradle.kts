@@ -20,6 +20,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -29,6 +30,12 @@ dependencies {
     //runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+    // Test
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(module = "mockito-core")
+    }
+    // Mockk
+    testImplementation("com.ninja-squad:springmockk:4.0.0")
     // Log
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     // Jackson
@@ -41,6 +48,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
     // Cache
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    // JWT
+    implementation("com.auth0:java-jwt:4.2.1")
 }
 
 tasks.withType<KotlinCompile> {
