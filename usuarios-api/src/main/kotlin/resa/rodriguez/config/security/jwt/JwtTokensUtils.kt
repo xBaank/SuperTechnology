@@ -95,6 +95,13 @@ class JwtTokensUtils {
                 null
             }
         } else null
+    }
 
+    // Nos permite obtener los campos importantes de manera sencilla
+    companion object {
+
+        const val TOKEN_HEADER = "Authorization"
+        const val TOKEN_PREFIX = "Bearer " // Importante
+        const val TOKEN_TYPE = "JWT"
     }
 }

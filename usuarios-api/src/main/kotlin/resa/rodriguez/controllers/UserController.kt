@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.web.bind.annotation.*
@@ -463,12 +464,10 @@ class UserController
 
     // "Me" Method
     @GetMapping("/me")
-    private suspend fun findMySelf(@RequestHeader token: String): ResponseEntity<String> = withContext(Dispatchers.IO) {
+    private suspend fun findMySelf(@AuthenticationPrincipal user: User): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo datos del usuario." }
 
-        val user = jwtTokenUtils.getUserDTOFromToken(token, userRepositoryCached, userMapper)
-        if (user == null) ResponseEntity("User not found", HttpStatus.NOT_FOUND)
-        else ResponseEntity(json.encodeToString(user), HttpStatus.OK)
+        ResponseEntity(json.encodeToString(user), HttpStatus.OK)
     }
 
     // -- ADDRESSES --
