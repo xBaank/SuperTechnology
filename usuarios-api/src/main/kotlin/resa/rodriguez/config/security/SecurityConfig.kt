@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import resa.rodriguez.config.security.jwt.JwtAuthenticationFilter
+import resa.rodriguez.config.security.jwt.JwtAuthorizationFilter
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.controllers.UserController
 
@@ -72,7 +73,8 @@ class SecurityConfig
 
             .and()
 
-            .addFilter(JwtAuthenticationFilter(jwtTokensUtils, authenticationManager))
+            .addFilter(JwtAuthenticationFilter(jwtTokensUtils, authenticationManager)) // Autenticacion
+            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, userController, authenticationManager)) // Autorizacion
 
         return http.build()
     }
