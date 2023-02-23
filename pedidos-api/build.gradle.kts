@@ -25,7 +25,7 @@ val koinKtorVersion = "3.3.0"
 val arrowVersion = "1.1.5"
 val kluentVersion = "1.72"
 val testContainersVersion = "1.17.6"
-val junitVersion = "5.8.1"
+val junitVersion = "5.9.0"
 
 
 dependencies {
@@ -40,6 +40,8 @@ dependencies {
     // for JVM:
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("org.testcontainers:mongodb:$testContainersVersion")
+    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
+
     //koin test
     testImplementation("io.insert-koin:koin-test:$koinVersion")
 
