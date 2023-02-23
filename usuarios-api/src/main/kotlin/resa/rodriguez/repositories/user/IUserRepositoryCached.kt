@@ -4,13 +4,14 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
+import resa.rodriguez.dto.UserDTOresponse
 import resa.rodriguez.models.User
 import java.util.UUID
 
 @Repository
 interface IUserRepositoryCached {
     suspend fun findAll(): Flow<User>
-    suspend fun findAllPaged(page: PageRequest): Flow<Page<User>>
+    suspend fun findAllPaged(page: PageRequest): Flow<Page<UserDTOresponse>>
     suspend fun findByActivo(activo: Boolean): Flow<User>
     suspend fun findById(id: UUID): User?
     suspend fun findByEmail(email: String): User?

@@ -11,6 +11,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
@@ -24,12 +25,14 @@ import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.mappers.fromDTOtoAddresses
 import resa.rodriguez.mappers.fromDTOtoUser
 import resa.rodriguez.mappers.toAddress
+import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.address.AddressRepositoryCached
@@ -110,7 +113,7 @@ class UserController
     private suspend fun create(
         @Valid @RequestBody userDTOcreate: UserDTOcreate,
         @RequestHeader token: String
-    ): ResponseEntity<String> =
+    ): ResponseEntity<UserDTOwithToken> =
         withContext(Dispatchers.IO) {
             log.info { "Creando usuario por parte de un administrador" }
 
@@ -121,11 +124,11 @@ class UserController
             val addresses = userDTOcreate.fromDTOtoAddresses(userSaved.id!!)
             addresses.forEach { addressRepositoryCached.save(it) }
 
-            ResponseEntity.ok(json.encodeToString(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved))))
+            ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved)))
         }
 
     // El createByAdmin que se usara por parte del cliente es el superior, este simplemente es para la carga de datos inicial
-    suspend fun createByAdminInitializer(userDTOcreate: UserDTOcreate): ResponseEntity<String> =
+    suspend fun createByAdminInitializer(userDTOcreate: UserDTOcreate): ResponseEntity<UserDTOwithToken> =
         withContext(Dispatchers.IO) {
             log.info { "Creando usuario por parte de un administrador || Carga de datos inicial" }
 
@@ -136,37 +139,37 @@ class UserController
             val addresses = userDTOcreate.fromDTOtoAddresses(userSaved.id!!)
             addresses.forEach { addressRepositoryCached.save(it) }
 
-            ResponseEntity.ok(json.encodeToString(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved))))
+            ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved)))
         }
 
     @GetMapping("/login")
-    private suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<String> =
+    private suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<UserDTOwithToken> =
         withContext(Dispatchers.IO) {
             log.info { "Login de usuario: ${userDto.username}" }
 
             try {
                 val user = userRepositoryCached.findByUsername(userDto.username)
-                    ?: return@withContext ResponseEntity("Incorrect fields.", HttpStatus.NOT_FOUND)
+                    ?: throw UserExceptionNotFound("Incorrect fields.")
 
                 if (!matches(userDto.password, user.password.encodeToByteArray()))
-                    return@withContext ResponseEntity("Incorrect fields.", HttpStatus.NOT_FOUND)
+                    throw UserExceptionNotFound("Incorrect fields.")
                 // Tecnicamente seria una bad request porque las contraseñas no coinciden, pero si lo
                 // hacemos asi, el usuario sabria que el email existe y lo que falla es la contraseña,
                 // por lo que podria iniciar un ataque de fuerza bruta para suplantar a otro usuario.
 
-                ResponseEntity.ok(json.encodeToString(UserDTOwithToken(userMapper.toDTO(user), jwtTokenUtils.create(user))))
+                ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(user), jwtTokenUtils.create(user)))
             } catch (e: Exception) {
-                ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
+                throw UserExceptionBadRequest(e.message)
             }
         }
 
     // "Find All" Methods
     @GetMapping("/list")
-    private suspend fun listUsers(@RequestHeader token: String): ResponseEntity<String> = withContext(Dispatchers.IO) {
+    private suspend fun listUsers(@RequestHeader token: String): ResponseEntity<List<UserDTOresponse>> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios" }
 
         val res = userRepositoryCached.findAll().toList()
-        ResponseEntity(json.encodeToString(userMapper.toDTO(res)), HttpStatus.OK)
+        ResponseEntity.ok(userMapper.toDTO(res))
     }
 
     @GetMapping("/list/paging")
@@ -175,27 +178,27 @@ class UserController
         @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int = 0,
         @RequestParam(defaultValue = APIConfig.PAGINATION_SIZE) size: Int = 10,
         @RequestParam(defaultValue = APIConfig.PAGINATION_SORT) sortBy: String = "created_at",
-    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+    ): ResponseEntity<Page<UserDTOresponse>> = withContext(Dispatchers.IO) {
         log.info { "Buscando usuarios paginados || Pagina: $page" }
 
         val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
-        val pageResponse = userRepositoryCached.findAllPaged(pageRequest).firstOrNull()?.toList()
+        val pageResponse = userRepositoryCached.findAllPaged(pageRequest).firstOrNull()
 
         if (pageResponse != null) {
-            ResponseEntity(json.encodeToString(userMapper.toDTO(pageResponse)), HttpStatus.OK)
-        } else ResponseEntity("Page not found", HttpStatus.NOT_FOUND)
+            ResponseEntity.ok(pageResponse)
+        } else throw UserExceptionNotFound("Page not found.")
     }
 
     @GetMapping("/list/activity/{active}")
     private suspend fun listUsersActive(
         @PathVariable active: Boolean,
         @RequestHeader token: String
-    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+    ): ResponseEntity<List<UserDTOresponse>> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios activados" }
 
         val res = userRepositoryCached.findByActivo(active).toList()
 
-        ResponseEntity.ok(json.encodeToString(userMapper.toDTO(res)))
+        ResponseEntity.ok(userMapper.toDTO(res))
     }
 
     // "Find One" Methods
@@ -203,12 +206,12 @@ class UserController
     private suspend fun findByUsername(
         @PathVariable username: String,
         @RequestHeader token: String
-    ): ResponseEntity<String> =
+    ): ResponseEntity<UserDTOresponse> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con username: $username" }
 
             val user = userRepositoryCached.findByUsername(username)
-                ?: return@withContext ResponseEntity("User with name: $username not found.", HttpStatus.NOT_FOUND)
+                ?: throw UserExceptionNotFound("User with name: $username not found.")
 
             val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
             val addr = mutableSetOf<String>()
@@ -223,19 +226,19 @@ class UserController
                 active = user.active
             )
 
-            ResponseEntity(json.encodeToString(result), HttpStatus.OK)
+            ResponseEntity.ok(result)
         }
 
     @GetMapping("/id/{userId}")
     private suspend fun findByUserId(
         @PathVariable userId: UUID,
         @RequestHeader token: String
-    ): ResponseEntity<String> =
+    ): ResponseEntity<UserDTOresponse> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con id: $userId" }
 
             val user = userRepositoryCached.findById(userId)
-                ?: return@withContext ResponseEntity("User with id: $userId not found", HttpStatus.NOT_FOUND)
+                ?: throw UserExceptionNotFound("User with id: $userId not found")
 
             val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
             val addr = mutableSetOf<String>()
@@ -250,19 +253,19 @@ class UserController
                 active = user.active
             )
 
-            ResponseEntity(json.encodeToString(result), HttpStatus.OK)
+            ResponseEntity.ok(result)
         }
 
     @GetMapping("/email/{userEmail}")
     private suspend fun findByUserEmail(
         @PathVariable userEmail: String,
         @RequestHeader token: String
-    ): ResponseEntity<String> =
+    ): ResponseEntity<UserDTOresponse> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con email: $userEmail" }
 
             val user = userRepositoryCached.findByEmail(userEmail)
-                ?: return@withContext ResponseEntity("User with email: $userEmail not found", HttpStatus.NOT_FOUND)
+                ?: throw UserExceptionNotFound("User with email: $userEmail not found")
 
             val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
             val addr = mutableSetOf<String>()
@@ -277,19 +280,19 @@ class UserController
                 active = user.active
             )
 
-            ResponseEntity(json.encodeToString(result), HttpStatus.OK)
+            ResponseEntity.ok(result)
         }
 
     @GetMapping("/phone/{userPhone}")
     private suspend fun findByUserPhone(
         @PathVariable userPhone: String,
         @RequestHeader token: String
-    ): ResponseEntity<String> =
+    ): ResponseEntity<UserDTOresponse> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuario con telefono: $userPhone" }
 
             val user = userRepositoryCached.findByPhone(userPhone)
-                ?: return@withContext ResponseEntity("User with phone: $userPhone not found", HttpStatus.NOT_FOUND)
+                ?: throw UserExceptionNotFound("User with phone: $userPhone not found")
 
             val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
             val addr = mutableSetOf<String>()
@@ -304,7 +307,7 @@ class UserController
                 active = user.active
             )
 
-            ResponseEntity(json.encodeToString(result), HttpStatus.OK)
+            ResponseEntity.ok(result)
         }
 
     // "Update" Methods
@@ -313,11 +316,11 @@ class UserController
     private suspend fun updateMySelf(
         @RequestHeader token: String,
         @Valid @RequestBody userDTOUpdated: UserDTOUpdated
-    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+        ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
         log.info { "Actualizando usuario" }
 
         val user = jwtTokenUtils.getUserFromToken(token, userRepositoryCached)
-            ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
+            ?: throw UserExceptionNotFound("User not found")
 
         val updatedPassword = if (userDTOUpdated.password.isBlank()) user.password
         else cipher(userDTOUpdated.password)
@@ -345,21 +348,20 @@ class UserController
 
         val userSaved = userRepositoryCached.save(userUpdated)
 
-        return@withContext ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
+        ResponseEntity.ok(userMapper.toDTO(userSaved))
     }
 
     @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     private suspend fun updateAvatar(
         @RequestHeader token: String,
         @RequestPart("file") file: MultipartFile
-    ): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
         val user = jwtTokenUtils.getUserFromToken(token, userRepositoryCached)
-            ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
+            ?: throw UserExceptionNotFound("User not found")
 
         val response = storageController.uploadFile(file)
-        if (!response.statusCode.is2xxSuccessful) return@withContext response
         val avatarUrl = response.body?.get("url")
-            ?: return@withContext ResponseEntity("Url not found.", HttpStatus.NOT_FOUND)
+            ?: throw UserExceptionNotFound("Url not found.")
 
         val userUpdated = User(
             id = user.id,
@@ -375,19 +377,19 @@ class UserController
 
         val userSaved = userRepositoryCached.save(userUpdated)
 
-        ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
+        ResponseEntity.ok(userMapper.toDTO(userSaved))
     }
 
     @PutMapping("/activity/{email}")
     private suspend fun switchActivityByEmail(
         @PathVariable email: String,
         @RequestHeader token: String
-    ): ResponseEntity<String> =
+    ): ResponseEntity<UserDTOresponse> =
         withContext(Dispatchers.IO) {
             log.info { "Cambio de actividad por email" }
 
             val user = userRepositoryCached.findByEmail(email)
-                ?: return@withContext ResponseEntity("User with email: $email not found", HttpStatus.NOT_FOUND)
+                ?: throw UserExceptionNotFound("User with email: $email not found")
 
             val userUpdateActivity = User(
                 id = user.id,
@@ -403,21 +405,18 @@ class UserController
 
             val userSaved = userRepositoryCached.save(userUpdateActivity)
 
-            ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
+            ResponseEntity.ok(userMapper.toDTO(userSaved))
         }
 
     @PutMapping("/role/{email}")
     private suspend fun updateRoleByEmail(
         @Valid @RequestBody userDTORoleUpdated: UserDTORoleUpdated,
         @RequestHeader token: String
-    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+    ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
         log.info { "Actualizando rol de usuario con email: ${userDTORoleUpdated.email}" }
 
         val user = userRepositoryCached.findByEmail(userDTORoleUpdated.email)
-            ?: return@withContext ResponseEntity(
-                "User with email: ${userDTORoleUpdated.email} not found",
-                HttpStatus.NOT_FOUND
-            )
+            ?: throw UserExceptionNotFound("User with email: ${userDTORoleUpdated.email} not found")
 
         val updatedRole =
             if (userDTORoleUpdated.role.name.uppercase() != (UserRole.USER.name) ||
@@ -441,42 +440,43 @@ class UserController
 
         val userSaved = userRepositoryCached.save(userUpdated)
 
-        ResponseEntity(json.encodeToString(userMapper.toDTO(userSaved)), HttpStatus.OK)
+        ResponseEntity.ok(userMapper.toDTO(userSaved))
     }
 
     // "Delete" Methods
     @DeleteMapping("/delete/{email}")
-    private suspend fun deleteUser(@PathVariable email: String, @RequestHeader token: String): ResponseEntity<String> =
+    private suspend fun deleteUser(@PathVariable email: String, @RequestHeader token: String): ResponseEntity<UserDTOresponse> =
         withContext(Dispatchers.IO) {
             log.info { "Eliminando al usuario de forma definitiva junto a sus direcciones asociadas" }
 
             val user = userRepositoryCached.findByEmail(email)
-                ?: return@withContext ResponseEntity("User with email: $email not found", HttpStatus.NOT_FOUND)
+                ?: throw UserExceptionNotFound("User with email: $email not found.")
 
             addressRepositoryCached.deleteAllByUserId(user.id!!)
 
-            userRepositoryCached.deleteById(user.id)
+            val deleted = userRepositoryCached.deleteById(user.id)
+                ?: throw UserExceptionNotFound("User with email: $email not found.")
 
-            ResponseEntity("User with email: $email deleted successfully", HttpStatus.OK)
+            ResponseEntity.ok(userMapper.toDTO(deleted))
         }
 
     // "Me" Method
     @GetMapping("/me")
-    private suspend fun findMySelf(@AuthenticationPrincipal user: User): ResponseEntity<String> = withContext(Dispatchers.IO) {
+    private suspend fun findMySelf(@AuthenticationPrincipal user: User): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo datos del usuario." }
 
-        ResponseEntity(json.encodeToString(user), HttpStatus.OK)
+        ResponseEntity.ok(userMapper.toDTO(user))
     }
 
     // -- ADDRESSES --
 
     // "Find All" Methods
     @GetMapping("/list/address")
-    private suspend fun listAddresses(@RequestHeader token: String): ResponseEntity<String> =
+    private suspend fun listAddresses(@RequestHeader token: String): ResponseEntity<List<Address>> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo listado de direcciones" }
 
-            ResponseEntity(json.encodeToString(addressRepositoryCached.findAll().toList()), HttpStatus.OK)
+            ResponseEntity.ok(addressRepositoryCached.findAll().toList())
         }
 
     @GetMapping("/list/address/user/{userId}")
@@ -488,10 +488,13 @@ class UserController
 
         val address = addressRepositoryCached.findAllFromUserId(userId).toList()
 
-        if (address.isEmpty()) ResponseEntity(
-            "Addresses with userId: $userId not found",
-            HttpStatus.NOT_FOUND
-        ) else ResponseEntity(json.encodeToString(address), HttpStatus.OK)
+        if (address.isEmpty()) throw AddressExceptionNotFound("Addresses with userId: $userId not found.")
+        else {
+            val add = ""
+            address.forEach { add.plus("${it.address},") }
+            add.dropLast(1) // asi quitamos la ultima coma
+            ResponseEntity.ok(add)
+        }
     }
 
     // "Find One" Methods
@@ -501,9 +504,9 @@ class UserController
             log.info { "Obteniendo direccion con id: $id" }
 
             val address = addressRepositoryCached.findById(id)
-                ?: return@withContext ResponseEntity("Address with id: $id not found", HttpStatus.NOT_FOUND)
+                ?: throw AddressExceptionNotFound("Address with id: $id not found.")
 
-            ResponseEntity(address.address, HttpStatus.OK)
+            ResponseEntity.ok(address.address)
         }
 
     @GetMapping("/address/{name}")
@@ -512,9 +515,9 @@ class UserController
             log.info { "Buscando direccion con nombre: $name" }
 
             val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
-                ?: return@withContext ResponseEntity("Address with name: $name not found", HttpStatus.NOT_FOUND)
+                ?: throw AddressExceptionNotFound("Address with name: $name not found.")
 
-            ResponseEntity(address.address, HttpStatus.OK)
+            ResponseEntity.ok(address.address)
         }
 
     // "Delete" Methods
@@ -527,20 +530,19 @@ class UserController
         log.info { "Eliminando direccion: $name" }
 
         val userDto = jwtTokenUtils.getUserDTOFromToken(token, userRepositoryCached, userMapper)
-            ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
+            ?: throw UserExceptionNotFound("User not found.")
 
         val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
         val user = userRepositoryCached.findByEmail(userDto.email)
 
-        if (address == null) return@withContext ResponseEntity("Address not found", HttpStatus.NOT_FOUND)
-        if (user == null) return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
+        if (address == null) throw AddressExceptionNotFound("Address not found.")
+        if (user == null) throw UserExceptionNotFound("User not found.")
 
         val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
 
         if (address.userId == user.id && addresses.size > 1) {
-            addressRepositoryCached.deleteById(address.id!!)
-        } else return@withContext ResponseEntity("No ha sido posible eliminar la direccion", HttpStatus.BAD_REQUEST)
-
-        return@withContext ResponseEntity("Direccion eliminada", HttpStatus.OK)
+            val addr = addressRepositoryCached.deleteById(address.id!!)
+            ResponseEntity.ok("Direccion $addr eliminada.")
+        } else throw UserExceptionBadRequest("No ha sido posible eliminar la direccion.")
     }
 }
