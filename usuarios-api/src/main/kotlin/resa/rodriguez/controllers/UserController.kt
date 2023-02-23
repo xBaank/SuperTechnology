@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.mappers.fromDTOtoAddresses
@@ -87,24 +88,21 @@ class UserController
 
     // Register, Create & Login Methods
     @PostMapping("/register")
-    private suspend fun register(@Valid @RequestBody userDto: UserDTOregister): ResponseEntity<String> =
+    private suspend fun register(@Valid @RequestBody userDto: UserDTOregister): ResponseEntity<UserDTOwithToken> =
         withContext(Dispatchers.IO) {
             log.info { "Registro de usuario: ${userDto.username}" }
 
             try {
-                val user = userDto.fromDTOtoUser() ?: return@withContext ResponseEntity(
-                    "Password and repeated password does not match.",
-                    HttpStatus.BAD_REQUEST
-                )
+                val user = userDto.fromDTOtoUser() ?: throw UserExceptionBadRequest("Password and repeated password does not match.")
 
                 val userSaved = userRepositoryCached.save(user)
 
                 val addresses = userDto.fromDTOtoAddresses(userSaved.id!!)
                 addresses.forEach { addressRepositoryCached.save(it) }
 
-                ResponseEntity.ok(json.encodeToString(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved))))
+                ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved)))
             } catch (e: Exception) {
-                ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
+                throw UserExceptionBadRequest(e.message)
             }
         }
 
