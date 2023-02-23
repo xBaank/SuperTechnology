@@ -102,3 +102,9 @@ data class UserDTORoleUpdated(
     val email: String,
     val role: UserRole
 )
+
+@Serializable
+data class UserDTOwithToken(
+    val user: UserDTOresponse,
+    val token: String
+)
