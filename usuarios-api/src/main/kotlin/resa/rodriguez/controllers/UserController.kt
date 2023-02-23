@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,14 +40,6 @@ import resa.rodriguez.services.*
 import java.util.UUID
 
 private val log = KotlinLogging.logger {}
-
-private val json = Json {
-    ignoreUnknownKeys = true
-    prettyPrint = true
-    useArrayPolymorphism = true
-    encodeDefaults = true
-}
-
 /**
  * Controlador para el manejo de distintos repositorios
  *
