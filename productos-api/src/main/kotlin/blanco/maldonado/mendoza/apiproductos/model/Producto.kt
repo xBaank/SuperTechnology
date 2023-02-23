@@ -1,5 +1,9 @@
 package blanco.maldonado.mendoza.apiproductos.model
 
+/**
+ * @since 16/02/2023
+ * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ */
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotEmpty
 import org.springframework.data.annotation.Id
