@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
@@ -56,7 +59,12 @@ class UserController
     private val addressRepositoryCached: AddressRepositoryCached,
     private val jwtTokenUtils: JwtTokensUtils,
     private val storageController: StorageController
-) {
+) : UserDetailsService {
+
+    // Spring Security, no se puede suspender
+    override fun loadUserByUsername(username: String?): UserDetails = runBlocking {
+        return@runBlocking userRepositoryCached.findByUsername(username!!) ?: throw Exception("ERROR")
+    }
 
     // -- GET DEFAULT --
     @GetMapping("")
@@ -367,7 +375,10 @@ class UserController
     }
 
     @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    private suspend fun updateAvatar(@RequestHeader token: String, @RequestPart("file") file: MultipartFile): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
+    private suspend fun updateAvatar(
+        @RequestHeader token: String,
+        @RequestPart("file") file: MultipartFile
+    ): ResponseEntity<out Any> = withContext(Dispatchers.IO) {
         val user = jwtTokenUtils.getUserFromToken(token, userRepositoryCached)
             ?: return@withContext ResponseEntity("User not found", HttpStatus.NOT_FOUND)
 

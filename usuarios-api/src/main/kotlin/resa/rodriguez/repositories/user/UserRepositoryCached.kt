@@ -52,6 +52,7 @@ class UserRepositoryCached
         repo.findFirstByEmail(email).firstOrNull()
     }
 
+    @Cacheable("usuarios")
     override suspend fun findByUsername(username: String): User? = withContext(Dispatchers.IO) {
         repo.findByUsername(username).firstOrNull()
     }

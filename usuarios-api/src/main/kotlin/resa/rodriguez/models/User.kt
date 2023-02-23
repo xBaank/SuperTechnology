@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotEmpty
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDate
 import java.util.UUID
 
@@ -23,12 +26,18 @@ import java.util.UUID
 data class User(
     @Id
     val id: UUID? = null,
+
     @NotEmpty(message = "El usuario debe tener un username.")
+    @get:JvmName("userName")
     val username: String,
+
     @NotEmpty(message = "El usuario debe tener un email.")
     val email: String,
+
     @NotEmpty(message = "El usuario debe tener una password.")
+    @get:JvmName("userPassword")
     val password: String,
+
     @NotEmpty(message = "El usuario debe tener un numero de telefono.")
     val phone: String,
     val avatar: String = "",
@@ -37,7 +46,36 @@ data class User(
     @Column("created_at")
     val createdAt: LocalDate = LocalDate.now(),
     val active: Boolean
-)
+) : UserDetails {
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+        return role.name.map { SimpleGrantedAuthority("ROLE_${it.uppercase()}") }.toMutableList()
+    }
+
+    override fun getPassword(): String {
+        return password
+    }
+
+    override fun getUsername(): String {
+        return username
+    }
+
+    override fun isAccountNonExpired(): Boolean {
+        return true
+    }
+
+    override fun isAccountNonLocked(): Boolean {
+        return true
+    }
+
+    override fun isCredentialsNonExpired(): Boolean {
+        return true
+    }
+
+    override fun isEnabled(): Boolean {
+        return true
+    }
+
+}
 
 /**
  * Clase usado para los distintos roles de los usuarios
