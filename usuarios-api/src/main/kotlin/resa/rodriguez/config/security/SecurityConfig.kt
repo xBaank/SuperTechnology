@@ -31,13 +31,20 @@ class SecurityConfig
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf().disable().exceptionHandling().and()
+            // Aceptamos request del tipo Http
             .authorizeHttpRequests()
 
+            // Spring desplaza a esta ruta todos los errores y excepciones, asi podemos mostrarlas en vez de un Forbidden
+            .requestMatchers("/error/**").permitAll()
+
+            // Permitimos el acceso a las rutas que comiencen por /usuarios, aunque no quita que se siga habiendo seguridad
             .requestMatchers("/usuarios/**")
             .permitAll()
 
+            // Permitimos el acceso sin autenticacion ni verificacion a las siguientes rutas
             .requestMatchers("", "/", "/login", "/register").permitAll()
 
+            // El resto, se necesitara autenticacion estandar
             .anyRequest().authenticated()
 
         return http.build()
