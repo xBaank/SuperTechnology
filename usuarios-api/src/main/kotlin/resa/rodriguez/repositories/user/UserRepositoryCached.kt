@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
+import resa.rodriguez.dto.UserDTOresponse
+import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.models.User
 import java.util.*
 
@@ -25,14 +27,15 @@ import java.util.*
 @Repository
 class UserRepositoryCached
 @Autowired constructor(
-    private val repo: UserRepository
+    private val repo: UserRepository,
+    private val userMapper: UserMapper
 ) : IUserRepositoryCached {
     override suspend fun findAll(): Flow<User> = withContext(Dispatchers.IO) {
         repo.findAll()
     }
 
-    override suspend fun findAllPaged(page: PageRequest): Flow<Page<User>> {
-        return repo.findAllBy(page).toList()
+    override suspend fun findAllPaged(page: PageRequest): Flow<Page<UserDTOresponse>> {
+        return repo.findAllBy(page).toList().map { userMapper.toDTO(it) }
             .windowed(page.pageSize, page.pageSize, true)
             .map { PageImpl(it, page, repo.count()) }
             .asFlow()
