@@ -4,12 +4,9 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
@@ -17,8 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import resa.rodriguez.models.User
 import java.util.Date
 
-class JwtAuthenticationFilter
-@Autowired constructor(
+class JwtAuthenticationFilter(
     private val jwtTokenUtil: JwtTokensUtils,
     private val authenticationManager: AuthenticationManager
 ) : UsernamePasswordAuthenticationFilter() {

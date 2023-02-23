@@ -54,6 +54,19 @@ class SecurityConfig
             // Permitimos el acceso sin autenticacion ni verificacion a las siguientes rutas
             .requestMatchers("/usuarios", "/usuarios/", "/usuarios/login", "/usuarios/register").permitAll()
 
+            .requestMatchers(
+                "/usuarios/create", "/usuarios/list", "/usuarios/list/paging",
+                "/usuarios/list/activity/{active}", "/usuarios/username/{username}",
+                "/usuarios/id/{userId}", "/usuarios/email/{userEmail}",
+                "/usuarios/phone/{userPhone}", "/usuarios/activity/{email}",
+                "/usuarios/list/address", "/usuarios/list/address/user/{userId}",
+                "/usuarios/address/{id}", "/usuarios/address/{name}"
+            ).hasAnyRole("ADMIN", "SUPER_ADMIN")
+
+            .requestMatchers(
+                "/usuarios/role/{email}", "/usuarios/delete/{email}"
+            ).hasAnyRole("SUPER_ADMIN")
+
             // El resto, se necesitara autenticacion estandar
             .anyRequest().authenticated()
 

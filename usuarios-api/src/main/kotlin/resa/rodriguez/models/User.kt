@@ -79,7 +79,6 @@ data class User(
 
 /**
  * Clase usado para los distintos roles de los usuarios
- *
  */
 enum class UserRole {
     USER, ADMIN, SUPER_ADMIN
