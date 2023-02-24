@@ -18,7 +18,7 @@ data class Producto(
     val id: Long? = null,
     val uuid: String? = null,
     @NotEmpty(message = "El nombre no puede estar vacío")
-    var nombre: String,
+    val nombre: String,
     @NotEmpty(message = "La categoría no puede estar vacía")
     val categoria: Categoria,
     @Min(value = 0, message = "El stick no puede ser negativo")

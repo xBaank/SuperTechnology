@@ -18,7 +18,7 @@ data class ProductoDto(
 )
 
 data class ProductoCreateDto(
-    var nombre: String,
+    val nombre: String,
     val categoria: String,
     val stock: Int,
     val description: String,
