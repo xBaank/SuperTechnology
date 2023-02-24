@@ -1,134 +1,111 @@
-package resa.rodriguez.controllers
+package resa.rodriguez.services
 
 import jakarta.validation.Valid
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.toSet
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
+import resa.rodriguez.controllers.StorageController
 import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
+import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.mappers.UserMapper
+import resa.rodriguez.mappers.fromDTOtoAddresses
+import resa.rodriguez.mappers.fromDTOtoUser
+import resa.rodriguez.mappers.toAddress
+import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
-import resa.rodriguez.services.*
+import resa.rodriguez.models.UserRole
+import resa.rodriguez.repositories.address.AddressRepositoryCached
+import resa.rodriguez.repositories.user.UserRepositoryCached
 import java.util.*
 
 private val log = KotlinLogging.logger {}
 
-/**
- * Controlador para el manejo de distintos repositorios
- *
- * @property userMapper
- * @property userRepositoryCached
- * @property addressRepositoryCached
- */
-@RestController
-@RequestMapping(APIConfig.API_PATH)
-class UserController
+
+@Service
+class UserService
 @Autowired constructor(
     private val userMapper: UserMapper,
-    private val service: UserService,
-    private val authenticationManager: AuthenticationManager,
+    private val userRepositoryCached: UserRepositoryCached,
+    private val addressRepositoryCached: AddressRepositoryCached,
     private val jwtTokenUtils: JwtTokensUtils,
-    private val storageController: StorageController
-) {
+    private val storageController: StorageController,
+    private val passwordEncoder: PasswordEncoder,
+) : UserDetailsService {
 
-    // -- GET DEFAULT --
-    @GetMapping("")
-    private fun bienvenida() = ResponseEntity(
-        "Microservicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
-                "Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
-        HttpStatus.OK
-    )
-
-    @GetMapping("/")
-    private fun bienvenida2() = ResponseEntity(
-        "Microservicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
-                "Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
-        HttpStatus.OK
-    )
+    // Spring Security, no se puede suspender
+    override fun loadUserByUsername(username: String): UserDetails = runBlocking {
+        userRepositoryCached.findByUsername(username)
+            ?: throw UserExceptionNotFound("Usuario con username $username no encontrado.")
+    }
 
     // -- USERS --
 
     // Register, Create & Login Methods
-    @PostMapping("/register")
-    private suspend fun register(@Valid @RequestBody userDto: UserDTOregister): ResponseEntity<UserDTOwithToken> =
+    suspend fun register(userDto: UserDTOregister): User =
         withContext(Dispatchers.IO) {
             log.info { "Registro de usuario: ${userDto.username}" }
 
             try {
+                val user = userDto.fromDTOtoUser()
+                    ?: throw UserExceptionBadRequest("Password and repeated password does not match.")
 
-                val userSaved = service.register(userDto)
+                val userSaved = userRepositoryCached.save(user)
 
-                ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved)))
+                val addresses = userDto.fromDTOtoAddresses(userSaved.id!!)
+                addresses.forEach { addressRepositoryCached.save(it) }
+
+                return@withContext userSaved
             } catch (e: Exception) {
                 throw UserExceptionBadRequest(e.message)
             }
         }
 
-    @PostMapping("/create")
-    private suspend fun create(
-        @Valid @RequestBody userDTOcreate: UserDTOcreate,
-        @RequestHeader token: String
-    ): ResponseEntity<UserDTOwithToken> =
+    suspend fun create(
+        userDTOcreate: UserDTOcreate,
+    ): User =
         withContext(Dispatchers.IO) {
             log.info { "Creando usuario por parte de un administrador" }
 
-            val userSaved = service.create(userDTOcreate)
+            val user = userDTOcreate.fromDTOtoUser()
 
-            ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved)))
-        }
+            val userSaved = userRepositoryCached.save(user)
 
-    // El createByAdmin que se usara por parte del cliente es el superior, este simplemente es para la carga de datos inicial
-    suspend fun createByAdminInitializer(userDTOcreate: UserDTOcreate): ResponseEntity<UserDTOwithToken> =
-        withContext(Dispatchers.IO) {
-            log.info { "Creando usuario por parte de un administrador || Carga de datos inicial" }
+            val addresses = userDTOcreate.fromDTOtoAddresses(userSaved.id!!)
+            addresses.forEach { addressRepositoryCached.save(it) }
 
-            val userSaved = service.create(userDTOcreate)
-
-            ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved)))
-        }
-
-    @GetMapping("/login")
-    private suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<UserDTOwithToken> =
-        withContext(Dispatchers.IO) {
-            log.info { "Login de usuario: ${userDto.username}" }
-
-            val authentication: Authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(
-                    userDto.username,
-                    userDto.password
-                )
-            )
-            // Autenticamos al usuario, si lo es nos lo devuelve
-            SecurityContextHolder.getContext().authentication = authentication
-
-            // Devolvemos al usuario autenticado
-            val user = authentication.principal as User
-
-            ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(user), jwtTokenUtils.create(user)))
+            return@withContext userSaved
         }
 
     // "Find All" Methods
-    @GetMapping("/list")
-    private suspend fun listUsers(@AuthenticationPrincipal user: User): ResponseEntity<List<UserDTOresponse>> =
-        withContext(Dispatchers.IO) {
+    suspend fun listUsers(user: User): List<User> =
+        withContext(
+            Dispatchers.IO
+        ) {
             log.info { "Obteniendo listado de usuarios" }
 
-            val res = service.listUsers(user)
-            ResponseEntity.ok(userMapper.toDTO(res))
+            return@withContext userRepositoryCached.findAll().toList<User>()
         }
 
-    /*@GetMapping("/list/paging")
     private suspend fun getAllPaging(
         @RequestHeader token: String,
         @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int = 0,
@@ -145,7 +122,6 @@ class UserController
         } else throw UserExceptionNotFound("Page not found.")
     }
 
-    @GetMapping("/list/activity/{active}")
     private suspend fun listUsersActive(
         @PathVariable active: Boolean,
         @RequestHeader token: String
@@ -158,7 +134,6 @@ class UserController
     }
 
     // "Find One" Methods
-    @GetMapping("/username/{username}")
     private suspend fun findByUsername(
         @PathVariable username: String,
         @RequestHeader token: String
@@ -185,7 +160,6 @@ class UserController
             ResponseEntity.ok(result)
         }
 
-    @GetMapping("/id/{userId}")
     private suspend fun findByUserId(
         @PathVariable userId: UUID,
         @RequestHeader token: String
@@ -212,7 +186,6 @@ class UserController
             ResponseEntity.ok(result)
         }
 
-    @GetMapping("/email/{userEmail}")
     private suspend fun findByUserEmail(
         @PathVariable userEmail: String,
         @RequestHeader token: String
@@ -239,7 +212,6 @@ class UserController
             ResponseEntity.ok(result)
         }
 
-    @GetMapping("/phone/{userPhone}")
     private suspend fun findByUserPhone(
         @PathVariable userPhone: String,
         @RequestHeader token: String
@@ -268,7 +240,6 @@ class UserController
 
     // "Update" Methods
 
-    @PutMapping("/me/update")
     private suspend fun updateMySelf(
         @RequestHeader token: String,
         @Valid @RequestBody userDTOUpdated: UserDTOUpdated
@@ -307,7 +278,6 @@ class UserController
         ResponseEntity.ok(userMapper.toDTO(userSaved))
     }
 
-    @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     private suspend fun updateAvatar(
         @RequestHeader token: String,
         @RequestPart("file") file: MultipartFile
@@ -336,7 +306,6 @@ class UserController
         ResponseEntity.ok(userMapper.toDTO(userSaved))
     }
 
-    @PutMapping("/activity/{email}")
     private suspend fun switchActivityByEmail(
         @PathVariable email: String,
         @RequestHeader token: String
@@ -364,7 +333,6 @@ class UserController
             ResponseEntity.ok(userMapper.toDTO(userSaved))
         }
 
-    @PutMapping("/role/{email}")
     private suspend fun updateRoleByEmail(
         @Valid @RequestBody userDTORoleUpdated: UserDTORoleUpdated,
         @RequestHeader token: String
@@ -400,7 +368,6 @@ class UserController
     }
 
     // "Delete" Methods
-    @DeleteMapping("/delete/{email}")
     private suspend fun deleteUser(
         @PathVariable email: String,
         @RequestHeader token: String
@@ -420,18 +387,17 @@ class UserController
         }
 
     // "Me" Method
-    @GetMapping("/me")
-    private suspend fun findMySelf(@AuthenticationPrincipal user: User): ResponseEntity<UserDTOresponse> =
-        withContext(Dispatchers.IO) {
-            log.info { "Obteniendo datos del usuario." }
+    private suspend fun findMySelf(@AuthenticationPrincipal user: User): ResponseEntity<UserDTOresponse> = withContext(
+        Dispatchers.IO
+    ) {
+        log.info { "Obteniendo datos del usuario." }
 
-            ResponseEntity.ok(userMapper.toDTO(user))
-        }
+        ResponseEntity.ok(userMapper.toDTO(user))
+    }
 
     // -- ADDRESSES --
 
     // "Find All" Methods
-    @GetMapping("/list/address")
     private suspend fun listAddresses(@RequestHeader token: String): ResponseEntity<List<Address>> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo listado de direcciones" }
@@ -439,7 +405,6 @@ class UserController
             ResponseEntity.ok(addressRepositoryCached.findAll().toList())
         }
 
-    @GetMapping("/list/address/user/{userId}")
     private suspend fun listAddressesByUserId(
         @PathVariable userId: UUID,
         @RequestHeader token: String
@@ -458,7 +423,6 @@ class UserController
     }
 
     // "Find One" Methods
-    @GetMapping("/address/{id}")
     private suspend fun findById(@PathVariable id: UUID, @RequestHeader token: String): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo direccion con id: $id" }
@@ -469,7 +433,7 @@ class UserController
             ResponseEntity.ok(address.address)
         }
 
-    @GetMapping("/address/{name}")
+
     private suspend fun findByName(@PathVariable name: String, @RequestHeader token: String): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
             log.info { "Buscando direccion con nombre: $name" }
@@ -504,5 +468,5 @@ class UserController
             val addr = addressRepositoryCached.deleteById(address.id!!)
             ResponseEntity.ok("Direccion $addr eliminada.")
         } else throw UserExceptionBadRequest("No ha sido posible eliminar la direccion.")
-    }*/
+    }
 }

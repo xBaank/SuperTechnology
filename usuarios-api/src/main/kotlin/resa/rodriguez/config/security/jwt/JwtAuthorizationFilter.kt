@@ -10,12 +10,12 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
-import resa.rodriguez.controllers.UserController
+import resa.rodriguez.services.UserService
 import java.io.IOException
 
 class JwtAuthorizationFilter(
     private val jwtTokensUtils: JwtTokensUtils,
-    private val controller: UserController,
+    private val service: UserService,
     authManager: AuthenticationManager
 ) : BasicAuthenticationFilter(authManager) {
 
@@ -46,7 +46,7 @@ class JwtAuthorizationFilter(
 
         val username = tokenDecoded.getClaim("username").toString().replace("\"", "")
 
-        val user = controller.loadUserByUsername(username)
+        val user = service.loadUserByUsername(username)
 
         return@runBlocking UsernamePasswordAuthenticationToken(
             user,

@@ -13,14 +13,14 @@ import org.springframework.security.web.SecurityFilterChain
 import resa.rodriguez.config.security.jwt.JwtAuthenticationFilter
 import resa.rodriguez.config.security.jwt.JwtAuthorizationFilter
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
-import resa.rodriguez.controllers.UserController
+import resa.rodriguez.services.UserService
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 class SecurityConfig
 @Autowired constructor(
-    private val userController: UserController,
+    private val service: UserService,
     private val jwtTokensUtils: JwtTokensUtils
 ) {
 
@@ -29,7 +29,7 @@ class SecurityConfig
         val authenticationManagerBuilder = http.getSharedObject(
             AuthenticationManagerBuilder::class.java
         )
-        authenticationManagerBuilder.userDetailsService(userController)
+        authenticationManagerBuilder.userDetailsService(service)
         return authenticationManagerBuilder.build()
     }
 
@@ -78,7 +78,7 @@ class SecurityConfig
             .and()
 
             .addFilter(JwtAuthenticationFilter(jwtTokensUtils, authenticationManager)) // Autenticacion
-            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, userController, authenticationManager)) // Autorizacion
+            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, service, authenticationManager)) // Autorizacion
 
         return http.build()
     }

@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import resa.rodriguez.dto.UserDTOlogin
 import resa.rodriguez.models.User
 import java.util.Date
 
@@ -20,7 +21,7 @@ class JwtAuthenticationFilter(
 ) : UsernamePasswordAuthenticationFilter() {
     @OptIn(ExperimentalSerializationApi::class)
     override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication {
-        val credentials = request?.inputStream?.let { Json.decodeFromStream<User>(it) }
+        val credentials = request?.inputStream?.let { Json.decodeFromStream<UserDTOlogin>(it) }
 
         val auth = UsernamePasswordAuthenticationToken(
             credentials?.username,
