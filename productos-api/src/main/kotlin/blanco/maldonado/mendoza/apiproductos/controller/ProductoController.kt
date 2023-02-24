@@ -83,7 +83,7 @@ class ProductoController
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por id" }
             try {
-                val res = repository.findById(id)!!.toDto()
+                val res = repository.findById(id)?.toDto() ?: throw ProductoNotFoundException("Producto no encontrado con id: $id .")
                 return@withContext ResponseEntity.ok(res)
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
