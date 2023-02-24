@@ -24,7 +24,7 @@ private val algorithm: Algorithm = Algorithm.HMAC512("Zanahoria turbopropulsada"
 class JwtTokensUtils {
     fun create(user: User): String {
         return JWT.create()
-            .withIssuer(user.id.toString())
+            .withSubject(user.id.toString())
             .withHeader(mapOf("typ" to TOKEN_TYPE))
             .withClaim("username", user.username)
             .withClaim("email", user.email)

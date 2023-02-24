@@ -11,7 +11,6 @@ import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.address.AddressRepository
-import resa.rodriguez.services.cipher
 import java.time.LocalDate
 import java.util.*
 
@@ -50,7 +49,7 @@ fun UserDTOregister.fromDTOtoUser(): User? {
     else User(
         username = username,
         email = email,
-        password = cipher(password),
+        password = password,
         phone = phone,
         role = UserRole.USER,
         createdAt = LocalDate.now(),
@@ -75,7 +74,7 @@ fun UserDTOregister.fromDTOtoAddresses(id: UUID): Set<Address> {
 fun UserDTOcreate.fromDTOtoUser() = User(
     username = username,
     email = email,
-    password = cipher(password),
+    password = password,
     phone = phone,
     role = role,
     createdAt = LocalDate.now(),

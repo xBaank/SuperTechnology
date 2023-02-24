@@ -48,6 +48,8 @@ class JwtAuthorizationFilter(
 
         val user = service.loadUserByUsername(username)
 
+        System.err.println(user)
+
         return@runBlocking UsernamePasswordAuthenticationToken(
             user,
             null,

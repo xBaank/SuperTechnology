@@ -56,8 +56,8 @@ class SecurityConfig
 
             // Permitimos el acceso sin autenticacion ni verificacion a las siguientes rutas
             .requestMatchers("/usuarios", "/usuarios/", "/usuarios/login", "/usuarios/register").permitAll()
-
-            .requestMatchers("/usuarios/me").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
+// TODO: RETOCAR PERMISOS, ES LO UNICO QUE FALLA, EL USUARIO ES ALMACENADO EN EL CONTEXTO, SE COMPRUEBA CON EL /me
+            .requestMatchers("/usuarios/me").permitAll()
 
             .requestMatchers(
                 "/usuarios/create", "/usuarios/list", "/usuarios/list/paging",
