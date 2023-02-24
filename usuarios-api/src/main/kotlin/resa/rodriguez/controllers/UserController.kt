@@ -120,13 +120,12 @@ class UserController
 
     // "Find All" Methods
     @GetMapping("/list")
-    private suspend fun listUsers(@AuthenticationPrincipal user: User): ResponseEntity<List<UserDTOresponse>> =
-        withContext(Dispatchers.IO) {
-            log.info { "Obteniendo listado de usuarios" }
+    private suspend fun listUsers(@AuthenticationPrincipal user: User): ResponseEntity<List<UserDTOresponse>> {
+        log.info { "Obteniendo listado de usuarios" }
 
-            val res = service.listUsers(user)
-            ResponseEntity.ok(userMapper.toDTO(res))
-        }
+        val res = service.listUsers(user)
+        return ResponseEntity.ok(userMapper.toDTO(res))
+    }
 
     /*@GetMapping("/list/paging")
     private suspend fun getAllPaging(
@@ -418,7 +417,7 @@ class UserController
 
             ResponseEntity.ok(userMapper.toDTO(deleted))
         }
-
+*/
     // "Me" Method
     @GetMapping("/me")
     private suspend fun findMySelf(@AuthenticationPrincipal user: User): ResponseEntity<UserDTOresponse> =
@@ -427,7 +426,7 @@ class UserController
 
             ResponseEntity.ok(userMapper.toDTO(user))
         }
-
+/*
     // -- ADDRESSES --
 
     // "Find All" Methods
