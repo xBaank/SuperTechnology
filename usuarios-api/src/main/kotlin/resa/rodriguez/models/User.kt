@@ -47,10 +47,18 @@ data class User(
     val createdAt: LocalDate = LocalDate.now(),
     val active: Boolean
 ) : UserDetails {
+
+    /**
+     * Clase usado para los distintos roles de los usuarios
+     */
+    enum class UserRole {
+        USER, ADMIN, SUPER_ADMIN
+    }
+
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        val authority = SimpleGrantedAuthority("ROLE_${role.name}")
-        return mutableListOf<GrantedAuthority>(authority)
-        //return role.name.map { SimpleGrantedAuthority("ROLE_${it.uppercase()}") }.toMutableList()
+        //val authority = SimpleGrantedAuthority("ROLE_${role.name}")
+        //return mutableListOf<GrantedAuthority>(authority)
+        return role.name.split(",").map { SimpleGrantedAuthority("ROLE_${it.trim()}") }.toMutableList()
     }
 
     override fun getPassword(): String {
@@ -77,11 +85,4 @@ data class User(
         return true
     }
 
-}
-
-/**
- * Clase usado para los distintos roles de los usuarios
- */
-enum class UserRole {
-    USER, ADMIN, SUPER_ADMIN
 }

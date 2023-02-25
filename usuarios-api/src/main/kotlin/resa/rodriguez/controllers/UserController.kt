@@ -7,6 +7,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -78,7 +79,6 @@ class UserController
     @PostMapping("/create")
     private suspend fun create(
         @Valid @RequestBody userDTOcreate: UserDTOcreate,
-        @RequestHeader token: String
     ): ResponseEntity<UserDTOwithToken> =
         withContext(Dispatchers.IO) {
             log.info { "Creando usuario por parte de un administrador" }
@@ -99,8 +99,7 @@ class UserController
         }
 
     @GetMapping("/login")
-    private suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<UserDTOwithToken> =
-        withContext(Dispatchers.IO) {
+    private suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<UserDTOwithToken>{
             log.info { "Login de usuario: ${userDto.username}" }
 
             val authentication: Authentication = authenticationManager.authenticate(
@@ -115,15 +114,16 @@ class UserController
             // Devolvemos al usuario autenticado
             val user = authentication.principal as User
 
-            ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(user), jwtTokenUtils.create(user)))
+            return ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(user), jwtTokenUtils.create(user)))
         }
 
     // "Find All" Methods
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
     private suspend fun listUsers(@AuthenticationPrincipal user: User): ResponseEntity<List<UserDTOresponse>> {
         log.info { "Obteniendo listado de usuarios" }
 
-        val res = service.listUsers(user)
+        val res = service.listUsers()
         return ResponseEntity.ok(userMapper.toDTO(res))
     }
 
@@ -426,82 +426,82 @@ class UserController
 
             ResponseEntity.ok(userMapper.toDTO(user))
         }
-/*
-    // -- ADDRESSES --
+    /*
+        // -- ADDRESSES --
 
-    // "Find All" Methods
-    @GetMapping("/list/address")
-    private suspend fun listAddresses(@RequestHeader token: String): ResponseEntity<List<Address>> =
-        withContext(Dispatchers.IO) {
-            log.info { "Obteniendo listado de direcciones" }
+        // "Find All" Methods
+        @GetMapping("/list/address")
+        private suspend fun listAddresses(@RequestHeader token: String): ResponseEntity<List<Address>> =
+            withContext(Dispatchers.IO) {
+                log.info { "Obteniendo listado de direcciones" }
 
-            ResponseEntity.ok(addressRepositoryCached.findAll().toList())
+                ResponseEntity.ok(addressRepositoryCached.findAll().toList())
+            }
+
+        @GetMapping("/list/address/user/{userId}")
+        private suspend fun listAddressesByUserId(
+            @PathVariable userId: UUID,
+            @RequestHeader token: String
+        ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+            log.info { "Obteniendo direcciones de usuario con id: $userId" }
+
+            val address = addressRepositoryCached.findAllFromUserId(userId).toList()
+
+            if (address.isEmpty()) throw AddressExceptionNotFound("Addresses with userId: $userId not found.")
+            else {
+                val add = ""
+                address.forEach { add.plus("${it.address},") }
+                add.dropLast(1) // asi quitamos la ultima coma
+                ResponseEntity.ok(add)
+            }
         }
 
-    @GetMapping("/list/address/user/{userId}")
-    private suspend fun listAddressesByUserId(
-        @PathVariable userId: UUID,
-        @RequestHeader token: String
-    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
-        log.info { "Obteniendo direcciones de usuario con id: $userId" }
+        // "Find One" Methods
+        @GetMapping("/address/{id}")
+        private suspend fun findById(@PathVariable id: UUID, @RequestHeader token: String): ResponseEntity<String> =
+            withContext(Dispatchers.IO) {
+                log.info { "Obteniendo direccion con id: $id" }
 
-        val address = addressRepositoryCached.findAllFromUserId(userId).toList()
+                val address = addressRepositoryCached.findById(id)
+                    ?: throw AddressExceptionNotFound("Address with id: $id not found.")
 
-        if (address.isEmpty()) throw AddressExceptionNotFound("Addresses with userId: $userId not found.")
-        else {
-            val add = ""
-            address.forEach { add.plus("${it.address},") }
-            add.dropLast(1) // asi quitamos la ultima coma
-            ResponseEntity.ok(add)
-        }
-    }
+                ResponseEntity.ok(address.address)
+            }
 
-    // "Find One" Methods
-    @GetMapping("/address/{id}")
-    private suspend fun findById(@PathVariable id: UUID, @RequestHeader token: String): ResponseEntity<String> =
-        withContext(Dispatchers.IO) {
-            log.info { "Obteniendo direccion con id: $id" }
+        @GetMapping("/address/{name}")
+        private suspend fun findByName(@PathVariable name: String, @RequestHeader token: String): ResponseEntity<String> =
+            withContext(Dispatchers.IO) {
+                log.info { "Buscando direccion con nombre: $name" }
 
-            val address = addressRepositoryCached.findById(id)
-                ?: throw AddressExceptionNotFound("Address with id: $id not found.")
+                val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
+                    ?: throw AddressExceptionNotFound("Address with name: $name not found.")
 
-            ResponseEntity.ok(address.address)
-        }
+                ResponseEntity.ok(address.address)
+            }
 
-    @GetMapping("/address/{name}")
-    private suspend fun findByName(@PathVariable name: String, @RequestHeader token: String): ResponseEntity<String> =
-        withContext(Dispatchers.IO) {
-            log.info { "Buscando direccion con nombre: $name" }
+        // "Delete" Methods
+
+        @DeleteMapping("/address/{name}")
+        private suspend fun deleteAddress(
+            @PathVariable name: String,
+            @RequestHeader token: String
+        ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+            log.info { "Eliminando direccion: $name" }
+
+            val userDto = jwtTokenUtils.getUserDTOFromToken(token, userRepositoryCached, userMapper)
+                ?: throw UserExceptionNotFound("User not found.")
 
             val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
-                ?: throw AddressExceptionNotFound("Address with name: $name not found.")
+            val user = userRepositoryCached.findByEmail(userDto.email)
 
-            ResponseEntity.ok(address.address)
-        }
+            if (address == null) throw AddressExceptionNotFound("Address not found.")
+            if (user == null) throw UserExceptionNotFound("User not found.")
 
-    // "Delete" Methods
+            val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
 
-    @DeleteMapping("/address/{name}")
-    private suspend fun deleteAddress(
-        @PathVariable name: String,
-        @RequestHeader token: String
-    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
-        log.info { "Eliminando direccion: $name" }
-
-        val userDto = jwtTokenUtils.getUserDTOFromToken(token, userRepositoryCached, userMapper)
-            ?: throw UserExceptionNotFound("User not found.")
-
-        val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
-        val user = userRepositoryCached.findByEmail(userDto.email)
-
-        if (address == null) throw AddressExceptionNotFound("Address not found.")
-        if (user == null) throw UserExceptionNotFound("User not found.")
-
-        val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
-
-        if (address.userId == user.id && addresses.size > 1) {
-            val addr = addressRepositoryCached.deleteById(address.id!!)
-            ResponseEntity.ok("Direccion $addr eliminada.")
-        } else throw UserExceptionBadRequest("No ha sido posible eliminar la direccion.")
-    }*/
+            if (address.userId == user.id && addresses.size > 1) {
+                val addr = addressRepositoryCached.deleteById(address.id!!)
+                ResponseEntity.ok("Direccion $addr eliminada.")
+            } else throw UserExceptionBadRequest("No ha sido posible eliminar la direccion.")
+        }*/
 }

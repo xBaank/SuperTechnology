@@ -9,7 +9,6 @@ import resa.rodriguez.dto.UserDTOregister
 import resa.rodriguez.dto.UserDTOresponse
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
-import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.address.AddressRepository
 import java.time.LocalDate
 import java.util.*
@@ -51,7 +50,7 @@ fun UserDTOregister.fromDTOtoUser(): User? {
         email = email,
         password = password,
         phone = phone,
-        role = UserRole.USER,
+        role = User.UserRole.USER,
         createdAt = LocalDate.now(),
         avatar = "",
         active = true

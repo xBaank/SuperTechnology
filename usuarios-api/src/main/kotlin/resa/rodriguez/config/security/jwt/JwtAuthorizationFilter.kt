@@ -1,11 +1,11 @@
 package resa.rodriguez.config.security.jwt
 
+import io.netty.handler.codec.http.HttpHeaderNames.AUTHORIZATION
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kotlinx.coroutines.runBlocking
-import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -26,7 +26,7 @@ class JwtAuthorizationFilter(
         chain: FilterChain
     ) {
         logger.info { "Filtrando" }
-        val header = req.getHeader(AUTHORIZATION)
+        val header = req.getHeader(AUTHORIZATION.toString())
 
         if (header == null || !header.startsWith(JwtTokensUtils.TOKEN_PREFIX)) {
             chain.doFilter(req, res)

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 import resa.rodriguez.dto.UserDTOresponse
 import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.models.User
-import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.user.IUserRepositoryCached
 import java.time.Instant
 import java.util.*
@@ -45,7 +44,7 @@ class JwtTokensUtils {
         }
     }
 
-    fun checkToken(token: String, role: UserRole): ResponseEntity<String>? {
+    fun checkToken(token: String, role: User.UserRole): ResponseEntity<String>? {
         val decoded = decode(token)
             ?: return ResponseEntity("No token detected.", HttpStatus.UNAUTHORIZED)
         if (decoded.getClaim("role").isMissing || decoded.getClaim("active").isMissing ||
@@ -56,21 +55,21 @@ class JwtTokensUtils {
         if (decoded.expiresAtAsInstant.isBefore(Instant.now()))
             return ResponseEntity("Token expired.", HttpStatus.UNAUTHORIZED)
         when (role) {
-            UserRole.SUPER_ADMIN -> {
-                if (!decoded.getClaim("role").asString().equals(UserRole.SUPER_ADMIN.name)) {
+            User.UserRole.SUPER_ADMIN -> {
+                if (!decoded.getClaim("role").asString().equals(User.UserRole.SUPER_ADMIN.name)) {
                     return ResponseEntity("You are not allowed to to this.", HttpStatus.FORBIDDEN)
                 }
             }
 
-            UserRole.ADMIN -> {
-                if (!(decoded.getClaim("role").asString().equals(UserRole.SUPER_ADMIN.name) ||
-                            decoded.getClaim("role").asString().equals(UserRole.ADMIN.name))
+            User.UserRole.ADMIN -> {
+                if (!(decoded.getClaim("role").asString().equals(User.UserRole.SUPER_ADMIN.name) ||
+                            decoded.getClaim("role").asString().equals(User.UserRole.ADMIN.name))
                 ) {
                     return ResponseEntity("You are not allowed to to this.", HttpStatus.FORBIDDEN)
                 }
             }
 
-            UserRole.USER -> {}
+            User.UserRole.USER -> {}
         }
         return null
     }
