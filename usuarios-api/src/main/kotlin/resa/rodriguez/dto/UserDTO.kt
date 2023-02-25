@@ -1,7 +1,7 @@
 package resa.rodriguez.dto
 
 import kotlinx.serialization.Serializable
-import resa.rodriguez.models.UserRole
+import resa.rodriguez.models.User
 import resa.rodriguez.services.LocalDateSerializer
 import java.time.LocalDate
 
@@ -55,7 +55,7 @@ data class UserDTOcreate(
     val email: String,
     val password: String,
     val phone: String,
-    val role: UserRole,
+    val role: User.UserRole,
     val addresses: Set<String>,
     val avatar: String = "",
     val active: Boolean = true
@@ -76,7 +76,7 @@ data class UserDTOcreate(
 data class UserDTOresponse(
     val username: String,
     val email: String,
-    val role: UserRole,
+    val role: User.UserRole,
     val addresses: Set<String>,
     val avatar: String,
     @Serializable(with = LocalDateSerializer::class)
@@ -100,7 +100,7 @@ data class UserDTOUpdated(
 @Serializable
 data class UserDTORoleUpdated(
     val email: String,
-    val role: UserRole
+    val role: User.UserRole
 )
 
 @Serializable

@@ -83,7 +83,7 @@ class UserService
         }
 
     // "Find All" Methods
-    suspend fun listUsers(user: User): List<User> =
+    suspend fun listUsers(): List<User> =
         withContext(
             Dispatchers.IO
         ) {

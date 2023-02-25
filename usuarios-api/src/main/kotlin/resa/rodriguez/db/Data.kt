@@ -1,7 +1,7 @@
 package resa.rodriguez.db
 
 import resa.rodriguez.dto.UserDTOcreate
-import resa.rodriguez.models.UserRole
+import resa.rodriguez.models.User
 
 /**
  * Datos iniciales que se cargaran la primera vez que se lance el microservicio
@@ -13,7 +13,7 @@ fun getUsersInit() = listOf(
         email = "test@example.com",
         password = "1234",
         phone = "123456789",
-        role = UserRole.SUPER_ADMIN,
+        role = User.UserRole.SUPER_ADMIN,
         addresses = setOf("C/1"),
         active = true
     ),
@@ -22,7 +22,7 @@ fun getUsersInit() = listOf(
         email = "test2@example.com",
         password = "12345",
         phone = "123456788",
-        role = UserRole.ADMIN,
+        role = User.UserRole.ADMIN,
         addresses = setOf("C/2"),
         active = true
     ),
@@ -31,7 +31,7 @@ fun getUsersInit() = listOf(
         email = "test3@example.com",
         password = "123456",
         phone = "123456799",
-        role = UserRole.USER,
+        role = User.UserRole.USER,
         addresses = setOf("C/3"),
         active = true
     )

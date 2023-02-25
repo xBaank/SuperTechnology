@@ -3,11 +3,11 @@ package resa.rodriguez.config.security
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import resa.rodriguez.config.security.jwt.JwtAuthenticationFilter
@@ -16,7 +16,7 @@ import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.services.UserService
 
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 class SecurityConfig
 @Autowired constructor(
@@ -37,7 +37,11 @@ class SecurityConfig
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         val authenticationManager = authManager(http)
 
-        http.csrf().disable().exceptionHandling().and()
+        http
+            .csrf()
+            .disable()
+            .exceptionHandling()
+            .and()
 
             // Para token JWT
             .authenticationManager(authenticationManager)
@@ -56,21 +60,22 @@ class SecurityConfig
 
             // Permitimos el acceso sin autenticacion ni verificacion a las siguientes rutas
             .requestMatchers("/usuarios", "/usuarios/", "/usuarios/login", "/usuarios/register").permitAll()
-// TODO: RETOCAR PERMISOS, ES LO UNICO QUE FALLA, EL USUARIO ES ALMACENADO EN EL CONTEXTO, SE COMPRUEBA CON EL /me
-            .requestMatchers("/usuarios/me").permitAll()
 
-            .requestMatchers(
-                "/usuarios/create", "/usuarios/list", "/usuarios/list/paging",
+            .requestMatchers("/usuarios/me").authenticated()
+            .requestMatchers(HttpMethod.GET,"/usuarios/list").hasRole("ADMIN")
+
+            /*.requestMatchers(
+                "/usuarios/create", "/usuarios/list/paging",
                 "/usuarios/list/activity/{active}", "/usuarios/username/{username}",
                 "/usuarios/id/{userId}", "/usuarios/email/{userEmail}",
                 "/usuarios/phone/{userPhone}", "/usuarios/activity/{email}",
                 "/usuarios/list/address", "/usuarios/list/address/user/{userId}",
                 "/usuarios/address/{id}", "/usuarios/address/{name}"
-            ).hasAnyRole("ADMIN", "SUPER_ADMIN")
+            ).hasAnyRole("ADMIN", "SUPER_ADMIN")*/
 
-            .requestMatchers(
+            /*.requestMatchers(
                 "/usuarios/role/{email}", "/usuarios/delete/{email}"
-            ).hasRole("SUPER_ADMIN")
+            ).hasRole("SUPER_ADMIN")*/
 
             // El resto, se necesitara autenticacion estandar
             .anyRequest().authenticated()
