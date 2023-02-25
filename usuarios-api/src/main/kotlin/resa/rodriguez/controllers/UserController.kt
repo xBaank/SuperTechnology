@@ -6,7 +6,9 @@ import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.AuthenticationManager
@@ -15,11 +17,14 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
 import resa.rodriguez.exceptions.UserExceptionBadRequest
+import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.mappers.UserMapper
+import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.services.*
 import java.util.*
@@ -41,7 +46,6 @@ class UserController
     private val service: UserService,
     private val authenticationManager: AuthenticationManager,
     private val jwtTokenUtils: JwtTokensUtils,
-    private val storageController: StorageController
 ) {
 
     // -- GET DEFAULT --
@@ -119,7 +123,7 @@ class UserController
     }
 
     // "Find All" Methods
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list")
     suspend fun listUsers(@AuthenticationPrincipal user: User): ResponseEntity<List<UserDTOresponse>> {
         log.info { "Obteniendo listado de usuarios" }
@@ -128,35 +132,36 @@ class UserController
         return ResponseEntity.ok(userMapper.toDTO(res))
     }
 
-    /*@GetMapping("/list/paging")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @GetMapping("/list/paging")
     private suspend fun getAllPaging(
-        @RequestHeader token: String,
+        @AuthenticationPrincipal user: User,
         @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int = 0,
         @RequestParam(defaultValue = APIConfig.PAGINATION_SIZE) size: Int = 10,
         @RequestParam(defaultValue = APIConfig.PAGINATION_SORT) sortBy: String = "created_at",
     ): ResponseEntity<Page<UserDTOresponse>> = withContext(Dispatchers.IO) {
         log.info { "Buscando usuarios paginados || Pagina: $page" }
 
-        val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
-        val pageResponse = userRepositoryCached.findAllPaged(pageRequest).firstOrNull()
+        val pageResponse = service.findAllPaging(page, size, sortBy)
 
         if (pageResponse != null) {
             ResponseEntity.ok(pageResponse)
         } else throw UserExceptionNotFound("Page not found.")
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/activity/{active}")
     private suspend fun listUsersActive(
         @PathVariable active: Boolean,
-        @RequestHeader token: String
+        @AuthenticationPrincipal user: User
     ): ResponseEntity<List<UserDTOresponse>> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo listado de usuarios activados" }
 
-        val res = userRepositoryCached.findByActivo(active).toList()
+        val res = service.findAllByActive(active)
 
         ResponseEntity.ok(userMapper.toDTO(res))
     }
-*/
+
     // "Find One" Methods
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/username/{username}")
@@ -265,160 +270,71 @@ class UserController
             ResponseEntity.ok(result)
         }
 
-    /*
-            // "Update" Methods
+    // "Update" Methods
 
-            @PutMapping("/me/update")
-            private suspend fun updateMySelf(
-                @RequestHeader token: String,
-                @Valid @RequestBody userDTOUpdated: UserDTOUpdated
-            ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
-                log.info { "Actualizando usuario" }
+    @PutMapping("/me/update")
+    private suspend fun updateMySelf(
+        @AuthenticationPrincipal user: User,
+        @Valid @RequestBody userDTOUpdated: UserDTOUpdated
+    ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
+        log.info { "Actualizando usuario" }
 
-                val user = jwtTokenUtils.getUserFromToken(token, userRepositoryCached)
-                    ?: throw UserExceptionNotFound("User not found")
+        val userSaved = service.updateMySelf(user, userDTOUpdated)
 
-                val updatedPassword = if (userDTOUpdated.password.isBlank()) user.password
-                else cipher(userDTOUpdated.password)
+        ResponseEntity.ok(userMapper.toDTO(userSaved))
+    }
 
-                if (userDTOUpdated.addresses.isNotEmpty()) {
-                    val addresses = mutableSetOf<String>()
-                    addresses.addAll(userDTOUpdated.addresses)
-                    addressRepositoryCached.findAllFromUserId(user.id!!).toSet().forEach { addresses.add(it.address) }
-                    addressRepositoryCached.deleteAllByUserId(user.id)
+    @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    private suspend fun updateAvatar(
+        @AuthenticationPrincipal user: User,
+        @RequestPart("file") file: MultipartFile
+    ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
+        val userSaved = service.updateAvatar(user, file)
 
-                    addresses.forEach { addressRepositoryCached.save(toAddress(user.id, it)) }
-                }
+        ResponseEntity.ok(userMapper.toDTO(userSaved))
+    }
 
-                val userUpdated = User(
-                    id = user.id,
-                    username = user.username,
-                    email = user.email,
-                    password = updatedPassword,
-                    phone = user.phone,
-                    avatar = user.avatar,
-                    role = user.role,
-                    createdAt = user.createdAt,
-                    active = user.active
-                )
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PutMapping("/activity/{email}")
+    private suspend fun switchActivityByEmail(
+        @PathVariable email: String,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<UserDTOresponse> =
+        withContext(Dispatchers.IO) {
+            log.info { "Cambio de actividad por email" }
 
-                val userSaved = userRepositoryCached.save(userUpdated)
+            val userSaved = service.switchActivity(email)
 
-                ResponseEntity.ok(userMapper.toDTO(userSaved))
-            }
+            ResponseEntity.ok(userMapper.toDTO(userSaved))
+        }
 
-            @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-            private suspend fun updateAvatar(
-                @RequestHeader token: String,
-                @RequestPart("file") file: MultipartFile
-            ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
-                val user = jwtTokenUtils.getUserFromToken(token, userRepositoryCached)
-                    ?: throw UserExceptionNotFound("User not found")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping("/role/{email}")
+    private suspend fun updateRoleByEmail(
+        @Valid @RequestBody userDTORoleUpdated: UserDTORoleUpdated,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
+        log.info { "Actualizando rol de usuario con email: ${userDTORoleUpdated.email}" }
 
-                val response = storageController.uploadFile(file)
-                val avatarUrl = response.body?.get("url")
-                    ?: throw UserExceptionNotFound("Url not found.")
+        val userSaved = service.updateRoleByEmail(userDTORoleUpdated)
 
-                val userUpdated = User(
-                    id = user.id,
-                    username = user.username,
-                    email = user.email,
-                    password = user.password,
-                    phone = user.phone,
-                    avatar = avatarUrl,
-                    role = user.role,
-                    createdAt = user.createdAt,
-                    active = user.active
-                )
+        ResponseEntity.ok(userMapper.toDTO(userSaved))
+    }
 
-                val userSaved = userRepositoryCached.save(userUpdated)
+    // "Delete" Methods
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @DeleteMapping("/delete/{email}")
+    private suspend fun deleteUser(
+        @PathVariable email: String,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
+        log.info { "Eliminando al usuario de forma definitiva junto a sus direcciones asociadas" }
 
-                ResponseEntity.ok(userMapper.toDTO(userSaved))
-            }
+        val deleted = service.delete(email)
 
-            @PutMapping("/activity/{email}")
-            private suspend fun switchActivityByEmail(
-                @PathVariable email: String,
-                @RequestHeader token: String
-            ): ResponseEntity<UserDTOresponse> =
-                withContext(Dispatchers.IO) {
-                    log.info { "Cambio de actividad por email" }
+        ResponseEntity.ok(userMapper.toDTO(deleted))
+    }
 
-                    val user = userRepositoryCached.findByEmail(email)
-                        ?: throw UserExceptionNotFound("User with email: $email not found")
-
-                    val userUpdateActivity = User(
-                        id = user.id,
-                        username = user.username,
-                        email = user.email,
-                        password = user.password,
-                        phone = user.phone,
-                        avatar = user.avatar,
-                        role = user.role,
-                        createdAt = user.createdAt,
-                        active = !user.active
-                    )
-
-                    val userSaved = userRepositoryCached.save(userUpdateActivity)
-
-                    ResponseEntity.ok(userMapper.toDTO(userSaved))
-                }
-
-            @PutMapping("/role/{email}")
-            private suspend fun updateRoleByEmail(
-                @Valid @RequestBody userDTORoleUpdated: UserDTORoleUpdated,
-                @RequestHeader token: String
-            ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
-                log.info { "Actualizando rol de usuario con email: ${userDTORoleUpdated.email}" }
-
-                val user = userRepositoryCached.findByEmail(userDTORoleUpdated.email)
-                    ?: throw UserExceptionNotFound("User with email: ${userDTORoleUpdated.email} not found")
-
-                val updatedRole =
-                    if (userDTORoleUpdated.role.name.uppercase() != (UserRole.USER.name) ||
-                        userDTORoleUpdated.role.name.uppercase() != (UserRole.ADMIN.name) ||
-                        userDTORoleUpdated.role.name.uppercase() != (UserRole.ADMIN.name)
-                    ) {
-                        user.role
-                    } else userDTORoleUpdated.role
-
-                val userUpdated = User(
-                    id = user.id,
-                    username = user.username,
-                    email = user.email,
-                    password = user.password,
-                    phone = user.phone,
-                    avatar = user.avatar,
-                    role = updatedRole,
-                    createdAt = user.createdAt,
-                    active = user.active
-                )
-
-                val userSaved = userRepositoryCached.save(userUpdated)
-
-                ResponseEntity.ok(userMapper.toDTO(userSaved))
-            }
-
-            // "Delete" Methods
-            @DeleteMapping("/delete/{email}")
-            private suspend fun deleteUser(
-                @PathVariable email: String,
-                @RequestHeader token: String
-            ): ResponseEntity<UserDTOresponse> =
-                withContext(Dispatchers.IO) {
-                    log.info { "Eliminando al usuario de forma definitiva junto a sus direcciones asociadas" }
-
-                    val user = userRepositoryCached.findByEmail(email)
-                        ?: throw UserExceptionNotFound("User with email: $email not found.")
-
-                    addressRepositoryCached.deleteAllByUserId(user.id!!)
-
-                    val deleted = userRepositoryCached.deleteById(user.id)
-                        ?: throw UserExceptionNotFound("User with email: $email not found.")
-
-                    ResponseEntity.ok(userMapper.toDTO(deleted))
-                }
-        */
     // "Me" Method
     @GetMapping("/me")
     suspend fun findMySelf(@AuthenticationPrincipal user: User): ResponseEntity<UserDTOresponse> =
@@ -427,82 +343,62 @@ class UserController
 
             ResponseEntity.ok(userMapper.toDTO(user))
         }
-    /*
-        // -- ADDRESSES --
 
-        // "Find All" Methods
-        @GetMapping("/list/address")
-        private suspend fun listAddresses(@RequestHeader token: String): ResponseEntity<List<Address>> =
-            withContext(Dispatchers.IO) {
-                log.info { "Obteniendo listado de direcciones" }
+    // -- ADDRESSES --
 
-                ResponseEntity.ok(addressRepositoryCached.findAll().toList())
-            }
+    // "Find All" Methods
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @GetMapping("/list/address")
+    private suspend fun listAddresses(@AuthenticationPrincipal user: User): ResponseEntity<List<Address>> =
+        withContext(Dispatchers.IO) {
+            log.info { "Obteniendo listado de direcciones" }
 
-        @GetMapping("/list/address/user/{userId}")
-        private suspend fun listAddressesByUserId(
-            @PathVariable userId: UUID,
-            @RequestHeader token: String
-        ): ResponseEntity<String> = withContext(Dispatchers.IO) {
-            log.info { "Obteniendo direcciones de usuario con id: $userId" }
-
-            val address = addressRepositoryCached.findAllFromUserId(userId).toList()
-
-            if (address.isEmpty()) throw AddressExceptionNotFound("Addresses with userId: $userId not found.")
-            else {
-                val add = ""
-                address.forEach { add.plus("${it.address},") }
-                add.dropLast(1) // asi quitamos la ultima coma
-                ResponseEntity.ok(add)
-            }
+            ResponseEntity.ok(service.findAllAddresses())
         }
 
-        // "Find One" Methods
-        @GetMapping("/address/{id}")
-        private suspend fun findById(@PathVariable id: UUID, @RequestHeader token: String): ResponseEntity<String> =
-            withContext(Dispatchers.IO) {
-                log.info { "Obteniendo direccion con id: $id" }
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @GetMapping("/list/address/user/{userId}")
+    private suspend fun listAddressesByUserId(
+        @PathVariable userId: UUID,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+        log.info { "Obteniendo direcciones de usuario con id: $userId" }
 
-                val address = addressRepositoryCached.findById(id)
-                    ?: throw AddressExceptionNotFound("Address with id: $id not found.")
+        ResponseEntity.ok(service.listAddressesByUserId(userId))
+    }
 
-                ResponseEntity.ok(address.address)
-            }
+    // "Find One" Methods
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @GetMapping("/address/{id}")
+    private suspend fun findById(@PathVariable id: UUID, @AuthenticationPrincipal user: User): ResponseEntity<String> =
+        withContext(Dispatchers.IO) {
+            log.info { "Obteniendo direccion con id: $id" }
 
-        @GetMapping("/address/{name}")
-        private suspend fun findByName(@PathVariable name: String, @RequestHeader token: String): ResponseEntity<String> =
-            withContext(Dispatchers.IO) {
-                log.info { "Buscando direccion con nombre: $name" }
+            ResponseEntity.ok(service.findAddressById(id))
+        }
 
-                val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
-                    ?: throw AddressExceptionNotFound("Address with name: $name not found.")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @GetMapping("/address/{name}")
+    private suspend fun findByName(
+        @PathVariable name: String,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<String> =
+        withContext(Dispatchers.IO) {
+            log.info { "Buscando direccion con nombre: $name" }
 
-                ResponseEntity.ok(address.address)
-            }
+            ResponseEntity.ok(service.findAddressByName(name))
+        }
 
-        // "Delete" Methods
+    // "Delete" Methods
 
-        @DeleteMapping("/address/{name}")
-        private suspend fun deleteAddress(
-            @PathVariable name: String,
-            @RequestHeader token: String
-        ): ResponseEntity<String> = withContext(Dispatchers.IO) {
-            log.info { "Eliminando direccion: $name" }
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @DeleteMapping("/address/{name}")
+    private suspend fun deleteAddress(
+        @PathVariable name: String,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+        log.info { "Eliminando direccion: $name" }
 
-            val userDto = jwtTokenUtils.getUserDTOFromToken(token, userRepositoryCached, userMapper)
-                ?: throw UserExceptionNotFound("User not found.")
-
-            val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
-            val user = userRepositoryCached.findByEmail(userDto.email)
-
-            if (address == null) throw AddressExceptionNotFound("Address not found.")
-            if (user == null) throw UserExceptionNotFound("User not found.")
-
-            val addresses = addressRepositoryCached.findAllFromUserId(user.id!!).toSet()
-
-            if (address.userId == user.id && addresses.size > 1) {
-                val addr = addressRepositoryCached.deleteById(address.id!!)
-                ResponseEntity.ok("Direccion $addr eliminada.")
-            } else throw UserExceptionBadRequest("No ha sido posible eliminar la direccion.")
-        }*/
+        ResponseEntity.ok(service.deleteAddress(name, user))
+    }
 }

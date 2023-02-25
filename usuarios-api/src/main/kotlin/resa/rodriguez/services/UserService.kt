@@ -2,21 +2,30 @@ package resa.rodriguez.services
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import resa.rodriguez.dto.UserDTOcreate
-import resa.rodriguez.dto.UserDTOregister
+import org.springframework.web.multipart.MultipartFile
+import resa.rodriguez.controllers.StorageController
+import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
+import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.mappers.fromDTOtoAddresses
 import resa.rodriguez.mappers.fromDTOtoUser
+import resa.rodriguez.mappers.toAddress
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.repositories.address.AddressRepositoryCached
@@ -30,9 +39,10 @@ class UserService
 @Autowired constructor(
     private val userRepositoryCached: UserRepositoryCached,
     private val addressRepositoryCached: AddressRepositoryCached,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val storageController: StorageController,
+    private val mapper: UserMapper
 ) : UserDetailsService {
-
     // Spring Security, no se puede suspender
     override fun loadUserByUsername(username: String): UserDetails = runBlocking {
         userRepositoryCached.findByUsername(username)
@@ -87,12 +97,10 @@ class UserService
 
     // "Find All" Methods
     suspend fun listUsers(): List<User> =
-        withContext(
-            Dispatchers.IO
-        ) {
+        withContext(Dispatchers.IO) {
             log.info { "Obteniendo listado de usuarios" }
 
-            return@withContext userRepositoryCached.findAll().toList<User>()
+            userRepositoryCached.findAll().toList()
         }
 
     suspend fun findByUsername(username: String): User? = withContext(Dispatchers.IO) {
@@ -126,5 +134,166 @@ class UserService
         log.info { "Obteniendo direcciones del usuario: $userId " }
 
         return@withContext addressRepositoryCached.findAllFromUserId(userId)
+    }
+
+    suspend fun findAllPaging(page: Int, size: Int, sortBy: String): Page<UserDTOresponse>? =
+        withContext(Dispatchers.IO) {
+            log.info { "Obteniendo usuarios de la pagina: $page " }
+
+            val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
+            userRepositoryCached.findAllPaged(pageRequest).firstOrNull()
+        }
+
+    suspend fun findAllByActive(active: Boolean): List<User> = withContext(Dispatchers.IO) {
+        log.info { "Obteniendo todos los usuarios con actividad = $active" }
+
+        userRepositoryCached.findByActivo(active).toList()
+    }
+
+    suspend fun updateMySelf(user: User, userDTOUpdated: UserDTOUpdated): User = withContext(Dispatchers.IO) {
+        val updatedPassword = if (userDTOUpdated.password.isBlank()) user.password
+        else passwordEncoder.encode(userDTOUpdated.password)
+
+        if (userDTOUpdated.addresses.isNotEmpty()) {
+            val addresses = mutableSetOf<String>()
+            addresses.addAll(userDTOUpdated.addresses)
+            addressRepositoryCached.findAllFromUserId(user.id!!).toSet().forEach { addresses.add(it.address) }
+            addressRepositoryCached.deleteAllByUserId(user.id)
+
+            addresses.forEach { addressRepositoryCached.save(toAddress(user.id, it)) }
+        }
+
+        val userUpdated = User(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            password = updatedPassword,
+            phone = user.phone,
+            avatar = user.avatar,
+            role = user.role,
+            createdAt = user.createdAt,
+            active = user.active
+        )
+
+        userRepositoryCached.save(userUpdated)
+    }
+
+    suspend fun updateAvatar(user: User, file: MultipartFile): User = withContext(Dispatchers.IO) {
+        val response = storageController.uploadFile(file)
+        val avatarUrl = response.body?.get("url")
+            ?: throw UserExceptionNotFound("Url not found.")
+
+        val userUpdated = User(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            password = user.password,
+            phone = user.phone,
+            avatar = avatarUrl,
+            role = user.role,
+            createdAt = user.createdAt,
+            active = user.active
+        )
+
+        userRepositoryCached.save(userUpdated)
+    }
+
+    suspend fun switchActivity(email: String): User = withContext(Dispatchers.IO) {
+        val user = userRepositoryCached.findByEmail(email)
+            ?: throw UserExceptionNotFound("User with email: $email not found")
+
+        val userUpdateActivity = User(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            password = user.password,
+            phone = user.phone,
+            avatar = user.avatar,
+            role = user.role,
+            createdAt = user.createdAt,
+            active = !user.active
+        )
+
+        userRepositoryCached.save(userUpdateActivity)
+    }
+
+    suspend fun updateRoleByEmail(userDTORoleUpdated: UserDTORoleUpdated): User = withContext(Dispatchers.IO) {
+        val user = userRepositoryCached.findByEmail(userDTORoleUpdated.email)
+            ?: throw UserExceptionNotFound("User with email: ${userDTORoleUpdated.email} not found")
+
+        val updatedRole =
+            if (userDTORoleUpdated.role.name.uppercase() != (User.UserRole.USER.name) ||
+                userDTORoleUpdated.role.name.uppercase() != (User.UserRole.ADMIN.name) ||
+                userDTORoleUpdated.role.name.uppercase() != (User.UserRole.ADMIN.name)
+            ) {
+                user.role
+            } else userDTORoleUpdated.role
+
+        val userUpdated = User(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            password = user.password,
+            phone = user.phone,
+            avatar = user.avatar,
+            role = updatedRole,
+            createdAt = user.createdAt,
+            active = user.active
+        )
+
+        userRepositoryCached.save(userUpdated)
+    }
+
+    suspend fun delete(email: String): User = withContext(Dispatchers.IO) {
+        val user = userRepositoryCached.findByEmail(email)
+            ?: throw UserExceptionNotFound("User with email: $email not found.")
+
+        addressRepositoryCached.deleteAllByUserId(user.id!!)
+
+        userRepositoryCached.deleteById(user.id)
+            ?: throw UserExceptionNotFound("User with email: $email not found.")
+    }
+
+    suspend fun findAllAddresses(): List<Address> = withContext(Dispatchers.IO) {
+        addressRepositoryCached.findAll().toList()
+    }
+
+    suspend fun listAddressesByUserId(userId: UUID): String = withContext(Dispatchers.IO) {
+        val address = addressRepositoryCached.findAllFromUserId(userId).toList()
+
+        if (address.isEmpty()) throw AddressExceptionNotFound("Addresses with userId: $userId not found.")
+        else {
+            val add = ""
+            address.forEach { add.plus("${it.address},") }
+            add.dropLast(1) // asi quitamos la ultima coma
+            add
+        }
+    }
+
+    suspend fun findAddressById(id: UUID): String = withContext(Dispatchers.IO) {
+        val addr = addressRepositoryCached.findById(id)
+            ?: throw AddressExceptionNotFound("Address with id: $id not found.")
+        addr.address
+    }
+
+    suspend fun findAddressByName(name: String): String = withContext(Dispatchers.IO) {
+        val addr = addressRepositoryCached.findAllByAddress(name).firstOrNull()
+            ?: throw AddressExceptionNotFound("Address with name: $name not found.")
+        addr.address
+    }
+
+    suspend fun deleteAddress(name: String, user: User): String = withContext(Dispatchers.IO) {
+        val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
+        val u = userRepositoryCached.findByEmail(user.email)
+
+        if (address == null) throw AddressExceptionNotFound("Address not found.")
+        if (u == null) throw UserExceptionNotFound("User not found.")
+
+        val addresses = addressRepositoryCached.findAllFromUserId(u.id!!).toSet()
+
+        if (address.userId == u.id && addresses.size > 1) {
+            val addr = addressRepositoryCached.deleteById(address.id!!)
+            "Direccion $addr eliminada."
+        } else throw UserExceptionBadRequest("No ha sido posible eliminar la direccion.")
     }
 }
