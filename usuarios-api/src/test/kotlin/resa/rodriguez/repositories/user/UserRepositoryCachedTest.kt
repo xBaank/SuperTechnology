@@ -16,10 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import resa.rodriguez.models.User
-import resa.rodriguez.models.UserRole
 import java.time.LocalDate
 import java.util.*
-import kotlin.streams.toList
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
@@ -31,7 +29,7 @@ internal class UserRepositoryCachedTest {
         "uwu",
         "1234567",
         "",
-        UserRole.SUPER_ADMIN,
+        User.UserRole.SUPER_ADMIN,
         LocalDate.now(),
         true
     )
@@ -52,7 +50,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findAll().toList()
 
         assertAll(
-            { Assertions.assertNotNull(result) },
+            { assertNotNull(result) },
             { assertEquals(user.id, result[0].id) }
         )
         coVerify(exactly = 1) { repo.findAll() }
@@ -66,7 +64,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findAll().toList()
 
         assertAll(
-            { Assertions.assertNotNull(result) },
+            { assertNotNull(result) },
             { assertTrue(result.isEmpty()) }
         )
         coVerify { repo.findAll() }
@@ -82,8 +80,8 @@ internal class UserRepositoryCachedTest {
         val result = repository.findAllPaged(pageRequest).toList()
 
         assertAll(
-            { Assertions.assertNotNull(result) },
-            { assertEquals(user.id, result[0].get().toList()[0].id) }
+            { assertNotNull(result) },
+            { assertEquals(user.username, result[0].get().toList()[0].username) }
         )
         coVerify { repo.findAllBy(any()) }
     }
@@ -98,7 +96,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findAllPaged(pageRequest).toList()
 
         assertAll(
-            { Assertions.assertNotNull(result) },
+            { assertNotNull(result) },
             { assertTrue(result.isEmpty()) }
         )
         coVerify { repo.findAllBy(any()) }
@@ -112,7 +110,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findByActivo(true).toList()
 
         assertAll(
-            { Assertions.assertNotNull(result) },
+            { assertNotNull(result) },
             { assertEquals(user.id, result[0].id) }
         )
         coVerify { repo.findAll() }
@@ -126,7 +124,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findByActivo(true).toList()
 
         assertAll(
-            { Assertions.assertNotNull(result) },
+            { assertNotNull(result) },
             { assertTrue(result.isEmpty()) }
         )
         coVerify(exactly = 1) { repo.findAll() }
@@ -154,7 +152,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findById(user.id!!)
 
         assertAll(
-            { Assertions.assertNull(result) }
+            { assertNull(result) }
         )
         coVerify {repo.findById(any())}
     }
@@ -167,7 +165,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findByUsername(user.username)
 
         assertAll(
-            { Assertions.assertNotNull(result) },
+            { assertNotNull(result) },
             { assertEquals(user.id, result?.id) }
         )
         coVerify { repo.findAll() }
@@ -181,7 +179,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findByUsername(user.username)
 
         assertAll(
-            { Assertions.assertNull(result) }
+            { assertNull(result) }
         )
         coVerify { repo.findAll() }
     }
@@ -208,7 +206,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findByEmail(user.email)
 
         assertAll(
-            { Assertions.assertNull(result) }
+            { assertNull(result) }
         )
         coVerify {repo.findById(any())}
     }
@@ -235,7 +233,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.findByPhone(user.phone)
 
         assertAll(
-            { Assertions.assertNull(result) }
+            { assertNull(result) }
         )
         coVerify {repo.findById(any())}
     }
@@ -311,7 +309,7 @@ internal class UserRepositoryCachedTest {
         val result = repository.deleteById(user.id!!)
 
         assertAll(
-            { Assertions.assertNull(result) }
+            { assertNull(result) }
         )
 
         coVerify { repo.findById(any()) }

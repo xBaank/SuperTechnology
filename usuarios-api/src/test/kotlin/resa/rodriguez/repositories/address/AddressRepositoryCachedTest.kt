@@ -17,7 +17,6 @@ import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.extension.ExtendWith
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
-import resa.rodriguez.models.UserRole
 import resa.rodriguez.repositories.user.UserRepository
 import java.time.LocalDate
 import java.util.*
@@ -38,7 +37,7 @@ internal class AddressRepositoryCachedTest {
         "uwu",
         "1234567",
         "",
-        UserRole.SUPER_ADMIN,
+        User.UserRole.SUPER_ADMIN,
         LocalDate.now(),
         true
     )
