@@ -15,7 +15,9 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
+import resa.rodriguez.repositories.address.AddressRepository
 import java.time.LocalDate
 import java.util.*
 
@@ -33,9 +35,13 @@ internal class UserRepositoryCachedTest {
         LocalDate.now(),
         true
     )
+    private val address = Address(UUID.randomUUID(), user.id!!, "AddressTest")
 
     @MockK
     lateinit var repo: UserRepository
+
+    @MockK
+    lateinit var aRepo: AddressRepository
 
     @InjectMockKs
     lateinit var repository: UserRepositoryCached
@@ -74,6 +80,7 @@ internal class UserRepositoryCachedTest {
     @Test
     fun findAllPaged() = runTest {
         coEvery { repo.findAllBy(any()) } returns flowOf(user)
+        coEvery { aRepo.findAllByUserId(any()) } returns flowOf(address)
         coEvery { repo.count() } returns 1
 
         val pageRequest = PageRequest.of(0, 10, Sort.Direction.ASC, "created_at")

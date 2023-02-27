@@ -22,7 +22,6 @@ import resa.rodriguez.dto.*
 import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
-import resa.rodriguez.mappers.UserMapper
 import resa.rodriguez.mappers.fromDTOtoAddresses
 import resa.rodriguez.mappers.fromDTOtoUser
 import resa.rodriguez.mappers.toAddress
@@ -41,7 +40,6 @@ class UserService
     private val addressRepositoryCached: AddressRepositoryCached,
     private val passwordEncoder: PasswordEncoder,
     private val storageController: StorageController,
-    private val mapper: UserMapper
 ) : UserDetailsService {
     // Spring Security, no se puede suspender
     override fun loadUserByUsername(username: String): UserDetails = runBlocking {
@@ -69,7 +67,7 @@ class UserService
                 val addresses = userDto.fromDTOtoAddresses(userSaved.id!!)
                 addresses.forEach { addressRepositoryCached.save(it) }
 
-                return@withContext userSaved
+                userSaved
             } catch (e: Exception) {
                 throw UserExceptionBadRequest(e.message)
             }
@@ -92,7 +90,7 @@ class UserService
             val addresses = userDTOcreate.fromDTOtoAddresses(userSaved.id!!)
             addresses.forEach { addressRepositoryCached.save(it) }
 
-            return@withContext userSaved
+            userSaved
         }
 
     // "Find All" Methods
@@ -103,28 +101,28 @@ class UserService
             userRepositoryCached.findAll().toList()
         }
 
-    suspend fun findByUsername(username: String): User? = withContext(Dispatchers.IO) {
+    suspend fun findByUsername(username: String): User = withContext(Dispatchers.IO) {
         log.info { "Obteniendo usuario con username: $username " }
 
-        return@withContext userRepositoryCached.findByUsername(username)
+        userRepositoryCached.findByUsername(username) ?: throw UserExceptionNotFound("User with username $username not found.")
     }
 
-    suspend fun findById(id: UUID): User? = withContext(Dispatchers.IO) {
+    suspend fun findById(id: UUID): User = withContext(Dispatchers.IO) {
         log.info { "Obteniendo usuario con id: $id" }
 
-        return@withContext userRepositoryCached.findById(id)
+        userRepositoryCached.findById(id) ?: throw UserExceptionNotFound("User with id $id not found.")
     }
 
-    suspend fun findByEmail(email: String): User? = withContext(Dispatchers.IO) {
+    suspend fun findByEmail(email: String): User = withContext(Dispatchers.IO) {
         log.info { "Obteniendo usuario con email: $email" }
 
-        return@withContext userRepositoryCached.findByEmail(email)
+        userRepositoryCached.findByEmail(email) ?: throw UserExceptionNotFound("User with email $email not found.")
     }
 
-    suspend fun findByUserPhone(phone: String): User? = withContext(Dispatchers.IO) {
+    suspend fun findByUserPhone(phone: String): User = withContext(Dispatchers.IO) {
         log.info { "Obteniendo usuario con phone: $phone" }
 
-        return@withContext userRepositoryCached.findByPhone(phone)
+        userRepositoryCached.findByPhone(phone) ?: throw UserExceptionNotFound("User with phone $phone not found.")
     }
 
     // ADDRESSES
@@ -133,15 +131,15 @@ class UserService
     suspend fun findAllFromUserId(userId: UUID): Flow<Address> = withContext(Dispatchers.IO) {
         log.info { "Obteniendo direcciones del usuario: $userId " }
 
-        return@withContext addressRepositoryCached.findAllFromUserId(userId)
+        addressRepositoryCached.findAllFromUserId(userId)
     }
 
-    suspend fun findAllPaging(page: Int, size: Int, sortBy: String): Page<UserDTOresponse>? =
+    suspend fun findAllPaging(page: Int, size: Int, sortBy: String): Page<UserDTOresponse> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo usuarios de la pagina: $page " }
 
             val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
-            userRepositoryCached.findAllPaged(pageRequest).firstOrNull()
+            userRepositoryCached.findAllPaged(pageRequest).firstOrNull() ?: throw UserExceptionNotFound("Page $page not found.")
         }
 
     suspend fun findAllByActive(active: Boolean): List<User> = withContext(Dispatchers.IO) {
@@ -200,7 +198,7 @@ class UserService
 
     suspend fun switchActivity(email: String): User = withContext(Dispatchers.IO) {
         val user = userRepositoryCached.findByEmail(email)
-            ?: throw UserExceptionNotFound("User with email: $email not found")
+            ?: throw UserExceptionNotFound("User with email: $email not found.")
 
         val userUpdateActivity = User(
             id = user.id,
@@ -219,7 +217,7 @@ class UserService
 
     suspend fun updateRoleByEmail(userDTORoleUpdated: UserDTORoleUpdated): User = withContext(Dispatchers.IO) {
         val user = userRepositoryCached.findByEmail(userDTORoleUpdated.email)
-            ?: throw UserExceptionNotFound("User with email: ${userDTORoleUpdated.email} not found")
+            ?: throw UserExceptionNotFound("User with email: ${userDTORoleUpdated.email} not found.")
 
         val updatedRole =
             if (userDTORoleUpdated.role.name.uppercase() != (User.UserRole.USER.name) ||
@@ -263,10 +261,9 @@ class UserService
 
         if (address.isEmpty()) throw AddressExceptionNotFound("Addresses with userId: $userId not found.")
         else {
-            val add = ""
-            address.forEach { add.plus("${it.address},") }
+            var add = ""
+            address.forEach { add += "${it.address}," }
             add.dropLast(1) // asi quitamos la ultima coma
-            add
         }
     }
 
@@ -291,9 +288,9 @@ class UserService
 
         val addresses = addressRepositoryCached.findAllFromUserId(u.id!!).toSet()
 
-        if (address.userId == u.id && addresses.size > 1) {
+        if (address.userId == u.id && addresses.size >= 1) {
             val addr = addressRepositoryCached.deleteById(address.id!!)
-            "Direccion $addr eliminada."
+            "Direccion ${addr?.address} eliminada."
         } else throw UserExceptionBadRequest("No ha sido posible eliminar la direccion.")
     }
 }
