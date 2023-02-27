@@ -1,10 +1,7 @@
 package resa.rodriguez.repositories.user
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.CacheEvict
@@ -15,8 +12,9 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 import resa.rodriguez.dto.UserDTOresponse
-import resa.rodriguez.mappers.UserMapper
+import resa.rodriguez.mappers.toDTO
 import resa.rodriguez.models.User
+import resa.rodriguez.repositories.address.AddressRepository
 import java.util.*
 
 /**
@@ -28,14 +26,17 @@ import java.util.*
 class UserRepositoryCached
 @Autowired constructor(
     private val repo: UserRepository,
-    private val userMapper: UserMapper
+    private val aRepo: AddressRepository,
 ) : IUserRepositoryCached {
     override suspend fun findAll(): Flow<User> = withContext(Dispatchers.IO) {
         repo.findAll()
     }
 
     override suspend fun findAllPaged(page: PageRequest): Flow<Page<UserDTOresponse>> {
-        return repo.findAllBy(page).toList().map { userMapper.toDTO(it) }
+        return repo.findAllBy(page).toList().map {
+            val addresses = it.id?.let { id -> aRepo.findAllByUserId(id).toSet() } ?: setOf()
+            it.toDTO(addresses)
+        }
             .windowed(page.pageSize, page.pageSize, true)
             .map { PageImpl(it, page, repo.count()) }
             .asFlow()

@@ -34,7 +34,7 @@ class StorageService(
 
     override fun init() {
         try {
-            if (!Files.exists(rootLocation)) Files.createDirectory(rootLocation)
+            if (!Files.exists(rootLocation)) Files.createDirectories(rootLocation)
         } catch (e: IOException) {
             throw StorageExceptionBadRequest("Unable to initialize storage system.", e)
         }

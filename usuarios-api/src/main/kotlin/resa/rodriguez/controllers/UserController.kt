@@ -23,10 +23,13 @@ import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
-import resa.rodriguez.mappers.UserMapper
+import resa.rodriguez.mappers.toDTO
+import resa.rodriguez.mappers.toDTOlist
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
+import resa.rodriguez.repositories.address.AddressRepositoryCached
 import resa.rodriguez.services.*
+import resa.rodriguez.validators.validate
 import java.util.*
 
 private val log = KotlinLogging.logger {}
@@ -42,8 +45,8 @@ private val log = KotlinLogging.logger {}
 @RequestMapping(APIConfig.API_PATH)
 class UserController
 @Autowired constructor(
-    private val userMapper: UserMapper,
     private val service: UserService,
+    private val aRepo: AddressRepositoryCached,
     private val authenticationManager: AuthenticationManager,
     private val jwtTokenUtils: JwtTokensUtils,
 ) {
@@ -71,11 +74,12 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Registro de usuario: ${userDto.username}" }
 
+            userDto.validate()
             try {
-
                 val userSaved = service.register(userDto)
+                val addresses = userSaved.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-                ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved)))
+                ResponseEntity.ok(UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)))
             } catch (e: Exception) {
                 throw UserExceptionBadRequest(e.message)
             }
@@ -88,9 +92,11 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Creando usuario por parte de un administrador" }
 
+            userDTOcreate.validate()
             val userSaved = service.create(userDTOcreate)
+            val addresses = userSaved.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-            ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved)))
+            ResponseEntity.ok(UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)))
         }
 
     // El createByAdmin que se usara por parte del cliente es el superior, este simplemente es para la carga de datos inicial
@@ -98,15 +104,18 @@ class UserController
         withContext(Dispatchers.IO) {
             log.info { "Creando usuario por parte de un administrador || Carga de datos inicial" }
 
+            userDTOcreate.validate()
             val userSaved = service.create(userDTOcreate)
+            val addresses = userSaved.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-            ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(userSaved), jwtTokenUtils.create(userSaved)))
+            ResponseEntity.ok(UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)))
         }
 
     @GetMapping("/login")
     suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<UserDTOwithToken> {
         log.info { "Login de usuario: ${userDto.username}" }
 
+        userDto.validate()
         val authentication: Authentication = authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(
                 userDto.username,
@@ -118,8 +127,9 @@ class UserController
 
         // Devolvemos al usuario autenticado
         val user = authentication.principal as User
+        val addresses = user.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-        return ResponseEntity.ok(UserDTOwithToken(userMapper.toDTO(user), jwtTokenUtils.create(user)))
+        return ResponseEntity.ok(UserDTOwithToken(user.toDTO(addresses), jwtTokenUtils.create(user)))
     }
 
     // "Find All" Methods
@@ -129,7 +139,7 @@ class UserController
         log.info { "Obteniendo listado de usuarios" }
 
         val res = service.listUsers()
-        return ResponseEntity.ok(userMapper.toDTO(res))
+        return ResponseEntity.ok(res.toDTOlist(aRepo))
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
@@ -159,7 +169,7 @@ class UserController
 
         val res = service.findAllByActive(active)
 
-        ResponseEntity.ok(userMapper.toDTO(res))
+        ResponseEntity.ok(res.toDTOlist(aRepo))
     }
 
     // "Find One" Methods
@@ -173,21 +183,9 @@ class UserController
             log.info { "Obteniendo usuario con username: $username" }
 
             val user = service.findByUsername(username)
-
             val addresses = service.findAllFromUserId(user?.id!!).toSet()
-            val addr = mutableSetOf<String>()
-            addresses.forEach { addr.add(it.address) }
-            val result = UserDTOresponse(
-                username = user.username,
-                email = user.email,
-                role = user.role,
-                addresses = addr,
-                avatar = user.avatar,
-                createdAt = user.createdAt,
-                active = user.active
-            )
 
-            ResponseEntity.ok(result)
+            ResponseEntity.ok(user.toDTO(addresses))
         }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
@@ -200,21 +198,9 @@ class UserController
             log.info { "Obteniendo usuario con id: $userId" }
 
             val user = service.findById(userId)
+            val addresses = service.findAllFromUserId(user.id!!).toSet()
 
-            val addresses = service.findAllFromUserId(user?.id!!).toSet()
-            val addr = mutableSetOf<String>()
-            addresses.forEach { addr.add(it.address) }
-            val result = UserDTOresponse(
-                username = user.username,
-                email = user.email,
-                role = user.role,
-                addresses = addr,
-                avatar = user.avatar,
-                createdAt = user.createdAt,
-                active = user.active
-            )
-
-            ResponseEntity.ok(result)
+            ResponseEntity.ok(user.toDTO(addresses))
         }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
@@ -227,21 +213,9 @@ class UserController
             log.info { "Obteniendo usuario con email: $userEmail" }
 
             val user = service.findByEmail(userEmail)
-
             val addresses = service.findAllFromUserId(user?.id!!).toSet()
-            val addr = mutableSetOf<String>()
-            addresses.forEach { addr.add(it.address) }
-            val result = UserDTOresponse(
-                username = user.username,
-                email = user.email,
-                role = user.role,
-                addresses = addr,
-                avatar = user.avatar,
-                createdAt = user.createdAt,
-                active = user.active
-            )
 
-            ResponseEntity.ok(result)
+            ResponseEntity.ok(user.toDTO(addresses))
         }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
@@ -253,21 +227,9 @@ class UserController
             log.info { "Obteniendo usuario con telefono: $userPhone" }
 
             val user = service.findByUserPhone(userPhone)
-
             val addresses = service.findAllFromUserId(user?.id!!).toSet()
-            val addr = mutableSetOf<String>()
-            addresses.forEach { addr.add(it.address) }
-            val result = UserDTOresponse(
-                username = user.username,
-                email = user.email,
-                role = user.role,
-                addresses = addr,
-                avatar = user.avatar,
-                createdAt = user.createdAt,
-                active = user.active
-            )
 
-            ResponseEntity.ok(result)
+            ResponseEntity.ok(user.toDTO(addresses))
         }
 
     // "Update" Methods
@@ -279,9 +241,11 @@ class UserController
     ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
         log.info { "Actualizando usuario" }
 
+        userDTOUpdated.validate()
         val userSaved = service.updateMySelf(user, userDTOUpdated)
+        val addresses = userSaved.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-        ResponseEntity.ok(userMapper.toDTO(userSaved))
+        ResponseEntity.ok(userSaved.toDTO(addresses))
     }
 
     @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
@@ -290,8 +254,9 @@ class UserController
         @RequestPart("file") file: MultipartFile
     ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
         val userSaved = service.updateAvatar(user, file)
+        val addresses = userSaved.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-        ResponseEntity.ok(userMapper.toDTO(userSaved))
+        ResponseEntity.ok(userSaved.toDTO(addresses))
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
@@ -304,8 +269,9 @@ class UserController
             log.info { "Cambio de actividad por email" }
 
             val userSaved = service.switchActivity(email)
+            val addresses = userSaved.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-            ResponseEntity.ok(userMapper.toDTO(userSaved))
+            ResponseEntity.ok(userSaved.toDTO(addresses))
         }
 
     @PreAuthorize("hasRole('SUPER_ADMIN')")
@@ -316,9 +282,11 @@ class UserController
     ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
         log.info { "Actualizando rol de usuario con email: ${userDTORoleUpdated.email}" }
 
+        userDTORoleUpdated.validate()
         val userSaved = service.updateRoleByEmail(userDTORoleUpdated)
+        val addresses = userSaved.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-        ResponseEntity.ok(userMapper.toDTO(userSaved))
+        ResponseEntity.ok(userSaved.toDTO(addresses))
     }
 
     // "Delete" Methods
@@ -331,8 +299,9 @@ class UserController
         log.info { "Eliminando al usuario de forma definitiva junto a sus direcciones asociadas" }
 
         val deleted = service.delete(email)
+        val addresses = deleted.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-        ResponseEntity.ok(userMapper.toDTO(deleted))
+        ResponseEntity.ok(deleted.toDTO(addresses))
     }
 
     // "Me" Method
@@ -340,8 +309,9 @@ class UserController
     suspend fun findMySelf(@AuthenticationPrincipal user: User): ResponseEntity<UserDTOresponse> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo datos del usuario." }
+            val addresses = user.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-            ResponseEntity.ok(userMapper.toDTO(user))
+            ResponseEntity.ok(user.toDTO(addresses))
         }
 
     // -- ADDRESSES --

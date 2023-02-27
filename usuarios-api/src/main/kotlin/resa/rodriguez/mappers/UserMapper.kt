@@ -1,15 +1,13 @@
 package resa.rodriguez.mappers
 
 import kotlinx.coroutines.flow.toSet
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import resa.rodriguez.dto.UserDTOUpdated
 import resa.rodriguez.dto.UserDTOcreate
 import resa.rodriguez.dto.UserDTOregister
 import resa.rodriguez.dto.UserDTOresponse
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
-import resa.rodriguez.repositories.address.AddressRepository
+import resa.rodriguez.repositories.address.AddressRepositoryCached
 import java.time.LocalDate
 import java.util.*
 
@@ -18,29 +16,25 @@ import java.util.*
  *
  * @property aRepo
  */
-@Service
-class UserMapper
-@Autowired constructor(private val aRepo: AddressRepository) {
-    suspend fun toDTO(user: User): UserDTOresponse {
-        val addresses = aRepo.findAllByUserId(user.id!!).toSet()
-        val addressesString = mutableSetOf<String>()
-        addresses.forEach { addressesString.add(it.address) }
-        return UserDTOresponse(
-            username = user.username,
-            email = user.email,
-            role = user.role,
-            addresses = addressesString,
-            avatar = user.avatar,
-            createdAt = user.createdAt,
-            active = user.active
-        )
-    }
 
-    suspend fun toDTO(users: List<User>): List<UserDTOresponse> {
-        val res = mutableListOf<UserDTOresponse>()
-        users.forEach { res.add(toDTO(it)) }
-        return res
-    }
+fun User.toDTO(addresses: Set<Address>): UserDTOresponse {
+    val addressesString = mutableSetOf<String>()
+    addresses.forEach { addressesString.add(it.address) }
+    return UserDTOresponse(
+        username = username,
+        email = email,
+        role = role,
+        addresses = addressesString,
+        avatar = avatar,
+        createdAt = createdAt,
+        active = active
+    )
+}
+
+suspend fun List<User>.toDTOlist(aRepo: AddressRepositoryCached): List<UserDTOresponse> {
+    val listDTO = mutableListOf<UserDTOresponse>()
+    forEach { listDTO.add(it.toDTO(it.id?.let { it1 -> aRepo.findAllFromUserId(it1).toSet() } ?: setOf())) }
+    return listDTO
 }
 
 fun UserDTOregister.fromDTOtoUser(): User? {
