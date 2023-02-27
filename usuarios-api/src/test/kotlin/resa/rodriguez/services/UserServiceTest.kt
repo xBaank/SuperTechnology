@@ -50,11 +50,11 @@ class UserServiceTest {
     )
     private val address = Address(UUID.randomUUID(), entity.id!!, dto.addresses.first())
 
-    @MockK lateinit var uRepo: UserRepositoryCached
-    @MockK lateinit var aRepo: AddressRepositoryCached
-    @MockK lateinit var passwordEncoder: PasswordEncoder
-    @MockK lateinit var storageController: StorageController
-    @InjectMockKs lateinit var service: UserService
+    @MockK private lateinit var uRepo: UserRepositoryCached
+    @MockK private lateinit var aRepo: AddressRepositoryCached
+    @MockK private lateinit var passwordEncoder: PasswordEncoder
+    @MockK private lateinit var storageController: StorageController
+    @InjectMockKs private lateinit var service: UserService
 
     init { MockKAnnotations.init(this) }
 
