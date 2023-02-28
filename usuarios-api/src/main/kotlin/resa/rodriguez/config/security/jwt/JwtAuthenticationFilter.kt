@@ -1,9 +1,11 @@
 package resa.rodriguez.config.security.jwt
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -18,12 +20,13 @@ class JwtAuthenticationFilter(
     private val authenticationManager: AuthenticationManager
 ) : UsernamePasswordAuthenticationFilter() {
 
+    @OptIn(ExperimentalSerializationApi::class)
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
-        val credentials = ObjectMapper().readValue(request.inputStream, UserDTOlogin::class.java)
+        val credentials = Json.decodeFromStream<UserDTOlogin>(request.inputStream)
 
         val auth = UsernamePasswordAuthenticationToken(
-            credentials?.username,
-            credentials?.password
+            credentials.username,
+            credentials.password
         )
         return authenticationManager.authenticate(auth)
     }

@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
 class EncoderConfig {
-    // Siempre que se inyecte un PasswordEncoder se inyectará este
+    // BCrypt de Spring
     @Bean
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()

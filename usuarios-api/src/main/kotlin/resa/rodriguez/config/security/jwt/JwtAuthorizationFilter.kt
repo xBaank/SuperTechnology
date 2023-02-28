@@ -34,7 +34,7 @@ class JwtAuthorizationFilter(
         }
         getAuthentication(header.substring(7))?.also {
             SecurityContextHolder.getContext().authentication = it
-            println(it)
+            //println(it)
         }
         chain.doFilter(req, res)
     }
@@ -47,8 +47,6 @@ class JwtAuthorizationFilter(
         val username = tokenDecoded.getClaim("username").toString().replace("\"", "")
 
         val user = service.loadUserByUsername(username)
-
-        System.err.println(user)
 
         return@runBlocking UsernamePasswordAuthenticationToken(
             user,

@@ -21,6 +21,7 @@ import java.util.*
  * Repositorio cacheado de usuarios
  *
  * @property repo
+ * @property aRepo
  */
 @Repository
 class UserRepositoryCached

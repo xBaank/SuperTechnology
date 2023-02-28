@@ -35,11 +35,7 @@ import java.util.*
 private val log = KotlinLogging.logger {}
 
 /**
- * Controlador para el manejo de distintos repositorios
- *
- * @property userMapper
- * @property userRepositoryCached
- * @property addressRepositoryCached
+ * Controlador para manejar a los usuarios
  */
 @RestController
 @RequestMapping(APIConfig.API_PATH)
@@ -160,7 +156,7 @@ class UserController
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @GetMapping("/list/activity/{active}")
+    @GetMapping("/list/{active}")
     private suspend fun listUsersActive(
         @PathVariable active: Boolean,
         @AuthenticationPrincipal user: User
@@ -327,7 +323,7 @@ class UserController
         }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @GetMapping("/list/address/user/{userId}")
+    @GetMapping("/list/address/{userId}")
     private suspend fun listAddressesByUserId(
         @PathVariable userId: UUID,
         @AuthenticationPrincipal user: User

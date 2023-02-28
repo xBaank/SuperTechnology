@@ -8,7 +8,7 @@ import java.time.LocalDate
 /**
  * Dto usada para el login de usuarios
  *
- * @property email
+ * @property username
  * @property password
  */
 @Serializable
@@ -89,7 +89,6 @@ data class UserDTOresponse(
  *
  * @property password
  * @property addresses
- * @property avatar
  */
 @Serializable
 data class UserDTOUpdated(
@@ -97,12 +96,24 @@ data class UserDTOUpdated(
     val addresses: Set<String>
 )
 
+/**
+ * DTO usada para actualizar el rol de usuario especificamente
+ *
+ * @property email
+ * @property role
+ */
 @Serializable
 data class UserDTORoleUpdated(
     val email: String,
     val role: User.UserRole
 )
 
+/**
+ * DTO usada para la respuesta en operaciones de login y register
+ *
+ * @property user
+ * @property token
+ */
 @Serializable
 data class UserDTOwithToken(
     val user: UserDTOresponse,
