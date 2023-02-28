@@ -15,6 +15,7 @@ import blanco.maldonado.mendoza.apiproductos.mapper.toModel
 import blanco.maldonado.mendoza.apiproductos.model.Producto
 import blanco.maldonado.mendoza.apiproductos.model.TestDto
 import blanco.maldonado.mendoza.apiproductos.repositories.ProductoCachedRepositoryImpl
+import blanco.maldonado.mendoza.apiproductos.user.User
 import blanco.maldonado.mendoza.apiproductos.validator.validate
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -29,6 +30,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
@@ -58,7 +60,7 @@ class ProductoController
     @Operation(summary = "Get all productos", description = "Get the products list", tags = ["Products"])
     @ApiResponse(responseCode = "200", description = "Lista de Producto")
     @GetMapping("")
-    suspend fun findAllProductos(): ResponseEntity<Flow<ProductoDto>> = withContext(Dispatchers.IO) {
+    suspend fun findAllProductos(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> = withContext(Dispatchers.IO) {
         logger.info { "Get productos" }
         val res = repository.findAll().map { it.toDto() }
         return@withContext ResponseEntity.ok(res)
