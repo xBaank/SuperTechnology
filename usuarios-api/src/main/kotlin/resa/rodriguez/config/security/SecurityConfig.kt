@@ -3,7 +3,6 @@ package resa.rodriguez.config.security
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -46,7 +45,7 @@ class SecurityConfig
             // Para token JWT
             .authenticationManager(authenticationManager)
 
-            // No usamos estado de sesion
+            // No usamos estados de sesion
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
             .and()
@@ -61,12 +60,15 @@ class SecurityConfig
             // Permitimos el acceso sin autenticacion ni verificacion a las siguientes rutas
             .requestMatchers("/usuarios", "/usuarios/", "/usuarios/login", "/usuarios/register").permitAll()
 
+            // Para acceder al /me se necesitara estar autenticado
+            .requestMatchers("/usuarios/me").authenticated()
+
             .requestMatchers(
                 "/usuarios/create", "/usuarios/list", "/usuarios/list/paging",
-                "/usuarios/list/activity/{active}", "/usuarios/username/{username}",
+                "/usuarios/list/{active}", "/usuarios/username/{username}",
                 "/usuarios/id/{userId}", "/usuarios/email/{userEmail}",
                 "/usuarios/phone/{userPhone}", "/usuarios/activity/{email}",
-                "/usuarios/list/address", "/usuarios/list/address/user/{userId}",
+                "/usuarios/list/address", "/usuarios/list/address/{userId}",
                 "/usuarios/address/{id}", "/usuarios/address/{name}"
             ).hasAnyRole("ADMIN", "SUPER_ADMIN")
 
@@ -79,8 +81,8 @@ class SecurityConfig
 
             .and()
 
-            .addFilter(JwtAuthenticationFilter(jwtTokensUtils, authenticationManager)) // Autenticacion
-            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, service, authenticationManager)) // Autorizacion
+            .addFilter(JwtAuthenticationFilter(jwtTokensUtils, authenticationManager)) // Filtro de Autenticacion
+            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, service, authenticationManager)) // Filtro de Autorizacion
 
         return http.build()
     }

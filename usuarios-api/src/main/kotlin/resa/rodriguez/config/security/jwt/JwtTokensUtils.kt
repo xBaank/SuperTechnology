@@ -10,7 +10,7 @@ import java.util.*
 private val algorithm: Algorithm = Algorithm.HMAC512("Zanahoria turbopropulsada")
 
 /**
- * @author Daniel Rodriguez Muñoz
+ *
  * Contiene los métodos necesarios para la creación de tokens, comprobación y decodificación para verificarlos
  */
 @Component
