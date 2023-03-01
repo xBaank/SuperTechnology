@@ -12,6 +12,7 @@ import org.koin.ktor.plugin.Koin
 import pedidosApi.auth.configureAuth
 import pedidosApi.modules.mainModule
 import pedidosApi.routing.pedidosRouting
+import pedidosApi.validators.configureValidation
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -42,6 +43,7 @@ fun Application.module() {
         anyHost()
     }
     configureAuth()
+    configureValidation()
     routing {
         pedidosRouting()
     }

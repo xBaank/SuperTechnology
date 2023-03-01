@@ -11,10 +11,11 @@ fun Application.configureAuth() = install(Authentication) {
     val issuer = this@configureAuth.environment.config.property("jwt.issuer").getString()
     val audience = this@configureAuth.environment.config.property("jwt.audience").getString()
 
-    val issuerSigned = JWT.create()
+    val issuerSigned = JWT
+        .require(HMAC256(secret))
         .withAudience(audience)
         .withIssuer(issuer)
-        .sign(HMAC256(secret))
+        .build()
 
     jwt("admin") {
         verifier(issuerSigned)

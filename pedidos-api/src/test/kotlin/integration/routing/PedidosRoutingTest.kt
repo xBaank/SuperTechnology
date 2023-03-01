@@ -3,14 +3,10 @@ package integration.routing
 import integration.data.PedidosData
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
 import org.amshove.kluent.shouldBe
@@ -54,6 +50,9 @@ class PedidosRoutingTest {
     }
 
     private fun ApplicationTestBuilder.createJsonClient(): HttpClient = createClient {
+        this@createJsonClient.environment {
+            config = PedidosData.config
+        }
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
@@ -62,15 +61,16 @@ class PedidosRoutingTest {
     @Test
     fun `should create pedido and get all pedidos`() = testApplication {
         val jsonClient = createJsonClient()
+
         val responsePost = jsonClient.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.createPedido)
-            headers {
-                append("Authorization", issueSi)
-            }
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
 
-        val response = jsonClient.get("/pedidos")
+        val response = jsonClient.get("/pedidos") {
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+        }
 
         val result = response.body<PagedFlowDto<PedidoDto>>()
 
@@ -85,7 +85,9 @@ class PedidosRoutingTest {
     fun `should get all pedidos by page`() = testApplication {
         val jsonClient = createJsonClient()
 
-        val response = jsonClient.get("/pedidos?page=0&size=10")
+        val response = jsonClient.get("/pedidos?page=0&size=10") {
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+        }
         response.status.shouldBe(HttpStatusCode.OK)
 
         val result = response.body<PagedFlowDto<PedidoDto>>()
@@ -97,7 +99,9 @@ class PedidosRoutingTest {
     fun `should not get all pedidos by page`() = testApplication {
         val jsonClient = createJsonClient()
 
-        val response = jsonClient.get("/pedidos?page=-5&size=10")
+        val response = jsonClient.get("/pedidos?page=-5&size=10") {
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+        }
         response.status.shouldBe(HttpStatusCode.BadRequest)
 
         val result = response.body<ErrorDto>()
@@ -108,7 +112,9 @@ class PedidosRoutingTest {
     fun `should not get by incorrect id`() = testApplication {
         val jsonClient = createJsonClient()
 
-        val response = jsonClient.get("/pedidos/fad")
+        val response = jsonClient.get("/pedidos/fad") {
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+        }
         response.status.shouldBe(HttpStatusCode.BadRequest)
 
         val result = response.body<ErrorDto>()
@@ -121,6 +127,7 @@ class PedidosRoutingTest {
 
         val response = jsonClient.put("/pedidos/fad") {
             contentType(ContentType.Application.Json)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
 
         val result = response.body<ErrorDto>()
@@ -136,6 +143,7 @@ class PedidosRoutingTest {
         val response = jsonClient.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.createPedido)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
 
         val result = response.body<PedidoDto>()
@@ -152,6 +160,7 @@ class PedidosRoutingTest {
         val response = jsonClient.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.incorrectFormat)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
 
         val result = response.body<ErrorDto>()
@@ -167,6 +176,7 @@ class PedidosRoutingTest {
         val responsePost = jsonClient.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.createPedido)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
 
         val pedidoCreated = responsePost.body<PedidoDto>()
@@ -174,6 +184,7 @@ class PedidosRoutingTest {
         val responsePut = jsonClient.put("/pedidos/${pedidoCreated.id}") {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.updatePedido)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
 
         val pedidoUpdated = responsePut.body<PedidoDto>()
@@ -193,11 +204,14 @@ class PedidosRoutingTest {
         val responsePost = jsonClient.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.createPedido)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
 
         val pedidoCreated = responsePost.body<PedidoDto>()
 
-        val responseGet = jsonClient.get("/pedidos/${pedidoCreated.id}")
+        val responseGet = jsonClient.get("/pedidos/${pedidoCreated.id}") {
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+        }
 
         val pedidoFound = responseGet.body<PedidoDto>()
 
@@ -213,11 +227,14 @@ class PedidosRoutingTest {
         val responsePost = jsonClient.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.createPedido)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
 
         val pedidoCreated = responsePost.body<PedidoDto>()
 
-        val responseGet = jsonClient.get("/pedidos/usuario/${pedidoCreated.usuario.id}")
+        val responseGet = jsonClient.get("/pedidos/usuario/${pedidoCreated.usuario.id}") {
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+        }
 
         val pedidosFound = responseGet.body<PagedFlowDto<PedidoDto>>()
 
@@ -233,11 +250,14 @@ class PedidosRoutingTest {
         val responsePost = jsonClient.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.createPedido)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
 
         val pedidoCreated = responsePost.body<PedidoDto>()
 
-        val responseGet = jsonClient.get("/pedidos/usuario/${pedidoCreated.usuario.id}?page=-5&size=10")
+        val responseGet = jsonClient.get("/pedidos/usuario/${pedidoCreated.usuario.id}?page=-5&size=10") {
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+        }
 
         val pedidoFound = responseGet.body<ErrorDto>()
 
@@ -252,6 +272,7 @@ class PedidosRoutingTest {
 
         val responsePut = jsonClient.put("/pedidos/63ebb2569be16967bba54c3b") {
             contentType(ContentType.Application.Json)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
         }
         val result = responsePut.body<ErrorDto>()
         responsePut.status.shouldBe(HttpStatusCode.NotFound)
@@ -263,13 +284,16 @@ class PedidosRoutingTest {
         val jsonClient = createJsonClient()
 
         val responsePost = jsonClient.post("/pedidos") {
-            contentType(ContentType.Application.Json)
             setBody(PedidosData.createPedido)
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+            contentType(ContentType.Application.Json)
         }
 
         val pedidoCreated = responsePost.body<PedidoDto>()
 
-        val responseDelete = jsonClient.delete("/pedidos/${pedidoCreated.id}")
+        val responseDelete = jsonClient.delete("/pedidos/${pedidoCreated.id}") {
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+        }
 
         responsePost.status.shouldBe(HttpStatusCode.Created)
         responseDelete.status.shouldBe(HttpStatusCode.NoContent)
@@ -280,8 +304,11 @@ class PedidosRoutingTest {
     fun `should not delete unknown pedido`() = testApplication {
         val jsonClient = createJsonClient()
 
-        val responseDelete = jsonClient.delete("/pedidos/63ebb2569be16967bba54c3b")
+        val responseDelete = jsonClient.delete("/pedidos/63ebb2569be16967bba54c3b") {
+            headers { set("Authorization", "Bearer ${PedidosData.token}") }
+        }
 
         responseDelete.status.shouldBe(HttpStatusCode.NotFound)
     }
+
 }
