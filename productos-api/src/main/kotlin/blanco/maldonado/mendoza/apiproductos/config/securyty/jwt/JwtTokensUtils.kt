@@ -1,4 +1,4 @@
-package jwt
+package blanco.maldonado.mendoza.apiproductos.config.securyty.jwt
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm

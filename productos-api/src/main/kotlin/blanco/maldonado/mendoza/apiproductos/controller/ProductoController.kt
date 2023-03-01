@@ -30,6 +30,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -66,6 +67,7 @@ class ProductoController
         return@withContext ResponseEntity.ok(res)
     }
 
+
     /**
      * Find product by id: Find the product if the id of the product is exists.
      *
@@ -81,7 +83,7 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/{id}")
-    suspend fun findProductById(@PathVariable id: String): ResponseEntity<ProductoDto> =
+    suspend fun findProductById(@AuthenticationPrincipal u : User ,@PathVariable id: String): ResponseEntity<ProductoDto> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por id" }
             try {
@@ -107,7 +109,7 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/categoria/{categoria}")
-    suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun findProductByCategoria(@AuthenticationPrincipal u : User,@PathVariable categoria: String): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Get productos by categoria" }
             try {
@@ -269,8 +271,10 @@ class ProductoController
     @Parameter(name = "id", description = "ID of Product", required = true, example = "1")
     @ApiResponse(responseCode = "204", description = "Product deleted.")
     @ApiResponse(responseCode = "404", description = "Error to delete product with this id.")
+    // todo @PreAuthorize("hasRole('SUPER_ADMIN')")
+    //todo @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{id}")
-    suspend fun deleteProduct(@PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
+    suspend fun deleteProduct(  @PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
         logger.info { "Borrando producto" }
         try {
             repository.delete(id)

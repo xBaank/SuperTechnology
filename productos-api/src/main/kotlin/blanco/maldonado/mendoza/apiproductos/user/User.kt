@@ -1,28 +1,38 @@
 package blanco.maldonado.mendoza.apiproductos.user
 
 import jakarta.validation.constraints.NotEmpty
+import org.springframework.data.annotation.Id
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.util.*
 
-class User (
-    val id: Long? = null,
-    val uuid: UUID? = UUID.randomUUID(),
-    @NotEmpty(message = "Must have a username.")
+data class User(
+    @Id
+    val id: UUID? = null,
+
+    @NotEmpty(message = "El usuario debe tener un username.")
     @get:JvmName("userName")
     val username: String,
-    @NotEmpty(message = "Must have an email.")
+
+    @NotEmpty(message = "El usuario debe tener un email.")
     val email: String,
-    @NotEmpty(message = "Must have a password.")
+
+    @NotEmpty(message = "El usuario debe tener una password.")
     @get:JvmName("userPassword")
     val password: String,
-    @NotEmpty(message = "Must have a rol.")
-    val role: Role,
+
+    @NotEmpty(message = "El usuario debe tener un rol.")
+    val role: UserRole,
+    val active: Boolean
 ) : UserDetails {
+
+    enum class UserRole {
+        USER, ADMIN, SUPER_ADMIN
+    }
+
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        val authority = SimpleGrantedAuthority("ROLE_${role.name}")
-        return mutableListOf<GrantedAuthority>(authority)
+        return role.name.split(",").map { SimpleGrantedAuthority("ROLE_${it.trim()}") }.toMutableList()
     }
 
     override fun getPassword(): String {
@@ -49,7 +59,4 @@ class User (
         return true
     }
 
-}
-enum class Role {
-    EMPLEADO, ADMIN
 }
