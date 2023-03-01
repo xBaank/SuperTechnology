@@ -15,6 +15,7 @@ import blanco.maldonado.mendoza.apiproductos.mapper.toModel
 import blanco.maldonado.mendoza.apiproductos.model.Producto
 import blanco.maldonado.mendoza.apiproductos.model.TestDto
 import blanco.maldonado.mendoza.apiproductos.repositories.ProductoCachedRepositoryImpl
+import blanco.maldonado.mendoza.apiproductos.user.User
 import blanco.maldonado.mendoza.apiproductos.validator.validate
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -29,6 +30,8 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
@@ -58,11 +61,12 @@ class ProductoController
     @Operation(summary = "Get all productos", description = "Get the products list", tags = ["Products"])
     @ApiResponse(responseCode = "200", description = "Lista de Producto")
     @GetMapping("")
-    suspend fun findAllProductos(): ResponseEntity<Flow<ProductoDto>> = withContext(Dispatchers.IO) {
+    suspend fun findAllProductos(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> = withContext(Dispatchers.IO) {
         logger.info { "Get productos" }
         val res = repository.findAll().map { it.toDto() }
         return@withContext ResponseEntity.ok(res)
     }
+
 
     /**
      * Find product by id: Find the product if the id of the product is exists.
@@ -79,7 +83,7 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/{id}")
-    suspend fun findProductById(@PathVariable id: String): ResponseEntity<ProductoDto> =
+    suspend fun findProductById(@AuthenticationPrincipal u : User ,@PathVariable id: String): ResponseEntity<ProductoDto> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por id" }
             try {
@@ -105,7 +109,7 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/categoria/{categoria}")
-    suspend fun findProductByCategoria(@PathVariable categoria: String): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun findProductByCategoria(@AuthenticationPrincipal u : User,@PathVariable categoria: String): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Get productos by categoria" }
             try {
@@ -267,8 +271,10 @@ class ProductoController
     @Parameter(name = "id", description = "ID of Product", required = true, example = "1")
     @ApiResponse(responseCode = "204", description = "Product deleted.")
     @ApiResponse(responseCode = "404", description = "Error to delete product with this id.")
+    // todo @PreAuthorize("hasRole('SUPER_ADMIN')")
+    //todo @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{id}")
-    suspend fun deleteProduct(@PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
+    suspend fun deleteProduct(  @PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
         logger.info { "Borrando producto" }
         try {
             repository.delete(id)

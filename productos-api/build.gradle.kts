@@ -20,7 +20,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
-   // implementation("org.springframework.boot:spring-boot-starter-security")
+   implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -54,6 +54,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     // JWT
     implementation("com.auth0:java-jwt:4.2.1")
+    //autentificacion de token
+    implementation("com.auth0:java-jwt:4.2.1")
+
+
 }
 
 tasks.withType<KotlinCompile> {
