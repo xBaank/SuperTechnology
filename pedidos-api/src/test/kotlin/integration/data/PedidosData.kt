@@ -27,6 +27,7 @@ object PedidosData {
     val incorrectFormat = "adsd"
 
     val config = ApplicationConfig("application.conf")
+
     val audience = config.property("jwt.audience").getString()
     val issuer = config.property("jwt.issuer").getString()
     val secret = config.property("jwt.secret").getString()
@@ -34,6 +35,12 @@ object PedidosData {
 
     val token: String = JWT.create()
         .withClaim("rol", "ADMIN")
+        .withAudience(audience)
+        .withIssuer(issuer)
+        .sign(Algorithm.HMAC256(secret))
+
+    val userToken: String = JWT.create()
+        .withClaim("rol", "USER")
         .withAudience(audience)
         .withIssuer(issuer)
         .sign(Algorithm.HMAC256(secret))

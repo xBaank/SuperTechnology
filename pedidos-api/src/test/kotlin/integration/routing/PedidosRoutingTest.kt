@@ -1,5 +1,7 @@
 package integration.routing
 
+import com.typesafe.config.ConfigFactory
+import com.typesafe.config.ConfigValueFactory
 import integration.data.PedidosData
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -7,6 +9,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
 import org.amshove.kluent.shouldBe
@@ -19,7 +22,6 @@ import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
-import pedidosApi.Config
 import pedidosApi.dto.responses.ErrorDto
 import pedidosApi.dto.responses.PagedFlowDto
 import pedidosApi.dto.responses.PedidoDto
@@ -44,18 +46,27 @@ class PedidosRoutingTest {
     fun setUp() {
         mongoDBContainer.start()
         stopKoin()
-        System.setProperty("mongo.connectionString", mongoDBContainer.connectionString)
-        System.setProperty("mongo.database", "pedidos")
-        Config.reload()
     }
 
     private fun ApplicationTestBuilder.createJsonClient(): HttpClient = createClient {
         this@createJsonClient.environment {
-            config = PedidosData.config
+            config = testConfig()
         }
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
+    }
+
+    private fun testConfig(): HoconApplicationConfig {
+        ConfigFactory.invalidateCaches()
+        return ConfigFactory.load("application.conf")
+            .apply {
+                getConfig("mongo").withValue(
+                    "connectionString",
+                    ConfigValueFactory.fromAnyRef(mongoDBContainer.connectionString)
+                )
+            }
+            .let(::HoconApplicationConfig)
     }
 
     @Test
@@ -309,6 +320,17 @@ class PedidosRoutingTest {
         }
 
         responseDelete.status.shouldBe(HttpStatusCode.NotFound)
+    }
+
+    @Test
+    fun `should not access unauthorized`() = testApplication {
+        val jsonClient = createJsonClient()
+
+        val responseGet = jsonClient.get("/pedidos/pedidos") {
+            headers { set("Authorization", "Bearer ${PedidosData.userToken}") }
+        }
+
+        responseGet.status.shouldBe(HttpStatusCode.Unauthorized)
     }
 
 }
