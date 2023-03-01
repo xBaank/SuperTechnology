@@ -1,6 +1,7 @@
 package pedidosApi.routing
 
 import arrow.core.continuations.either
+import arrow.core.getOrElse
 import io.github.smiley4.ktorswaggerui.dsl.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -36,7 +37,7 @@ fun Routing.pedidosRouting() = route("/pedidos") {
             val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
             val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
             val userId = call.principal<JWTPrincipal>()?.getClaim("id", String::class) ?: ""
-            handleResult(repository.getByUserId(userId, page, size))
+            repository.getByUserId(userId, page, size).getOrElse { throw it }
         }
     }
     authenticate("admin") {

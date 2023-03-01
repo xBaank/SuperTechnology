@@ -3,10 +3,14 @@ package integration.routing
 import integration.data.PedidosData
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
 import org.amshove.kluent.shouldBe
@@ -61,6 +65,9 @@ class PedidosRoutingTest {
         val responsePost = jsonClient.post("/pedidos") {
             contentType(ContentType.Application.Json)
             setBody(PedidosData.createPedido)
+            headers {
+                append("Authorization", issueSi)
+            }
         }
 
         val response = jsonClient.get("/pedidos")
