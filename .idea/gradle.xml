@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/gateway-api" />
             <option value="$PROJECT_DIR$/pedidos-api" />
             <option value="$PROJECT_DIR$/productos-api" />
             <option value="$PROJECT_DIR$/usuarios-api" />
