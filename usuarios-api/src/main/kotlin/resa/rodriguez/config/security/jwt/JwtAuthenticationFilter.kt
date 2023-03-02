@@ -15,6 +15,12 @@ import resa.rodriguez.dto.UserDTOlogin
 import resa.rodriguez.models.User
 import java.util.*
 
+/**
+ * JWT para Spring Secyrity Config: Filtro de autenticacion
+ *
+ * @property jwtTokenUtil
+ * @property authenticationManager
+ */
 class JwtAuthenticationFilter(
     private val jwtTokenUtil: JwtTokensUtils,
     private val authenticationManager: AuthenticationManager

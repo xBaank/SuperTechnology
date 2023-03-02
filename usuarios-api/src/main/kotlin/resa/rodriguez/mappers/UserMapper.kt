@@ -14,7 +14,7 @@ import java.util.*
 /**
  * Clase encargada del paso de dto a modelo y al contrario, tanto de user como de address
  *
- * @property addresses
+ *
  */
 
 fun User.toDTO(addresses: Set<Address>): UserDTOresponse {

@@ -15,6 +15,12 @@ import resa.rodriguez.config.security.jwt.JwtAuthorizationFilter
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.services.UserService
 
+/**
+ * Clase de configuracion de Spring Security
+ *
+ * @property service
+ * @property jwtTokensUtils
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -70,11 +76,11 @@ class SecurityConfig
                 "/usuarios/id/{userId}", "/usuarios/email/{userEmail}",
                 "/usuarios/phone/{userPhone}", "/usuarios/activity/{email}",
                 "/usuarios/list/address", "/usuarios/list/address/{userId}",
-                "/usuarios/address/{id}", "/usuarios/address/{name}"
+                "/usuarios/address/{id}", "/usuarios/address"
             ).hasAnyRole("ADMIN", "SUPER_ADMIN")
 
             .requestMatchers(
-                "/usuarios/role/{email}", "/usuarios/delete/{email}"
+                "/usuarios/role", "/usuarios/delete"
             ).hasRole("SUPER_ADMIN")
 
             // El resto, se necesitara autenticacion estandar

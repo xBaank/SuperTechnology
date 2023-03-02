@@ -3,6 +3,12 @@ package resa.rodriguez.validators
 import resa.rodriguez.dto.*
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 
+/**
+ * Clase encargada de validar los usuarios y sus campos
+ *
+ */
+
+
 fun UserDTOcreate.validate(): UserDTOcreate {
     if (this.username.isBlank())
         throw UserExceptionBadRequest("Username cannot be blank.")
@@ -54,8 +60,6 @@ fun UserDTOregister.validate(): UserDTOregister {
 fun UserDTOUpdated.validate(): UserDTOUpdated {
     if (this.password.length < 7 || this.password.isBlank())
         throw UserExceptionBadRequest("Password must at least be 7 characters long.")
-    else if (this.addresses.isEmpty())
-        throw UserExceptionBadRequest("must at least have one address.")
     else {
         this.addresses.forEach { if (it.isBlank()) throw UserExceptionBadRequest("Address cannot be blank.") }
         return this

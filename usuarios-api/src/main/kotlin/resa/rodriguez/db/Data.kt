@@ -34,5 +34,14 @@ fun getUsersInit() = listOf(
         role = User.UserRole.USER,
         addresses = setOf("C/3"),
         active = true
+    ),
+    UserDTOcreate(
+        username = "Test_User4",
+        email = "test4@example.com",
+        password = "1234567",
+        phone = "123459999",
+        role = User.UserRole.USER,
+        addresses = setOf("C/4"),
+        active = false
     )
 )
