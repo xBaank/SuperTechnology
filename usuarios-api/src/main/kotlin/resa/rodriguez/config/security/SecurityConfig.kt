@@ -3,11 +3,11 @@ package resa.rodriguez.config.security
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import resa.rodriguez.config.security.jwt.JwtAuthenticationFilter
@@ -16,7 +16,7 @@ import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.services.UserService
 
 @Configuration
-//@EnableWebSecurity
+@EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 class SecurityConfig
 @Autowired constructor(
