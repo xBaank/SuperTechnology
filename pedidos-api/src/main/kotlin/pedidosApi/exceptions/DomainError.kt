@@ -1,13 +1,13 @@
 package pedidosApi.exceptions
 
-sealed interface DomainError
-sealed interface PedidoError : DomainError {
-    class PedidoNotFound(val message: String) : PedidoError
-    class PedidoSaveError(val message: String) : PedidoError
-    class InvalidPedidoId(val message: String) : PedidoError
-    class InvalidPedidoPage(val message: String) : PedidoError
-    class InvalidPedidoFormat(val message: String) : PedidoError
-    class MissingPedidoId(val message: String) : PedidoError
+sealed class DomainError : Exception()
+sealed class PedidoError : DomainError() {
+    class PedidoNotFound(override val message: String) : PedidoError()
+    class PedidoSaveError(override val message: String) : PedidoError()
+    class InvalidPedidoId(override val message: String) : PedidoError()
+    class InvalidPedidoPage(override val message: String) : PedidoError()
+    class InvalidPedidoFormat(override val message: String) : PedidoError()
+    class MissingPedidoId(override val message: String) : PedidoError()
 }
 
-class ApiError(val message: String) : DomainError
+class ApiError(override val message: String) : DomainError()

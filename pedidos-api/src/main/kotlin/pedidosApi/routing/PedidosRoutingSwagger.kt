@@ -7,6 +7,7 @@ import pedidosApi.dto.responses.ErrorDto
 import pedidosApi.dto.responses.PagedFlowDto
 import pedidosApi.dto.responses.PedidoDto
 
+
 fun OpenApiRoute.getAll() {
     description = "Get pedidos paged"
     request {

@@ -9,8 +9,10 @@ import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import org.koin.ktor.plugin.Koin
+import pedidosApi.auth.configureAuth
 import pedidosApi.modules.mainModule
 import pedidosApi.routing.pedidosRouting
+import pedidosApi.validators.configureValidation
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -40,6 +42,8 @@ fun Application.module() {
     install(CORS) {
         anyHost()
     }
+    configureAuth()
+    configureValidation()
     routing {
         pedidosRouting()
     }

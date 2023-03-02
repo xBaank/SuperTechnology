@@ -1,9 +1,14 @@
 package pedidosApi.routing
 
 import arrow.core.continuations.either
+import arrow.core.flatMap
+import arrow.core.getOrElse
 import io.github.smiley4.ktorswaggerui.dsl.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
@@ -17,8 +22,8 @@ import pedidosApi.extensions.inject
 import pedidosApi.extensions.mapToApiError
 import pedidosApi.extensions.receiveOrNull
 import pedidosApi.extensions.toObjectIdOrNull
-import pedidosApi.handlers.handleError
-import pedidosApi.handlers.handleResult
+import pedidosApi.json.buildPagedPedidoDto
+import pedidosApi.json.buildPedidoDto
 import pedidosApi.models.EstadoPedido
 import pedidosApi.models.Pedido
 import pedidosApi.models.Tarea
@@ -29,49 +34,80 @@ const val DEFAULT_SIZE = 10
 
 fun Routing.pedidosRouting() = route("/pedidos") {
     val repository by inject<PedidosRepository>()
+    authenticate("user") {
+        get("/usuario/me", builder = OpenApiRoute::getByUsuarioId) {
+            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
+            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
+            val userId = call.principal<JWTPrincipal>()?.getClaim("id", String::class) ?: ""
 
-    get("/usuario/{id}", builder = OpenApiRoute::getByUsuarioId) {
-        val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
-        val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
-
-        val usuarioId = call.parameters.getOrFail("id")
-        handleResult(repository.getByUserId(usuarioId, page, size))
+            repository.getByUserId(userId, page, size)
+                .map { buildPagedPedidoDto(it) }
+                .getOrElse { throw it }
+                .let { call.respond(it) }
+        }
     }
+    authenticate("admin") {
+        get("/usuario/{id}", builder = OpenApiRoute::getByUsuarioId) {
+            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
+            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
 
-    get(builder = OpenApiRoute::getAll) {
-        val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
-        val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
-        handleResult(repository.getByPage(page, size))
-    }
+            val usuarioId = call.parameters.getOrFail("id")
 
-    get("{id}", builder = OpenApiRoute::getById) {
-        val id = call.parameters.getOrFail("id")
-        handleResult(repository.getById(id), HttpStatusCode.OK)
-    }
+            repository.getByUserId(usuarioId, page, size)
+                .map { buildPagedPedidoDto(it) }
+                .getOrElse { throw it }
+                .let { call.respond(it) }
+        }
 
-    post(builder = OpenApiRoute::post) {
-        val pedido = call.receiveOrNull<CreatePedidoDto>()
-            ?: return@post handleError(PedidoError.InvalidPedidoFormat("Invalid body format"))
+        get(builder = OpenApiRoute::getAll) {
+            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
+            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
 
-        createPedido(pedido).fold(
-            ifLeft = { handleError(it) },
-            ifRight = { handleResult(repository.save(it), HttpStatusCode.Created) }
-        )
-    }
+            repository.getByPage(page, size)
+                .map { buildPagedPedidoDto(it) }
+                .getOrElse { throw it }
+                .let { call.respond(it) }
+        }
 
-    put("{id}", builder = OpenApiRoute::put) {
-        val id = call.parameters.getOrFail("id")
-        val pedido = call.receiveOrNull<UpdatePedidoDto>()
+        get("{id}", builder = OpenApiRoute::getById) {
+            val id = call.parameters.getOrFail("id")
 
-        updatePedido(pedido, id).fold(
-            ifLeft = { handleError(it) },
-            ifRight = { handleResult(repository.save(it), HttpStatusCode.OK) }
-        )
-    }
+            repository.getById(id)
+                .map { buildPedidoDto(it) }
+                .getOrElse { throw it }
+                .let { call.respond(HttpStatusCode.OK, it) }
+        }
 
-    delete("{id}", builder = OpenApiRoute::delete) {
-        val id = call.parameters.getOrFail("id")
-        handleResult(repository.delete(id))
+        post(builder = OpenApiRoute::post) {
+            val pedido =
+                call.receiveOrNull<CreatePedidoDto>() ?: throw PedidoError.InvalidPedidoFormat("Invalid body format")
+
+            createPedido(pedido)
+                .flatMap { repository.save(it) }
+                .map { buildPedidoDto(it) }
+                .getOrElse { throw it }
+                .let { call.respond(HttpStatusCode.Created, it) }
+        }
+
+        put("{id}", builder = OpenApiRoute::put) {
+            val id = call.parameters.getOrFail("id")
+            val pedido = call.receiveOrNull<UpdatePedidoDto>()
+
+
+
+            updatePedido(pedido, id)
+                .flatMap { repository.save(it) }
+                .map { buildPedidoDto(it) }
+                .getOrElse { throw it }
+                .let { call.respond(HttpStatusCode.OK, it) }
+        }
+
+        delete("{id}", builder = OpenApiRoute::delete) {
+            val id = call.parameters.getOrFail("id")
+            repository.delete(id)
+                .getOrElse { throw it }
+                .let { call.respond(HttpStatusCode.NoContent) }
+        }
     }
 }
 

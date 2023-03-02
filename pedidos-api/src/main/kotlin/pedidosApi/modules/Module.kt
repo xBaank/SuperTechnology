@@ -2,7 +2,6 @@ package pedidosApi.modules
 
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import org.koin.core.module.dsl.singleOf
@@ -20,7 +19,6 @@ val retrofit = Retrofit.Builder()
     .addCallAdapterFactory(EitherCallAdapterFactory.create())
     .addConverterFactory(Json.asConverterFactory(MediaType.get("application/json")))
 
-@OptIn(ExperimentalSerializationApi::class)
 val mainModule = module {
     single {
         KMongo.createClient(Config.connectionString).coroutine.getDatabase(Config.database).getCollection<Pedido>()
