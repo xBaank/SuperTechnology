@@ -34,7 +34,6 @@ class JwtAuthorizationFilter(
         }
         getAuthentication(header.substring(7))?.also {
             SecurityContextHolder.getContext().authentication = it
-            //println(it)
         }
         chain.doFilter(req, res)
     }
