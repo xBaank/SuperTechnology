@@ -70,6 +70,23 @@ class UserControllerTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
+    fun Bienvenida() = runTest {
+        val result = controller.bienvenida()
+        val res = result.body
+
+        Assertions.assertAll(
+            { Assertions.assertNotNull(result) },
+            { Assertions.assertNotNull(res) },
+            { assertEquals(result.statusCode, HttpStatus.OK) },
+            { assertEquals(
+                "Microservicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
+                "Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
+                res) }
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
     fun findById() = runTest {
         coEvery { service.findById(any()) } returns entity
         coEvery { service.findAllFromUserId(any()) } returns flowOf(address)
@@ -88,5 +105,20 @@ class UserControllerTest {
 
         coVerify { service.findById(any()) }
         coVerify { service.findAllFromUserId(any()) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun findByIdNF() = runTest {
+        coEvery { service.findById(any()) } throws
+            UserExceptionNotFound("User with id ${entity.id} not found.")
+
+        val result = assertThrows<UserExceptionNotFound> {
+            controller.findByUserId(entity, entity.id!!)
+        }
+
+        assertEquals("User with id ${entity.id} not found.", result.message)
+
+        coVerify { service.findById(any()) }
     }
 }
