@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -13,6 +14,18 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import resa.rodriguez.services.UserService
 import java.io.IOException
 
+private val log = KotlinLogging.logger {}
+
+/**
+ * JWT para Spring Secyrity Config: Filtro de autorizacion
+ *
+ * @property jwtTokensUtils
+ * @property service
+ * @constructor
+ * Se implementa AuthenticationManager
+ *
+ * @param authManager
+ */
 class JwtAuthorizationFilter(
     private val jwtTokensUtils: JwtTokensUtils,
     private val service: UserService,
@@ -25,7 +38,7 @@ class JwtAuthorizationFilter(
         res: HttpServletResponse,
         chain: FilterChain
     ) {
-        logger.info { "Filtrando" }
+        log.info { "Filtrando" }
         val header = req.getHeader(AUTHORIZATION.toString())
 
         if (header == null || !header.startsWith(JwtTokensUtils.TOKEN_PREFIX)) {
@@ -39,7 +52,7 @@ class JwtAuthorizationFilter(
     }
 
     private fun getAuthentication(token: String): UsernamePasswordAuthenticationToken? = runBlocking {
-        logger.info { "Obteniendo autenticación" }
+        log.info { "Obteniendo autenticación" }
 
         val tokenDecoded = jwtTokensUtils.decode(token) ?: return@runBlocking null
 
