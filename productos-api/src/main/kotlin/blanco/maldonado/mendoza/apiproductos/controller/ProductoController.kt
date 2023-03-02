@@ -30,7 +30,6 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -153,7 +152,7 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/nombre/{nombre}")
-    suspend fun findProductByNombre(@PathVariable nombre: String): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun findProductByNombre(@AuthenticationPrincipal u : User, @PathVariable nombre: String): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por nombre" }
             try {
@@ -180,7 +179,7 @@ class ProductoController
     )
     @ApiResponse(responseCode = "404", description = "Product not found because the name is null")
     @GetMapping("/nombre/")
-    suspend fun resultNombreNulo(): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun resultNombreNulo(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por nombre nulo" }
             try {
@@ -202,7 +201,7 @@ class ProductoController
     )
     @ApiResponse(responseCode = "404", description = "Producto not found because the category was null")
     @GetMapping("/categoria/")
-    suspend fun resultCategoriaNula(): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun resultCategoriaNula(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por categoria nula" }
             try {
@@ -221,7 +220,7 @@ class ProductoController
     @Operation(summary = "Create Product", description = "Create the product object", tags = ["Producto"])
     @ApiResponse(responseCode = "201", description = "Product created")
     @PostMapping("")
-    suspend fun createProduct(@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDto> {
+    suspend fun createProduct(@AuthenticationPrincipal u : User,@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDto> {
         logger.info { "Creando un producto" }
         productoDto.activo.lowercase()
         checkProducto(productoDto)
@@ -246,7 +245,7 @@ class ProductoController
     @ApiResponse(responseCode = "200", description = "Product modified")
     @ApiResponse(responseCode = "404", description = "Product not found with this id.")
     @PutMapping("/{id}")
-    suspend fun updateProduct(
+    suspend fun updateProduct(@AuthenticationPrincipal u : User,
         @PathVariable id: String, @Valid @RequestBody productoDto: ProductoCreateDto
     ): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
         logger.info { "Modificando producto con id $id" }
@@ -274,7 +273,7 @@ class ProductoController
     // todo @PreAuthorize("hasRole('SUPER_ADMIN')")
     //todo @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{id}")
-    suspend fun deleteProduct(  @PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
+    suspend fun deleteProduct(@AuthenticationPrincipal u : User,  @PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
         logger.info { "Borrando producto" }
         try {
             repository.delete(id)
