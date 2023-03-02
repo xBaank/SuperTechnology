@@ -30,6 +30,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -59,6 +60,7 @@ class ProductoController
      */
     @Operation(summary = "Get all productos", description = "Get the products list", tags = ["Products"])
     @ApiResponse(responseCode = "200", description = "Lista de Producto")
+    @PreAuthorize("hasAnyRole('USER','ADMIN', 'SUPER_ADMIN')")
     @GetMapping("")
     suspend fun findAllProductos(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> = withContext(Dispatchers.IO) {
         logger.info { "Get productos" }
@@ -81,6 +83,7 @@ class ProductoController
     @ApiResponse(responseCode = "401", description = "You are not authorized with this id.")
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
+    @PreAuthorize("hasAnyRole('USER','ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/{id}")
     suspend fun findProductById(@AuthenticationPrincipal u : User ,@PathVariable id: String): ResponseEntity<ProductoDto> =
         withContext(Dispatchers.IO) {
@@ -107,6 +110,7 @@ class ProductoController
     @ApiResponse(responseCode = "401", description = "You are not authorized with this id.")
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
+    @PreAuthorize("hasAnyRole('USER','ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/categoria/{categoria}")
     suspend fun findProductByCategoria(@AuthenticationPrincipal u : User,@PathVariable categoria: String): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
@@ -151,6 +155,7 @@ class ProductoController
     @ApiResponse(responseCode = "401", description = "You are not authorized with this id.")
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
+    @PreAuthorize("hasAnyRole('USER','ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/nombre/{nombre}")
     suspend fun findProductByNombre(@AuthenticationPrincipal u : User, @PathVariable nombre: String): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
@@ -178,6 +183,7 @@ class ProductoController
         tags = ["Producto"]
     )
     @ApiResponse(responseCode = "404", description = "Product not found because the name is null")
+    @PreAuthorize("hasAnyRole('USER','ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/nombre/")
     suspend fun resultNombreNulo(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
@@ -200,6 +206,7 @@ class ProductoController
         tags = ["Producto"]
     )
     @ApiResponse(responseCode = "404", description = "Producto not found because the category was null")
+    @PreAuthorize("hasAnyRole('USER','ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/categoria/")
     suspend fun resultCategoriaNula(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
@@ -219,6 +226,7 @@ class ProductoController
      */
     @Operation(summary = "Create Product", description = "Create the product object", tags = ["Producto"])
     @ApiResponse(responseCode = "201", description = "Product created")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
     @PostMapping("")
     suspend fun createProduct(@AuthenticationPrincipal u : User,@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDto> {
         logger.info { "Creando un producto" }
@@ -234,16 +242,17 @@ class ProductoController
     }
 
     /**
-     * Update product: Modifica un producto si el id del producto existe en la base de datos, con código 200.
+     * Update product: Modified the product if the id of product is exists in the database with code 200.
      *
      * @param id
      * @param productoDto
-     * @return Devuelve el producto modificado.
+     * @return Return the modified product with code 200.
      */
     @Operation(summary = "Update Product", description = "update the product object", tags = ["Product"])
     @Parameter(name = "id", description = "Product ID", required = true, example = "1")
     @ApiResponse(responseCode = "200", description = "Product modified")
     @ApiResponse(responseCode = "404", description = "Product not found with this id.")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PutMapping("/{id}")
     suspend fun updateProduct(@AuthenticationPrincipal u : User,
         @PathVariable id: String, @Valid @RequestBody productoDto: ProductoCreateDto
@@ -270,8 +279,7 @@ class ProductoController
     @Parameter(name = "id", description = "ID of Product", required = true, example = "1")
     @ApiResponse(responseCode = "204", description = "Product deleted.")
     @ApiResponse(responseCode = "404", description = "Error to delete product with this id.")
-    // todo @PreAuthorize("hasRole('SUPER_ADMIN')")
-    //todo @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     suspend fun deleteProduct(@AuthenticationPrincipal u : User,  @PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
         logger.info { "Borrando producto" }
