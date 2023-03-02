@@ -12,6 +12,6 @@ EXPOSE 6969:6969
 # Directorio donde se almacena la aplicacion
 RUN mkdir /app
 # Copiamos el jar
-COPY --from=build /home/usuarios-api/gradle/src/build/libs/usuarios-api-0.0.1-SNAPSHOT.jar /app/usuarios-api-springboot.jar
+COPY --from=build /home/usuarios-api/gradle/src/build/libs/usuarios-api-0.0.1.jar /app/usuarios-api-springboot.jar
 # Ejecutamos la aplicacion
 ENTRYPOINT ["java", "-jar", "/app/usuarios-api-springboot.jar"]
