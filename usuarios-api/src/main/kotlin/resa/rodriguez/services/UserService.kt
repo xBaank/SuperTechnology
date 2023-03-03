@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.controllers.StorageController
 import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.AddressExceptionBadRequest
 import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
@@ -220,8 +221,8 @@ class UserService
             ?: throw UserExceptionNotFound("User with email: ${userDTORoleUpdated.email} not found.")
 
         val updatedRole =
-            if (userDTORoleUpdated.role.name.uppercase() != (User.UserRole.USER.name) ||
-                userDTORoleUpdated.role.name.uppercase() != (User.UserRole.ADMIN.name) ||
+            if (userDTORoleUpdated.role.name.uppercase() != (User.UserRole.USER.name) &&
+                userDTORoleUpdated.role.name.uppercase() != (User.UserRole.ADMIN.name) &&
                 userDTORoleUpdated.role.name.uppercase() != (User.UserRole.ADMIN.name)
             ) {
                 user.role
@@ -291,6 +292,6 @@ class UserService
         if (address.userId == u.id && addresses.size >= 1) {
             val addr = addressRepositoryCached.deleteById(address.id!!)
             "Direccion ${addr?.address} eliminada."
-        } else throw UserExceptionBadRequest("No ha sido posible eliminar la direccion.")
+        } else throw AddressExceptionBadRequest("No ha sido posible eliminar la direccion.")
     }
 }

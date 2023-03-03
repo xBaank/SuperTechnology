@@ -21,6 +21,7 @@ import resa.rodriguez.dto.UserDTORoleUpdated
 import resa.rodriguez.dto.UserDTOUpdated
 import resa.rodriguez.dto.UserDTOcreate
 import resa.rodriguez.dto.UserDTOregister
+import resa.rodriguez.exceptions.AddressExceptionBadRequest
 import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
@@ -655,7 +656,7 @@ class UserServiceTest {
         coEvery { aRepo.findAllFromUserId(any()) } returns flowOf()
         coEvery { aRepo.deleteById(any()) } returns address
 
-        val result = assertThrows<UserExceptionBadRequest> {
+        val result = assertThrows<AddressExceptionBadRequest> {
             service.deleteAddress(address.address, entity)
         }
 
