@@ -62,7 +62,11 @@ class SecurityConfig
             // Spring desplaza a esta ruta todos los errores y excepciones, asi podemos mostrarlas en vez de un Forbidden
             .requestMatchers("/error/**").permitAll()
 
-            .requestMatchers("/**").permitAll()
+            // Permitimos el acceso de swagger
+            .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+
+            // Abrimos el acceso a los end points, luego se limitaran segun el rol/acceso
+            .requestMatchers("/usuarios/**").permitAll()
 
             // Permitimos el acceso sin autenticacion ni verificacion a las siguientes rutas
             .requestMatchers("/usuarios", "/usuarios/", "/usuarios/login", "/usuarios/register").permitAll()

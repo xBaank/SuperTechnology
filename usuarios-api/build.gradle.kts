@@ -5,7 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version "1.7.22"
     kotlin("plugin.spring") version "1.7.22"
-    //Dokka Documentacion Kotlin
+    // Dokka
     id("org.jetbrains.dokka") version "1.7.20"
     // Plugin de Serialization Kotlin
     kotlin("plugin.serialization") version "1.7.20"
@@ -66,6 +66,9 @@ dependencies {
 
     // Serialization JSON
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 }
 
 tasks.withType<KotlinCompile> {
