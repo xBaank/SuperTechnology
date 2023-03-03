@@ -21,7 +21,7 @@ fun UserDTOcreate.validate(): UserDTOcreate {
     else if (this.phone.isBlank() || this.phone.length < 9)
         throw UserExceptionBadRequest("Phone must at least be 9 characters long.")
     else if (this.addresses.isEmpty())
-        throw UserExceptionBadRequest("must at least have one address.")
+        throw UserExceptionBadRequest("Must at least have one address.")
     else {
         this.addresses.forEach { if (it.isBlank()) throw UserExceptionBadRequest("Address cannot be blank.") }
         return this
@@ -50,7 +50,7 @@ fun UserDTOregister.validate(): UserDTOregister {
     else if (this.phone.isBlank() || this.phone.length < 9)
         throw UserExceptionBadRequest("Phone must at least be 9 characters long.")
     else if (this.addresses.isEmpty())
-        throw UserExceptionBadRequest("must at least have one address.")
+        throw UserExceptionBadRequest("Must at least have one address.")
     else {
         this.addresses.forEach { if (it.isBlank()) throw UserExceptionBadRequest("Address cannot be blank.") }
         return this

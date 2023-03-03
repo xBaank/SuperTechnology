@@ -99,7 +99,7 @@ class UserController
             val userSaved = service.create(userDTOcreate)
             val addresses = userSaved.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-            ResponseEntity.ok(UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)))
+            ResponseEntity(UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)), HttpStatus.CREATED)
         }
 
     // El createByAdmin que se usara por parte del cliente es el superior, este simplemente es para la carga de datos inicial
