@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
@@ -70,7 +71,7 @@ class UserControllerTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun Bienvenida() = runTest {
+    fun bienvenida() = runTest {
         val result = controller.bienvenida()
         val res = result.body
 
@@ -83,6 +84,191 @@ class UserControllerTest {
                 "Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
                 res) }
         )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun register() = runTest {
+        coEvery { service.register(any()) } returns entity
+        coEvery { aRepo.findAllFromUserId(any()) } returns flowOf(address)
+        coEvery { jwtTokenUtils.create(any()) } returns "token"
+
+        val result = controller.register(dtoRegister)
+        val res = result.body
+
+        Assertions.assertAll(
+            { Assertions.assertNotNull(result) },
+            { Assertions.assertNotNull(res) },
+            { assertEquals(result.statusCode, HttpStatus.OK) },
+            { assertEquals(dto.email, res?.user?.email) },
+            { assertEquals(dto.username, res?.user?.username) },
+            { assertEquals("token", res?.token) }
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun registerMal1() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.register(dtoRegisterMal1)
+        }
+        assertEquals("Username cannot be blank.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun registerMal2() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.register(dtoRegisterMal2)
+        }
+        assertEquals("Email cannot be blank.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun registerMal3() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.register(dtoRegisterMal3)
+        }
+        assertEquals("Invalid email.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun registerMal4() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.register(dtoRegisterMal4)
+        }
+        assertEquals("Passwords do not match.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun registerMal5() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.register(dtoRegisterMal5)
+        }
+        assertEquals("Password must at least be 7 characters long.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun registerMal6() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.register(dtoRegisterMal6)
+        }
+        assertEquals("Phone must at least be 9 characters long.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun registerMal7() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.register(dtoRegisterMal7)
+        }
+        assertEquals("Must at least have one address.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun registerMal8() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.register(dtoRegisterMal8)
+        }
+        assertEquals("Address cannot be blank.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun registerMal9() = runTest {
+        coEvery { service.register(any()) } throws UserExceptionBadRequest("Password and repeated password does not match.")
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.register(dtoRegister)
+        }
+        assertEquals("Password and repeated password does not match.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun create() = runTest {
+        coEvery { service.create(any()) } returns entity
+        coEvery { aRepo.findAllFromUserId(any()) } returns flowOf(address)
+        coEvery { jwtTokenUtils.create(any()) } returns "token"
+
+        val result = controller.create(dto)
+        val res = result.body
+
+        Assertions.assertAll(
+            { Assertions.assertNotNull(result) },
+            { Assertions.assertNotNull(res) },
+            { assertEquals(result.statusCode, HttpStatus.CREATED) },
+            { assertEquals(dto.email, res?.user?.email) },
+            { assertEquals(dto.username, res?.user?.username) },
+            { assertEquals("token", res?.token) }
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createMal1() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.create(dtoMal1)
+        }
+        assertEquals("Username cannot be blank.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createMal2() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.create(dtoMal2)
+        }
+        assertEquals("Email cannot be blank.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createMal3() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.create(dtoMal3)
+        }
+        assertEquals("Invalid email.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createMal4() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.create(dtoMal4)
+        }
+        assertEquals("Password must at least be 7 characters long.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createMal5() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.create(dtoMal5)
+        }
+        assertEquals("Phone must at least be 9 characters long.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createMal6() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.create(dtoMal6)
+        }
+        assertEquals("Must at least have one address.", result.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createMal7() = runTest {
+        val result = assertThrows<UserExceptionBadRequest> {
+            controller.create(dtoMal7)
+        }
+        assertEquals("Address cannot be blank.", result.message)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
