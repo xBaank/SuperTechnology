@@ -230,6 +230,15 @@ class UserService
         addressRepositoryCached.findAll().toList()
     }
 
+    suspend fun findAllPagingAddresses(page: Int, size: Int, sortBy: String ): Page<Address> =
+        withContext(Dispatchers.IO) {
+            log.info { "Obteniendo direcciones de la pagina: $page " }
+
+            val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
+            addressRepositoryCached.findAllPaged(pageRequest).firstOrNull()
+                ?: throw AddressExceptionNotFound("Page $page not found.")
+        }
+
     suspend fun listAddressesByUserId(userId: UUID): String = withContext(Dispatchers.IO) {
         val address = addressRepositoryCached.findAllFromUserId(userId).toList()
 

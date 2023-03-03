@@ -16,7 +16,7 @@ class SwaggerConfig {
             .info(
                 Info()
                     .title("SuperTechnology - Usuarios")
-                    .version("1.0.0")
+                    .version(APIConfig.API_VERSION)
                     .description(
                         "Microservicio de gestión de usuarios de una tienda de tecnología para las asignaturas " +
                                 "de Acceso a Datos y Programación de Procesos y Servicios del IES Luis Vives (Leganés) " +

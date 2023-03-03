@@ -1,14 +1,15 @@
 package resa.rodriguez.repositories.address
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 import resa.rodriguez.models.Address
 import resa.rodriguez.repositories.user.UserRepository
@@ -28,6 +29,12 @@ class AddressRepositoryCached
 ) : IAddressRepositoryCached {
     override suspend fun findAll(): Flow<Address> = withContext(Dispatchers.IO) {
         aRepo.findAll()
+    }
+
+    override suspend fun findAllPaged(page: PageRequest): Flow<Page<Address>> {
+        return aRepo.findAllBy(page).toList().windowed(page.pageSize, page.pageSize, true)
+            .map { PageImpl(it, page, aRepo.count()) }
+            .asFlow()
     }
 
     override suspend fun findAllFromUserId(id: UUID): Flow<Address> = withContext(Dispatchers.IO) {
