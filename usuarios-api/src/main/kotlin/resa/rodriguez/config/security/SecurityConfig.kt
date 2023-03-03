@@ -79,7 +79,8 @@ class SecurityConfig
                 "/usuarios/list/{active}", "/usuarios/username/{username}",
                 "/usuarios/id/{userId}", "/usuarios/email/{userEmail}",
                 "/usuarios/phone/{userPhone}", "/usuarios/activity/{email}",
-                "/usuarios/list/address", "/usuarios/list/address/{userId}",
+                "/usuarios/list/address", "/list/address/paging",
+                "/usuarios/list/address/{userId}",
                 "/usuarios/address/{id}", "/usuarios/address"
             ).hasAnyRole("ADMIN", "SUPER_ADMIN")
 

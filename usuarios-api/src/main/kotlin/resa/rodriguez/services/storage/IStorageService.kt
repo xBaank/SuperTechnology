@@ -6,7 +6,7 @@ import java.nio.file.Path
 import java.util.stream.Stream
 
 interface IStorageService {
-    fun init()
+    fun initStorageDirectory()
     fun store(file: MultipartFile): String
     fun loadAll(): Stream<Path>
     fun load(fileName: String): Path
@@ -14,5 +14,5 @@ interface IStorageService {
     fun delete(fileName: String)
     fun deleteAll()
     fun getUrl(fileName: String): String
-    fun store(file: MultipartFile, fileName: String): String
+    suspend fun storeFileFromUser(file: MultipartFile, fileName: String): String
 }

@@ -1,9 +1,8 @@
 package resa.rodriguez.controllers
 
 import jakarta.validation.Valid
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.toSet
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -21,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.mappers.toDTO
@@ -29,18 +29,20 @@ import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.repositories.address.AddressRepositoryCached
 import resa.rodriguez.services.*
+import resa.rodriguez.services.storage.StorageService
 import resa.rodriguez.validators.validate
 import java.util.*
 
 private val log = KotlinLogging.logger {}
 
 /**
- * Controlador para el manejo de distintos repositorios
+ * Controlador para el manejo de distintos servicios y utiles relacionados con los usuarios
  *
  * @property service
  * @property AddressRepositoryCached
  * @property authenticationManager
  * @property jwtTokenUtils
+ * @property StorageService
  */
 @RestController
 @RequestMapping(APIConfig.API_PATH)
@@ -50,6 +52,7 @@ class UserController
     private val aRepo: AddressRepositoryCached,
     private val authenticationManager: AuthenticationManager,
     private val jwtTokenUtils: JwtTokensUtils,
+    private val storageService: StorageService
 ) {
 
     // -- GET DEFAULT --
@@ -97,7 +100,10 @@ class UserController
             val userSaved = service.create(userDTOcreate)
             val addresses = userSaved.id?.let { service.findAllFromUserId(it).toSet() } ?: setOf()
 
-            ResponseEntity(UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)), HttpStatus.CREATED)
+            ResponseEntity(
+                UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)),
+                HttpStatus.CREATED
+            )
         }
 
     // El createByAdmin que se usara por parte del cliente es el superior, este simplemente es para la carga de datos inicial
@@ -254,11 +260,22 @@ class UserController
     suspend fun updateAvatar(
         @AuthenticationPrincipal user: User,
         @RequestPart("file") file: MultipartFile
-    ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
-        val userSaved = service.updateAvatar(user, file)
-        val addresses = userSaved.id?.let { service.findAllFromUserId(it).toSet() } ?: setOf()
+    ): ResponseEntity<UserDTOresponse> = runBlocking {
+        log.info { "Actualizando avatar usuario" }
 
-        ResponseEntity.ok(userSaved.toDTO(addresses))
+        val myScope = CoroutineScope(Dispatchers.IO)
+        val fileStored = myScope.async { storageService.storeFileFromUser(file, user.username) }.await()
+
+        val uriImage = storageService.getUrl(fileStored)
+
+        val newUser = user.copy(
+            avatar = uriImage
+        )
+
+        val userUpdated = service.updateAvatar(newUser)
+        val addresses = userUpdated.id?.let { service.findAllFromUserId(it).toSet() } ?: setOf()
+
+        return@runBlocking ResponseEntity.ok(userUpdated.toDTO(addresses))
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
@@ -327,6 +344,23 @@ class UserController
 
             ResponseEntity.ok(service.findAllAddresses())
         }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @GetMapping("/list/address/paging")
+    suspend fun getAllPagingAddresses(
+        @AuthenticationPrincipal user: User,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int = 0,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_SIZE) size: Int = 10,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_SORT) sortBy: String = "created_at",
+    ): ResponseEntity<Page<Address>> {
+        log.info { "Buscando direcciones paginadas || Pagina: $page" }
+
+        val pageResponse = service.findAllPagingAddresses(page, size, sortBy)
+
+        return if (pageResponse != null) {
+            ResponseEntity.ok(pageResponse)
+        } else throw AddressExceptionNotFound("Page not found.")
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/address/{userId}")

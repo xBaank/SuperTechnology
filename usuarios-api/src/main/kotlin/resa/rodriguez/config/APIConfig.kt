@@ -10,7 +10,7 @@ class APIConfig {
     companion object {
         const val API_PATH = "/usuarios"
 
-        const val API_VERSION = "1.0"
+        const val API_VERSION = "1.0.0"
 
         const val PAGINATION_INIT = "0"
 

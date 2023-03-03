@@ -16,8 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
-import resa.rodriguez.controllers.StorageController
 import resa.rodriguez.dto.*
 import resa.rodriguez.exceptions.AddressExceptionBadRequest
 import resa.rodriguez.exceptions.AddressExceptionNotFound
@@ -30,7 +28,7 @@ import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.repositories.address.AddressRepositoryCached
 import resa.rodriguez.repositories.user.UserRepositoryCached
-import java.util.UUID
+import java.util.*
 
 private val log = KotlinLogging.logger {}
 
@@ -39,8 +37,7 @@ class UserService
 @Autowired constructor(
     private val userRepositoryCached: UserRepositoryCached,
     private val addressRepositoryCached: AddressRepositoryCached,
-    private val passwordEncoder: PasswordEncoder,
-    private val storageController: StorageController,
+    private val passwordEncoder: PasswordEncoder
 ) : UserDetailsService {
     // Spring Security, no se puede suspender
     override fun loadUserByUsername(username: String): UserDetails = runBlocking {
@@ -105,7 +102,8 @@ class UserService
     suspend fun findByUsername(username: String): User = withContext(Dispatchers.IO) {
         log.info { "Obteniendo usuario con username: $username " }
 
-        userRepositoryCached.findByUsername(username) ?: throw UserExceptionNotFound("User with username $username not found.")
+        userRepositoryCached.findByUsername(username)
+            ?: throw UserExceptionNotFound("User with username $username not found.")
     }
 
     suspend fun findById(id: UUID): User = withContext(Dispatchers.IO) {
@@ -140,7 +138,8 @@ class UserService
             log.info { "Obteniendo usuarios de la pagina: $page " }
 
             val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
-            userRepositoryCached.findAllPaged(pageRequest).firstOrNull() ?: throw UserExceptionNotFound("Page $page not found.")
+            userRepositoryCached.findAllPaged(pageRequest).firstOrNull()
+                ?: throw UserExceptionNotFound("Page $page not found.")
         }
 
     suspend fun findAllByActive(active: Boolean): List<User> = withContext(Dispatchers.IO) {
@@ -177,24 +176,8 @@ class UserService
         userRepositoryCached.save(userUpdated)
     }
 
-    suspend fun updateAvatar(user: User, file: MultipartFile): User = withContext(Dispatchers.IO) {
-        val response = storageController.uploadFile(file)
-        val avatarUrl = response.body?.get("url")
-            ?: throw UserExceptionNotFound("Url not found.")
-
-        val userUpdated = User(
-            id = user.id,
-            username = user.username,
-            email = user.email,
-            password = user.password,
-            phone = user.phone,
-            avatar = avatarUrl,
-            role = user.role,
-            createdAt = user.createdAt,
-            active = user.active
-        )
-
-        userRepositoryCached.save(userUpdated)
+    suspend fun updateAvatar(user: User): User = withContext(Dispatchers.IO) {
+        userRepositoryCached.save(user)
     }
 
     suspend fun switchActivity(email: String): User = withContext(Dispatchers.IO) {
@@ -223,23 +206,14 @@ class UserService
         val updatedRole =
             if (userDTORoleUpdated.role.name.uppercase() != (User.UserRole.USER.name) &&
                 userDTORoleUpdated.role.name.uppercase() != (User.UserRole.ADMIN.name) &&
-                userDTORoleUpdated.role.name.uppercase() != (User.UserRole.ADMIN.name)
+                userDTORoleUpdated.role.name.uppercase() != (User.UserRole.SUPER_ADMIN.name)
             ) {
                 user.role
             } else userDTORoleUpdated.role
 
-        val userUpdated = User(
-            id = user.id,
-            username = user.username,
-            email = user.email,
-            password = user.password,
-            phone = user.phone,
-            avatar = user.avatar,
-            role = updatedRole,
-            createdAt = user.createdAt,
-            active = user.active
+        val userUpdated = user.copy(
+            role = updatedRole
         )
-
         userRepositoryCached.save(userUpdated)
     }
 
@@ -256,6 +230,15 @@ class UserService
     suspend fun findAllAddresses(): List<Address> = withContext(Dispatchers.IO) {
         addressRepositoryCached.findAll().toList()
     }
+
+    suspend fun findAllPagingAddresses(page: Int, size: Int, sortBy: String ): Page<Address> =
+        withContext(Dispatchers.IO) {
+            log.info { "Obteniendo direcciones de la pagina: $page " }
+
+            val pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, sortBy)
+            addressRepositoryCached.findAllPaged(pageRequest).firstOrNull()
+                ?: throw AddressExceptionNotFound("Page $page not found.")
+        }
 
     suspend fun listAddressesByUserId(userId: UUID): String = withContext(Dispatchers.IO) {
         val address = addressRepositoryCached.findAllFromUserId(userId).toList()
@@ -289,7 +272,7 @@ class UserService
 
         val addresses = addressRepositoryCached.findAllFromUserId(u.id!!).toSet()
 
-        if (address.userId == u.id && addresses.size >= 1) {
+        if (address.userId == u.id && addresses.isNotEmpty()) {
             val addr = addressRepositoryCached.deleteById(address.id!!)
             "Direccion ${addr?.address} eliminada."
         } else throw AddressExceptionBadRequest("No ha sido posible eliminar la direccion.")
