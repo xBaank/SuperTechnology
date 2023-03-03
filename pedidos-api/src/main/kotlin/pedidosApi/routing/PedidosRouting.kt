@@ -1,8 +1,10 @@
 package pedidosApi.routing
 
+import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.flatMap
-import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import io.github.smiley4.ktorswaggerui.dsl.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -13,17 +15,20 @@ import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 import org.litote.kmongo.id.toId
+import pedidosApi.buildErrorDto
+import pedidosApi.buildPagedPedidoDto
+import pedidosApi.buildPedidoDto
 import pedidosApi.clients.ProductosClient
 import pedidosApi.clients.UsuariosClient
 import pedidosApi.dto.requests.CreatePedidoDto
 import pedidosApi.dto.requests.UpdatePedidoDto
+import pedidosApi.exceptions.ApiError
+import pedidosApi.exceptions.DomainError
 import pedidosApi.exceptions.PedidoError
 import pedidosApi.extensions.inject
 import pedidosApi.extensions.mapToApiError
 import pedidosApi.extensions.receiveOrNull
 import pedidosApi.extensions.toObjectIdOrNull
-import pedidosApi.json.buildPagedPedidoDto
-import pedidosApi.json.buildPedidoDto
 import pedidosApi.models.EstadoPedido
 import pedidosApi.models.Pedido
 import pedidosApi.models.Tarea
@@ -42,21 +47,20 @@ fun Routing.pedidosRouting() = route("/pedidos") {
 
             repository.getByUserId(userId, page, size)
                 .map { buildPagedPedidoDto(it) }
-                .getOrElse { throw it }
-                .let { call.respond(it) }
+                .onLeft { call.handleError(it) }
+                .onRight { call.respond(it) }
         }
     }
     authenticate("admin") {
         get("/usuario/{id}", builder = OpenApiRoute::getByUsuarioId) {
             val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
             val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
-
             val usuarioId = call.parameters.getOrFail("id")
 
             repository.getByUserId(usuarioId, page, size)
                 .map { buildPagedPedidoDto(it) }
-                .getOrElse { throw it }
-                .let { call.respond(it) }
+                .onLeft { call.handleError(it) }
+                .onRight { call.respond(it) }
         }
 
         get(builder = OpenApiRoute::getAll) {
@@ -65,8 +69,8 @@ fun Routing.pedidosRouting() = route("/pedidos") {
 
             repository.getByPage(page, size)
                 .map { buildPagedPedidoDto(it) }
-                .getOrElse { throw it }
-                .let { call.respond(it) }
+                .onLeft { call.handleError(it) }
+                .onRight { call.respond(it) }
         }
 
         get("{id}", builder = OpenApiRoute::getById) {
@@ -74,46 +78,47 @@ fun Routing.pedidosRouting() = route("/pedidos") {
 
             repository.getById(id)
                 .map { buildPedidoDto(it) }
-                .getOrElse { throw it }
-                .let { call.respond(HttpStatusCode.OK, it) }
+                .onLeft { call.handleError(it) }
+                .onRight { call.respond(HttpStatusCode.OK, it) }
         }
 
         post(builder = OpenApiRoute::post) {
-            val pedido =
-                call.receiveOrNull<CreatePedidoDto>() ?: throw PedidoError.InvalidPedidoFormat("Invalid body format")
+            val pedido = call.receiveOrNull<CreatePedidoDto>()
+                .let { it?.right() ?: PedidoError.InvalidPedidoFormat("Invalid body format").left() }
 
-            createPedido(pedido)
+            pedido.flatMap { createPedido(it) }
                 .flatMap { repository.save(it) }
                 .map { buildPedidoDto(it) }
-                .getOrElse { throw it }
-                .let { call.respond(HttpStatusCode.Created, it) }
+                .onLeft { call.handleError(it) }
+                .onRight { call.respond(HttpStatusCode.Created, it) }
         }
 
         put("{id}", builder = OpenApiRoute::put) {
             val id = call.parameters.getOrFail("id")
             val pedido = call.receiveOrNull<UpdatePedidoDto>()
 
-
-
             updatePedido(pedido, id)
                 .flatMap { repository.save(it) }
                 .map { buildPedidoDto(it) }
-                .getOrElse { throw it }
-                .let { call.respond(HttpStatusCode.OK, it) }
+                .onLeft { call.handleError(it) }
+                .onRight { call.respond(HttpStatusCode.OK, it) }
         }
 
         delete("{id}", builder = OpenApiRoute::delete) {
             val id = call.parameters.getOrFail("id")
+
             repository.delete(id)
-                .getOrElse { throw it }
-                .let { call.respond(HttpStatusCode.NoContent) }
+                .onLeft { call.handleError(it) }
+                .onRight { call.respond(HttpStatusCode.NoContent) }
         }
     }
 }
 
-private suspend fun createPedido(pedido: CreatePedidoDto) = either {
+private suspend fun createPedido(
+    pedido: CreatePedidoDto,
+): Either<ApiError, Pedido> = either {
     val userClient by inject<UsuariosClient>()
-    val productClient by inject<ProductosClient>()
+    val productoClient by inject<ProductosClient>()
 
 
     val usuario = userClient.getUsuario(pedido.usuario).mapToApiError().bind()
@@ -122,7 +127,7 @@ private suspend fun createPedido(pedido: CreatePedidoDto) = either {
 
     val tareas = pedido.tareas.map { tarea ->
         Tarea(
-            producto = productClient.getProducto(tarea.producto).mapToApiError().bind(),
+            producto = productoClient.getProducto(tarea.producto).mapToApiError().bind(),
             empleado = usuario,
             createdAt = current
         )
@@ -141,7 +146,7 @@ private suspend fun createPedido(pedido: CreatePedidoDto) = either {
 /**
  * Update user, iva and estado
  */
-private suspend fun updatePedido(updatePedidoDto: UpdatePedidoDto?, id: String) = either {
+private suspend fun updatePedido(updatePedidoDto: UpdatePedidoDto?, id: String): Either<DomainError, Pedido> = either {
     val userClient by inject<UsuariosClient>()
     val pedidosRepository by inject<PedidosRepository>()
 
@@ -155,5 +160,42 @@ private suspend fun updatePedido(updatePedidoDto: UpdatePedidoDto?, id: String) 
         usuario = usuario,
         iva = updatePedidoDto?.iva ?: pedidoToUpdate.iva,
         estado = updatePedidoDto?.estado ?: pedidoToUpdate.estado
+    )
+}
+
+suspend fun ApplicationCall.handleError(error: DomainError) = when (error) {
+    is PedidoError.PedidoNotFound -> respond(
+        HttpStatusCode.NotFound,
+        buildErrorDto(error.message, HttpStatusCode.NotFound.value)
+    )
+
+    is PedidoError.InvalidPedidoId -> respond(
+        HttpStatusCode.BadRequest,
+        buildErrorDto(error.message, HttpStatusCode.BadRequest.value)
+    )
+
+    is PedidoError.PedidoSaveError -> respond(
+        HttpStatusCode.NotFound,
+        buildErrorDto(error.message, HttpStatusCode.NotFound.value)
+    )
+
+    is PedidoError.InvalidPedidoPage -> respond(
+        HttpStatusCode.BadRequest,
+        buildErrorDto(error.message, HttpStatusCode.BadRequest.value)
+    )
+
+    is PedidoError.InvalidPedidoFormat -> respond(
+        HttpStatusCode.BadRequest,
+        buildErrorDto(error.message, HttpStatusCode.BadRequest.value)
+    )
+
+    is PedidoError.MissingPedidoId -> respond(
+        HttpStatusCode.BadRequest,
+        buildErrorDto(error.message, HttpStatusCode.BadRequest.value)
+    )
+
+    is ApiError -> respond(
+        HttpStatusCode.FailedDependency,
+        buildErrorDto(error.message, HttpStatusCode.FailedDependency.value)
     )
 }

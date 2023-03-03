@@ -19,11 +19,18 @@ fun OpenApiRoute.getAll() {
             description = "Page size, Default: 10, Max: 500"
             required = false
         }
+        headerParameter<String>("Authorization") {
+            description = "Authorization header"
+            required = true
+        }
     }
     response {
         HttpStatusCode.OK to {
             description = "Paged result"
             body<PagedFlowDto<PedidoDto>>()
+        }
+        HttpStatusCode.Unauthorized to {
+            description = "Unauthorized"
         }
     }
 }
@@ -43,6 +50,10 @@ fun OpenApiRoute.getByUsuarioId() {
             description = "user id"
             required = true
         }
+        headerParameter<String>("Authorization") {
+            description = "Authorization header"
+            required = true
+        }
     }
     response {
         HttpStatusCode.OK to {
@@ -52,6 +63,9 @@ fun OpenApiRoute.getByUsuarioId() {
         HttpStatusCode.NotFound to {
             description = "User not found"
             body<ErrorDto>()
+        }
+        HttpStatusCode.Unauthorized to {
+            description = "Unauthorized"
         }
     }
 }
@@ -64,6 +78,10 @@ fun OpenApiRoute.getById() {
             description = "pedido id"
             required = true
         }
+        headerParameter<String>("Authorization") {
+            description = "Authorization header"
+            required = true
+        }
     }
     response {
         HttpStatusCode.OK to {
@@ -73,6 +91,9 @@ fun OpenApiRoute.getById() {
         HttpStatusCode.NotFound to {
             description = "Pedido not found"
             body<ErrorDto>()
+        }
+        HttpStatusCode.Unauthorized to {
+            description = "Unauthorized"
         }
     }
 }
@@ -84,11 +105,18 @@ fun OpenApiRoute.post() {
             description = "CreatePedidoDto that will be inserted"
             required = true
         }
+        headerParameter<String>("Authorization") {
+            description = "Authorization header"
+            required = true
+        }
     }
     response {
         HttpStatusCode.Created to {
             description = "Pedido inserted"
             body<PedidoDto>()
+        }
+        HttpStatusCode.Unauthorized to {
+            description = "Unauthorized"
         }
     }
 }
@@ -100,11 +128,18 @@ fun OpenApiRoute.put() {
             description = "Id from the pedido"
             required = true
         }
+        headerParameter<String>("Authorization") {
+            description = "Authorization header"
+            required = true
+        }
     }
     response {
         HttpStatusCode.Created to {
             description = "Pedido saved"
             body<PedidoDto>()
+        }
+        HttpStatusCode.Unauthorized to {
+            description = "Unauthorized"
         }
     }
 }
@@ -116,11 +151,17 @@ fun OpenApiRoute.delete() {
             description = "Id from the pedido"
             required = true
         }
+        headerParameter<String>("Authorization") {
+            description = "Authorization header"
+            required = true
+        }
     }
     response {
         HttpStatusCode.OK to {
             description = "Pedido deleted"
-            body<Unit>()
+        }
+        HttpStatusCode.Unauthorized to {
+            description = "Unauthorized"
         }
     }
 }

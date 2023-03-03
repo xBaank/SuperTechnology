@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
+import kotlinx.coroutines.flow.Flow
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.div
 import org.litote.kmongo.eq
@@ -14,6 +15,8 @@ import pedidosApi.extensions.toObjectIdOrNull
 import pedidosApi.models.Pedido
 
 const val MAX_SIZE = 500
+
+class PagedFlow<T>(val page: Int, val size: Int, results: Flow<T>) : Flow<T> by results
 
 class PedidosRepository(private val collection: CoroutineCollection<Pedido>) {
 

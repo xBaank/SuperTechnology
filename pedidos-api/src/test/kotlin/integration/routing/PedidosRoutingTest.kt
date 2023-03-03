@@ -1,5 +1,6 @@
 package integration.routing
 
+import com.typesafe.config.ConfigValueFactory.fromAnyRef
 import integration.data.PedidosData
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -7,6 +8,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
 import org.amshove.kluent.shouldBe
@@ -19,7 +21,6 @@ import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
-import pedidosApi.Config
 import pedidosApi.dto.responses.ErrorDto
 import pedidosApi.dto.responses.PagedFlowDto
 import pedidosApi.dto.responses.PedidoDto
@@ -44,14 +45,15 @@ class PedidosRoutingTest {
     fun setUp() {
         mongoDBContainer.start()
         stopKoin()
-        System.setProperty("mongo.connectionString", mongoDBContainer.connectionString)
-        System.setProperty("mongo.database", "pedidos")
-        Config.reload()
     }
 
     private fun ApplicationTestBuilder.createJsonClient(): HttpClient = createClient {
         this@createJsonClient.environment {
-            config = PedidosData.config
+            config = HoconApplicationConfig(
+                PedidosData.config
+                    .withValue("mongo.connectionString", fromAnyRef(mongoDBContainer.connectionString))
+                    .withValue("mongo.database", fromAnyRef("pedidos"))
+            )
         }
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })

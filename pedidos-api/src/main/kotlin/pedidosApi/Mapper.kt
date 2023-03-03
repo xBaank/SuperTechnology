@@ -1,4 +1,4 @@
-package pedidosApi.json
+package pedidosApi
 
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
