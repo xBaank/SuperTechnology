@@ -26,7 +26,7 @@ class SwaggerConfig {
             .externalDocs(
                 ExternalDocumentation()
                     .description("Repositorio del proyecto en Github")
-                    .url("https://github.com/xBaank/SuperTechnology")
+                    .url("https://github.com/xBaank/SuperTechnology/tree/master/usuarios-api")
             )
     }
 

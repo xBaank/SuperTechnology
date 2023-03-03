@@ -70,7 +70,7 @@ class UserControllerTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun Bienvenida() = runTest {
+    fun bienvenida() = runTest {
         val result = controller.bienvenida()
         val res = result.body
 
