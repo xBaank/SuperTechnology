@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.AddressExceptionBadRequest
 import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
@@ -274,6 +275,6 @@ class UserService
         if (address.userId == u.id && addresses.isNotEmpty()) {
             val addr = addressRepositoryCached.deleteById(address.id!!)
             "Direccion ${addr?.address} eliminada."
-        } else throw UserExceptionBadRequest("No ha sido posible eliminar la direccion.")
+        } else throw AddressExceptionBadRequest("No ha sido posible eliminar la direccion.")
     }
 }
