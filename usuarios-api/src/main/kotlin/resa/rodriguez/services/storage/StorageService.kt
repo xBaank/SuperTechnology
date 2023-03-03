@@ -1,5 +1,6 @@
 package resa.rodriguez.services.storage
 
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
@@ -20,23 +21,27 @@ import java.nio.file.StandardCopyOption
 import java.util.*
 import java.util.stream.Stream
 
+private val log = KotlinLogging.logger {}
+
 @Service
 class StorageService(
     @Value("\${upload.root-location}") path: String,
-): IStorageService {
-    private val rootLocation: Path
+) : IStorageService {
+    private val rootLocation: Path = Paths.get(path)
 
     init {
-        rootLocation = Paths.get(path)
-        //this.deleteAll()
-        this.init()
+        initStorageDirectory()
     }
 
-    override fun init() {
-        try {
-            if (!Files.exists(rootLocation)) Files.createDirectories(rootLocation)
-        } catch (e: IOException) {
-            throw StorageExceptionBadRequest("Unable to initialize storage system.", e)
+    final override fun initStorageDirectory() {
+        if (!Files.exists(rootLocation)) {
+            log.info { "Creando directorio de almacenamiento: $rootLocation" }
+            Files.createDirectory(rootLocation)
+        } else {
+            log.debug { "El directorio existe; eliminacion de datos en proceso..." }
+            deleteAll()
+            // Volvemos a crear el directorio una vez se han eliminado los datos (eso incluye al propio directorio)
+            Files.createDirectory(rootLocation)
         }
     }
 
@@ -63,22 +68,23 @@ class StorageService(
         }
     }
 
-    override fun store(file: MultipartFile, fileName: String): String {
-        val fileName = StringUtils.cleanPath(file.originalFilename.toString())
-        val extension = StringUtils.getFilenameExtension(fileName).toString()
+    override suspend fun storeFileFromUser(file: MultipartFile, fileName: String): String {
+        val extension = StringUtils.getFilenameExtension(file.originalFilename)
+        val fileSaved = "$fileName.$extension"
 
-        val storedName = "$fileName.$extension"
         try {
-            if (file.isEmpty)
+            if (file.isEmpty) {
                 throw StorageExceptionBadRequest("Could not store $fileName. File is empty.")
-            if (fileName.contains(".."))
+            }
+            if (fileSaved.contains("..")) {
                 throw StorageExceptionBadRequest("You cannot store $fileName in a parent directory.")
+            }
             file.inputStream.use { inputStream ->
                 Files.copy(
-                    inputStream, rootLocation.resolve(storedName),
+                    inputStream, rootLocation.resolve(fileSaved),
                     StandardCopyOption.REPLACE_EXISTING
                 )
-                return storedName
+                return fileSaved
             }
         } catch (e: IOException) {
             throw StorageExceptionBadRequest("Could not store $fileName", e)
