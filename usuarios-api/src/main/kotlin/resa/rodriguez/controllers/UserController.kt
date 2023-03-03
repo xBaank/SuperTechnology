@@ -35,7 +35,12 @@ import java.util.*
 private val log = KotlinLogging.logger {}
 
 /**
- * Controlador para manejar a los usuarios
+ * Controlador para el manejo de distintos repositorios
+ *
+ * @property service
+ * @property AddressRepositoryCached
+ * @property authenticationManager
+ * @property jwtTokenUtils
  */
 @RestController
 @RequestMapping(APIConfig.API_PATH)
@@ -140,32 +145,32 @@ class UserController
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/paging")
-    private suspend fun getAllPaging(
+    suspend fun getAllPaging(
         @AuthenticationPrincipal user: User,
         @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int = 0,
         @RequestParam(defaultValue = APIConfig.PAGINATION_SIZE) size: Int = 10,
         @RequestParam(defaultValue = APIConfig.PAGINATION_SORT) sortBy: String = "created_at",
-    ): ResponseEntity<Page<UserDTOresponse>> = withContext(Dispatchers.IO) {
+    ): ResponseEntity<Page<UserDTOresponse>> {
         log.info { "Buscando usuarios paginados || Pagina: $page" }
 
         val pageResponse = service.findAllPaging(page, size, sortBy)
 
-        if (pageResponse != null) {
+        return if (pageResponse != null) {
             ResponseEntity.ok(pageResponse)
         } else throw UserExceptionNotFound("Page not found.")
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/{active}")
-    private suspend fun listUsersActive(
+    suspend fun listUsersActive(
         @PathVariable active: Boolean,
         @AuthenticationPrincipal user: User
-    ): ResponseEntity<List<UserDTOresponse>> = withContext(Dispatchers.IO) {
+    ): ResponseEntity<List<UserDTOresponse>> {
         log.info { "Obteniendo listado de usuarios activados" }
 
         val res = service.findAllByActive(active)
 
-        ResponseEntity.ok(res.toDTOlist(aRepo))
+        return ResponseEntity.ok(res.toDTOlist(aRepo))
     }
 
     // "Find One" Methods
@@ -179,7 +184,7 @@ class UserController
             log.info { "Obteniendo usuario con username: $username" }
 
             val user = service.findByUsername(username)
-            val addresses = service.findAllFromUserId(user?.id!!).toSet()
+            val addresses = service.findAllFromUserId(user.id!!).toSet()
 
             ResponseEntity.ok(user.toDTO(addresses))
         }
@@ -209,7 +214,7 @@ class UserController
             log.info { "Obteniendo usuario con email: $userEmail" }
 
             val user = service.findByEmail(userEmail)
-            val addresses = service.findAllFromUserId(user?.id!!).toSet()
+            val addresses = service.findAllFromUserId(user.id!!).toSet()
 
             ResponseEntity.ok(user.toDTO(addresses))
         }
@@ -223,15 +228,15 @@ class UserController
             log.info { "Obteniendo usuario con telefono: $userPhone" }
 
             val user = service.findByUserPhone(userPhone)
-            val addresses = service.findAllFromUserId(user?.id!!).toSet()
+            val addresses = service.findAllFromUserId(user.id!!).toSet()
 
             ResponseEntity.ok(user.toDTO(addresses))
         }
 
     // "Update" Methods
 
-    @PutMapping("/me/update")
-    private suspend fun updateMySelf(
+    @PutMapping("/me")
+    suspend fun updateMySelf(
         @AuthenticationPrincipal user: User,
         @Valid @RequestBody userDTOUpdated: UserDTOUpdated
     ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
@@ -245,7 +250,7 @@ class UserController
     }
 
     @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    private suspend fun updateAvatar(
+    suspend fun updateAvatar(
         @AuthenticationPrincipal user: User,
         @RequestPart("file") file: MultipartFile
     ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
@@ -257,7 +262,7 @@ class UserController
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PutMapping("/activity/{email}")
-    private suspend fun switchActivityByEmail(
+    suspend fun switchActivityByEmail(
         @PathVariable email: String,
         @AuthenticationPrincipal user: User
     ): ResponseEntity<UserDTOresponse> =
@@ -271,8 +276,8 @@ class UserController
         }
 
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    @PutMapping("/role/{email}")
-    private suspend fun updateRoleByEmail(
+    @PutMapping("/role")
+    suspend fun updateRoleByEmail(
         @Valid @RequestBody userDTORoleUpdated: UserDTORoleUpdated,
         @AuthenticationPrincipal user: User
     ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
@@ -287,8 +292,8 @@ class UserController
 
     // "Delete" Methods
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    @DeleteMapping("/delete/{email}")
-    private suspend fun deleteUser(
+    @DeleteMapping("/{email}")
+    suspend fun deleteUser(
         @PathVariable email: String,
         @AuthenticationPrincipal user: User
     ): ResponseEntity<UserDTOresponse> = withContext(Dispatchers.IO) {
@@ -315,7 +320,7 @@ class UserController
     // "Find All" Methods
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/address")
-    private suspend fun listAddresses(@AuthenticationPrincipal user: User): ResponseEntity<List<Address>> =
+    suspend fun listAddresses(@AuthenticationPrincipal user: User): ResponseEntity<List<Address>> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo listado de direcciones" }
 
@@ -324,7 +329,7 @@ class UserController
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/address/{userId}")
-    private suspend fun listAddressesByUserId(
+    suspend fun listAddressesByUserId(
         @PathVariable userId: UUID,
         @AuthenticationPrincipal user: User
     ): ResponseEntity<String> = withContext(Dispatchers.IO) {
@@ -336,7 +341,7 @@ class UserController
     // "Find One" Methods
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/address/{id}")
-    private suspend fun findById(@PathVariable id: UUID, @AuthenticationPrincipal user: User): ResponseEntity<String> =
+    suspend fun findById(@PathVariable id: UUID, @AuthenticationPrincipal user: User): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo direccion con id: $id" }
 
@@ -344,9 +349,9 @@ class UserController
         }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @GetMapping("/address/{name}")
-    private suspend fun findByName(
-        @PathVariable name: String,
+    @GetMapping("/address")
+    suspend fun findByName(
+        @RequestParam(defaultValue = "") name: String = "",
         @AuthenticationPrincipal user: User
     ): ResponseEntity<String> =
         withContext(Dispatchers.IO) {
@@ -358,9 +363,9 @@ class UserController
     // "Delete" Methods
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @DeleteMapping("/address/{name}")
-    private suspend fun deleteAddress(
-        @PathVariable name: String,
+    @DeleteMapping("/address")
+    suspend fun deleteAddress(
+        @RequestParam(defaultValue = "") name: String = "",
         @AuthenticationPrincipal user: User
     ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Eliminando direccion: $name" }

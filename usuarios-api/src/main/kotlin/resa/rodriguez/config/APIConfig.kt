@@ -3,7 +3,7 @@ package resa.rodriguez.config
 import org.springframework.context.annotation.Configuration
 
 /**
- * Clase que se encarga de configurar la ruta principal de la API, ademas de marcar la version
+ * Clase de configuracion que se encarga de configurar la ruta principal de la API, ademas de marcar la version
  */
 @Configuration
 class APIConfig {

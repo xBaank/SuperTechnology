@@ -16,6 +16,11 @@ import resa.rodriguez.services.storage.IStorageService
 import java.io.IOException
 import java.time.LocalDateTime
 
+/**
+ * Controlador encargado del almacenamiento, haciendo uso del servicio especifico
+ *
+ * @property storageService
+ */
 @RestController
 @RequestMapping("${APIConfig.API_PATH}/storage")
 class StorageController

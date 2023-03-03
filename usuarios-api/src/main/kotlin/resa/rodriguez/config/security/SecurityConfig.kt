@@ -15,6 +15,12 @@ import resa.rodriguez.config.security.jwt.JwtAuthorizationFilter
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.services.UserService
 
+/**
+ * Clase de configuracion de Spring Security
+ *
+ * @property service
+ * @property jwtTokensUtils
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -56,7 +62,11 @@ class SecurityConfig
             // Spring desplaza a esta ruta todos los errores y excepciones, asi podemos mostrarlas en vez de un Forbidden
             .requestMatchers("/error/**").permitAll()
 
-            .requestMatchers("/**").permitAll()
+            // Permitimos el acceso de swagger
+            .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+
+            // Abrimos el acceso a los end points, luego se limitaran segun el rol/acceso
+            .requestMatchers("/usuarios/**").permitAll()
 
             // Permitimos el acceso sin autenticacion ni verificacion a las siguientes rutas
             .requestMatchers("/usuarios", "/usuarios/", "/usuarios/login", "/usuarios/register").permitAll()
@@ -70,11 +80,11 @@ class SecurityConfig
                 "/usuarios/id/{userId}", "/usuarios/email/{userEmail}",
                 "/usuarios/phone/{userPhone}", "/usuarios/activity/{email}",
                 "/usuarios/list/address", "/usuarios/list/address/{userId}",
-                "/usuarios/address/{id}", "/usuarios/address/{name}"
+                "/usuarios/address/{id}", "/usuarios/address"
             ).hasAnyRole("ADMIN", "SUPER_ADMIN")
 
             .requestMatchers(
-                "/usuarios/role/{email}", "/usuarios/delete/{email}"
+                "/usuarios/role", "/usuarios/delete"
             ).hasRole("SUPER_ADMIN")
 
             // El resto, se necesitara autenticacion estandar
