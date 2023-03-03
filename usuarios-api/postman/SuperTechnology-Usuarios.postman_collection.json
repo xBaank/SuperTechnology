@@ -107,7 +107,7 @@
 			"response": []
 		},
 		{
-			"name": "Listado",
+			"name": "Listado Usuarios",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -137,7 +137,7 @@
 			"response": []
 		},
 		{
-			"name": "Listado Paginado",
+			"name": "Listado Usuarios Paginado",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -599,6 +599,48 @@
 						"usuarios",
 						"list",
 						"address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listado Direcciones Paginado",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkNDg5YTMyZC1mOWIwLTQ1MzItOTg1ZC04NDJjMGIzMzE0MjQiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3Nzk1OTIyNSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.IZ49K6ZUynE5Mr_TzBbdGp0dd8usux6b234PkWVgLyz-uVUkmBMonKTNqRfCqxBkV1RqCG8ZzfmxY7nhcTyF2g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6969/usuarios/list/address/paging?page=0&size=2",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6969",
+					"path": [
+						"usuarios",
+						"list",
+						"address",
+						"paging"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "2"
+						}
 					]
 				}
 			},

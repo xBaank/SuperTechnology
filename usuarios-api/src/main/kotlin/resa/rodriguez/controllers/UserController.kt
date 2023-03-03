@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
+import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.mappers.toDTO
@@ -99,7 +100,10 @@ class UserController
             val userSaved = service.create(userDTOcreate)
             val addresses = userSaved.id?.let { aRepo.findAllFromUserId(it).toSet() } ?: setOf()
 
-            ResponseEntity(UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)), HttpStatus.CREATED)
+            ResponseEntity(
+                UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)),
+                HttpStatus.CREATED
+            )
         }
 
     // El createByAdmin que se usara por parte del cliente es el superior, este simplemente es para la carga de datos inicial
@@ -339,6 +343,23 @@ class UserController
 
             ResponseEntity.ok(service.findAllAddresses())
         }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @GetMapping("/list/address/paging")
+    suspend fun getAllPagingAddresses(
+        @AuthenticationPrincipal user: User,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int = 0,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_SIZE) size: Int = 10,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_SORT) sortBy: String = "created_at",
+    ): ResponseEntity<Page<Address>> {
+        log.info { "Buscando direcciones paginadas || Pagina: $page" }
+
+        val pageResponse = service.findAllPagingAddresses(page, size, sortBy)
+
+        return if (pageResponse != null) {
+            ResponseEntity.ok(pageResponse)
+        } else throw AddressExceptionNotFound("Page not found.")
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/address/{userId}")
