@@ -3,11 +3,10 @@ package resa.rodriguez.config.security.jwt
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.JWT
 import com.auth0.jwt.interfaces.DecodedJWT
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import resa.rodriguez.models.User
 import java.util.*
-
-private val algorithm: Algorithm = Algorithm.HMAC512("Zanahoria turbopropulsada")
 
 /**
  * Contiene los métodos necesarios para la creación de tokens, comprobación y decodificación para verificarlos
@@ -15,6 +14,10 @@ private val algorithm: Algorithm = Algorithm.HMAC512("Zanahoria turbopropulsada"
  */
 @Component
 class JwtTokensUtils {
+
+    @Value("\${jwt.secret}")
+    private val algorithmSecret: String? = null
+
     fun create(user: User): String {
         return JWT.create()
             .withSubject(user.id.toString())
@@ -25,11 +28,11 @@ class JwtTokensUtils {
             .withClaim("role", user.role.name)
             .withClaim("active", user.active)
             .withExpiresAt(Date(System.currentTimeMillis() + (24 * 60 * 60 * 1_000)))
-            .sign(algorithm)
+            .sign(Algorithm.HMAC512(algorithmSecret))
     }
 
     fun decode(token: String): DecodedJWT? {
-        val verifier = JWT.require(algorithm)
+        val verifier = JWT.require(Algorithm.HMAC512(algorithmSecret))
             .build()
 
         return try {
