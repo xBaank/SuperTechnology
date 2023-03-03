@@ -10,6 +10,7 @@ import blanco.maldonado.mendoza.apiproductos.dto.ProductoDto
 import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoBadRequestException
 import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoConflictIntegrityException
 import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoNotFoundException
+import blanco.maldonado.mendoza.apiproductos.exceptions.UserExceptionBadRequest
 import blanco.maldonado.mendoza.apiproductos.mapper.toDto
 import blanco.maldonado.mendoza.apiproductos.mapper.toModel
 import blanco.maldonado.mendoza.apiproductos.model.Producto
@@ -30,6 +31,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -60,11 +62,12 @@ class ProductoController
     @Operation(summary = "Get all productos", description = "Get the products list", tags = ["Products"])
     @ApiResponse(responseCode = "200", description = "Lista de Producto")
     @GetMapping("")
-    suspend fun findAllProductos(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> = withContext(Dispatchers.IO) {
-        logger.info { "Get productos" }
-        val res = repository.findAll().map { it.toDto() }
-        return@withContext ResponseEntity.ok(res)
-    }
+    suspend fun findAllProductos(): ResponseEntity<Flow<ProductoDto>> =
+        withContext(Dispatchers.IO) {
+            logger.info { "Get productos" }
+            val res = repository.findAll().map { it.toDto() }
+            return@withContext ResponseEntity.ok(res)
+        }
 
 
     /**
@@ -82,11 +85,14 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/{id}")
-    suspend fun findProductById(@AuthenticationPrincipal u : User ,@PathVariable id: String): ResponseEntity<ProductoDto> =
+    suspend fun findProductById(
+        @PathVariable id: String
+    ): ResponseEntity<ProductoDto> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por id" }
             try {
-                val res = repository.findById(id)?.toDto() ?: throw ProductoNotFoundException("Producto no encontrado con id: $id .")
+                val res = repository.findById(id)?.toDto()
+                    ?: throw ProductoNotFoundException("Producto no encontrado con id: $id .")
                 return@withContext ResponseEntity.ok(res)
             } catch (e: ProductoNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
@@ -108,7 +114,9 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/categoria/{categoria}")
-    suspend fun findProductByCategoria(@AuthenticationPrincipal u : User,@PathVariable categoria: String): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun findProductByCategoria(
+        @PathVariable categoria: String
+    ): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Get productos by categoria" }
             try {
@@ -152,7 +160,9 @@ class ProductoController
     @ApiResponse(responseCode = "500", description = "Intern error with this id.")
     @ApiResponse(responseCode = "400", description = "Incorrect petition with this id.")
     @GetMapping("/nombre/{nombre}")
-    suspend fun findProductByNombre(@AuthenticationPrincipal u : User, @PathVariable nombre: String): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun findProductByNombre(
+        @PathVariable nombre: String
+    ): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por nombre" }
             try {
@@ -179,7 +189,7 @@ class ProductoController
     )
     @ApiResponse(responseCode = "404", description = "Product not found because the name is null")
     @GetMapping("/nombre/")
-    suspend fun resultNombreNulo(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun resultNombreNulo(): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por nombre nulo" }
             try {
@@ -201,7 +211,7 @@ class ProductoController
     )
     @ApiResponse(responseCode = "404", description = "Producto not found because the category was null")
     @GetMapping("/categoria/")
-    suspend fun resultCategoriaNula(@AuthenticationPrincipal u : User): ResponseEntity<Flow<ProductoDto>> =
+    suspend fun resultCategoriaNula(): ResponseEntity<Flow<ProductoDto>> =
         withContext(Dispatchers.IO) {
             logger.info { "Obteniendo producto por categoria nula" }
             try {
@@ -219,8 +229,12 @@ class ProductoController
      */
     @Operation(summary = "Create Product", description = "Create the product object", tags = ["Producto"])
     @ApiResponse(responseCode = "201", description = "Product created")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
     @PostMapping("")
-    suspend fun createProduct(@AuthenticationPrincipal u : User,@Valid @RequestBody productoDto: ProductoCreateDto): ResponseEntity<ProductoDto> {
+    suspend fun createProduct(
+        @AuthenticationPrincipal u: User,
+        @Valid @RequestBody productoDto: ProductoCreateDto
+    ): ResponseEntity<ProductoDto> {
         logger.info { "Creando un producto" }
         productoDto.activo.lowercase()
         checkProducto(productoDto)
@@ -230,6 +244,8 @@ class ProductoController
             return ResponseEntity.status(HttpStatus.CREATED).body(res)
         } catch (e: ProductoBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        } catch (e: UserExceptionBadRequest) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
 
@@ -245,7 +261,8 @@ class ProductoController
     @ApiResponse(responseCode = "200", description = "Product modified")
     @ApiResponse(responseCode = "404", description = "Product not found with this id.")
     @PutMapping("/{id}")
-    suspend fun updateProduct(@AuthenticationPrincipal u : User,
+    suspend fun updateProduct(
+        @AuthenticationPrincipal u: User,
         @PathVariable id: String, @Valid @RequestBody productoDto: ProductoCreateDto
     ): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
         logger.info { "Modificando producto con id $id" }
@@ -273,18 +290,19 @@ class ProductoController
     // todo @PreAuthorize("hasRole('SUPER_ADMIN')")
     //todo @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{id}")
-    suspend fun deleteProduct(@AuthenticationPrincipal u : User,  @PathVariable id: String): ResponseEntity<ProductoDto> = withContext(Dispatchers.IO) {
-        logger.info { "Borrando producto" }
-        try {
-            repository.delete(id)
-            return@withContext ResponseEntity.noContent().build()
-        } catch (e: ProductoNotFoundException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
-        } catch (e: ProductoConflictIntegrityException) {
-            throw ResponseStatusException(HttpStatus.CONFLICT, e.message)
-        }
+    suspend fun deleteProduct(@AuthenticationPrincipal u: User, @PathVariable id: String): ResponseEntity<ProductoDto> =
+        withContext(Dispatchers.IO) {
+            logger.info { "Borrando producto" }
+            try {
+                repository.delete(id)
+                return@withContext ResponseEntity.noContent().build()
+            } catch (e: ProductoNotFoundException) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+            } catch (e: ProductoConflictIntegrityException) {
+                throw ResponseStatusException(HttpStatus.CONFLICT, e.message)
+            }
 
-    }
+        }
 
     /**
      * Check producto: Function that check if the name of product is exists in the database.
