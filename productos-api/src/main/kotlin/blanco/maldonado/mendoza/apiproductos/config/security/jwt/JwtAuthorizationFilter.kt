@@ -1,29 +1,26 @@
-package blanco.maldonado.mendoza.apiproductos.config.securyty.jwt
+package blanco.maldonado.mendoza.apiproductos.config.security.jwt
 
-import blanco.maldonado.mendoza.apiproductos.mapper.toModel
-import blanco.maldonado.mendoza.apiproductos.model.Producto
 import blanco.maldonado.mendoza.apiproductos.service.UserService
-import blanco.maldonado.mendoza.apiproductos.user.User
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
-import org.springframework.stereotype.Service
 import java.io.IOException
-import java.util.*
 
+private val log = KotlinLogging.logger { }
 
 class JwtAuthorizationFilter(
     private val jwtTokensUtils: JwtTokensUtils,
     authManager: AuthenticationManager,
-    private  val service : UserService
-    ) : BasicAuthenticationFilter(authManager) {
+    private val service: UserService
+) : BasicAuthenticationFilter(authManager) {
 
     @Throws(IOException::class, ServletException::class)
     override fun doFilterInternal(
@@ -31,8 +28,8 @@ class JwtAuthorizationFilter(
         res: HttpServletResponse,
         chain: FilterChain
     ) {
-        logger.info { "Filtrando" }
-        val header = req.getHeader(AUTHORIZATION.toString())
+        log.info { "Filtrando" }
+        val header = req.getHeader(AUTHORIZATION)
 
         if (header == null || !header.startsWith(JwtTokensUtils.TOKEN_PREFIX)) {
             chain.doFilter(req, res)
@@ -46,9 +43,8 @@ class JwtAuthorizationFilter(
     }
 
     private fun getAuthentication(token: String): UsernamePasswordAuthenticationToken? = runBlocking {
-        logger.info { "Obteniendo autenticación" }
-
-        val user = service.loadUserByUsername(token)?:return@runBlocking null
+        log.info { "Obteniendo autenticación" }
+        val user = service.loadUserByUsername(token) ?: return@runBlocking null
         System.err.println(user)
 
         return@runBlocking UsernamePasswordAuthenticationToken(
