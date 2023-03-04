@@ -1,5 +1,8 @@
 package blanco.maldonado.mendoza.apiproductos.config.security.jwt
-
+/**
+ * @since 1/3/2023
+ * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ */
 import blanco.maldonado.mendoza.apiproductos.service.UserService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
@@ -16,6 +19,15 @@ import java.io.IOException
 
 private val log = KotlinLogging.logger { }
 
+/**
+ * Jwt authorization filter
+ *
+ * @property jwtTokensUtils
+ * @property service
+ * @constructor
+ *
+ * @param authManager
+ */
 class JwtAuthorizationFilter(
     private val jwtTokensUtils: JwtTokensUtils,
     authManager: AuthenticationManager,

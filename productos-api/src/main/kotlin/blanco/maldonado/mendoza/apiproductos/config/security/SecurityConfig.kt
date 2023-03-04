@@ -1,5 +1,8 @@
 package blanco.maldonado.mendoza.apiproductos.config.security
-
+/**
+ * @since 1/3/2023
+ * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ */
 import blanco.maldonado.mendoza.apiproductos.config.security.jwt.JwtAuthorizationFilter
 import blanco.maldonado.mendoza.apiproductos.config.security.jwt.JwtTokensUtils
 import blanco.maldonado.mendoza.apiproductos.service.UserService
@@ -15,6 +18,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 
+/**
+ * Security config
+ *
+ * @property service
+ * @property jwtTokensUtils
+ * @constructor Create empty Security config
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -24,6 +34,12 @@ class SecurityConfig
     private val jwtTokensUtils: JwtTokensUtils
 ) {
 
+    /**
+     * Auth manager
+     *
+     * @param http
+     * @return
+     */
     @Bean
     fun authManager(http: HttpSecurity): AuthenticationManager {
         val authenticationManagerBuilder = http.getSharedObject(
@@ -33,6 +49,12 @@ class SecurityConfig
         return authenticationManagerBuilder.build()
     }
 
+    /**
+     * Filter chain
+     *
+     * @param http
+     * @return
+     */
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         val authenticationManager = authManager(http)

@@ -237,6 +237,7 @@ class ProductoController
      */
     @Operation(summary = "Create Product", description = "Create the product object", tags = ["Producto"])
     @ApiResponse(responseCode = "201", description = "Product created")
+    @ApiResponse(responseCode = "401", description = "Forbidden because you don't have permission with this account.")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
     @PostMapping("")
     suspend fun createProduct(
@@ -268,6 +269,7 @@ class ProductoController
     @Parameter(name = "id", description = "Product ID", required = true, example = "1")
     @ApiResponse(responseCode = "200", description = "Product modified")
     @ApiResponse(responseCode = "404", description = "Product not found with this id.")
+    @ApiResponse(responseCode = "401", description = "Forbidden because you don't have permission with this account.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PutMapping("/{id}")
     suspend fun updateProduct(
@@ -296,6 +298,7 @@ class ProductoController
     @Parameter(name = "id", description = "ID of Product", required = true, example = "1")
     @ApiResponse(responseCode = "204", description = "Product deleted.")
     @ApiResponse(responseCode = "404", description = "Error to delete product with this id.")
+    @ApiResponse(responseCode = "401", description = "Forbidden because you don't have permission with this account.")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     suspend fun deleteProduct(@AuthenticationPrincipal u: User, @PathVariable id: String): ResponseEntity<ProductoDto> =
@@ -312,6 +315,13 @@ class ProductoController
 
         }
 
+    /**
+     * Find all paging: Function to get all paginated products.
+     *
+     * @param page
+     * @param size
+     * @return
+     */
     @GetMapping("paging")
     suspend fun findAllPaging(
         @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int,
