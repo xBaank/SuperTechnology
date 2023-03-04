@@ -7,6 +7,7 @@ package blanco.maldonado.mendoza.apiproductos.controller
 import blanco.maldonado.mendoza.apiproductos.config.APIConfig
 import blanco.maldonado.mendoza.apiproductos.dto.ProductoCreateDto
 import blanco.maldonado.mendoza.apiproductos.dto.ProductoDto
+import blanco.maldonado.mendoza.apiproductos.dto.ProductoPageDto
 import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoBadRequestException
 import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoConflictIntegrityException
 import blanco.maldonado.mendoza.apiproductos.exceptions.ProductoNotFoundException
@@ -14,7 +15,6 @@ import blanco.maldonado.mendoza.apiproductos.exceptions.UserExceptionBadRequest
 import blanco.maldonado.mendoza.apiproductos.mapper.toDto
 import blanco.maldonado.mendoza.apiproductos.mapper.toModel
 import blanco.maldonado.mendoza.apiproductos.model.Producto
-import blanco.maldonado.mendoza.apiproductos.model.TestDto
 import blanco.maldonado.mendoza.apiproductos.repositories.ProductoCachedRepositoryImpl
 import blanco.maldonado.mendoza.apiproductos.user.User
 import blanco.maldonado.mendoza.apiproductos.validator.validate
@@ -24,11 +24,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.Valid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -304,6 +306,30 @@ class ProductoController
 
         }
 
+    @GetMapping("paging")
+    suspend fun findAllPaging(
+        @RequestParam(defaultValue = APIConfig.PAGINATION_INIT) page: Int,
+        @RequestParam(defaultValue = APIConfig.PAGINATION_SIZE) size: Int
+    ): ResponseEntity<ProductoPageDto> {
+        logger.info { "Buscando productos paginados" }
+        val pageRequest = PageRequest.of(page, size)
+        val pageResult = repository.findAllPage(pageRequest).firstOrNull()
+
+        pageResult?.let {
+            val dto = ProductoPageDto(
+                content = pageResult.content.map { it.toDto() },
+                currentPage = pageResult.number,
+                pageSize = pageResult.size,
+                totalPages = if (pageResult.totalElements % pageResult.size == 0L) pageResult.totalElements / pageResult.size else (pageResult.totalElements / pageResult.size) + 1,
+                totalProductos = pageResult.totalElements
+            )
+            return ResponseEntity.ok(dto)
+        } ?: run {
+            return ResponseEntity.notFound().build()
+        }
+    }
+
+
     /**
      * Check producto: Function that check if the name of product is exists in the database.
      *
@@ -315,18 +341,4 @@ class ProductoController
             throw ProductoBadRequestException("El producto con nombre ${producto.nombre} ya existe")
         }
     }
-
-    /**
-     * Get all:
-     *
-     * @param texto
-     * @return
-     */
-    @GetMapping("/test")
-    fun getAll(@RequestParam texto: String?): ResponseEntity<List<TestDto>> {
-        logger.info { "GET ALL Test" }
-        return ResponseEntity.ok(listOf(TestDto("Hola : Query: $texto"), TestDto("Mundo : Query: $texto")))
-    }
-
-
 }
