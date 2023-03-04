@@ -1,4 +1,4 @@
-package blanco.maldonado.mendoza.apiproductos.config.securyty.jwt
+package blanco.maldonado.mendoza.apiproductos.config.security.jwt
 
 import blanco.maldonado.mendoza.apiproductos.service.UserService
 import jakarta.servlet.FilterChain

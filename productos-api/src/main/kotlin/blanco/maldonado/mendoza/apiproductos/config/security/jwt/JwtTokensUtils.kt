@@ -1,4 +1,4 @@
-package blanco.maldonado.mendoza.apiproductos.config.securyty.jwt
+package blanco.maldonado.mendoza.apiproductos.config.security.jwt
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class JwtTokensUtils {
-    @Value("\${jwt.secret}")
+    @Value("\${jwt.secret:Zanahoria_Turbopropulsada9}")
     private val algorithmSecret: String = "Zanahoria_Turbopropulsada9"
 
     fun decode(token: String): DecodedJWT? {

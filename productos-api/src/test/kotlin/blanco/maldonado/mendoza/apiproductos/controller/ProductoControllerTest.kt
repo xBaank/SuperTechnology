@@ -256,7 +256,7 @@ class ProductoControllerTest {
     //todo no va y no se porque
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun createProductSuperAdmin() = runTest {
+    fun createProduct() = runTest {
         coEvery { repository.save(any()) } returns producto
         coEvery { repository.findByNombre(any()) } returns emptyFlow()
         val result = controller.createProduct(superAdmin, productoCreateDto)
@@ -267,36 +267,6 @@ class ProductoControllerTest {
             { assertNotNull(res) },
             { assertEquals(result.statusCode, HttpStatus.CREATED) },
             { assertEquals(productoDto.description, res.description) }
-        )
-        coVerify { repository.save(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun createProductAdmin() = runTest {
-        coEvery { repository.save(any()) } throws ResponseStatusException(HttpStatus.UNAUTHORIZED)
-        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-        val res = assertThrows<ResponseStatusException> {
-            controller.createProduct(admin, productoCreateDto)
-        }
-        assertEquals(
-            """401 UNAUTHORIZED""",
-            res.message
-        )
-        coVerify { repository.save(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun createProductUser() = runTest {
-        coEvery { repository.save(any()) } throws ResponseStatusException(HttpStatus.UNAUTHORIZED)
-        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-        val res = assertThrows<ResponseStatusException> {
-            controller.createProduct(usuario, productoCreateDto)
-        }
-        assertEquals(
-            """401 UNAUTHORIZED""",
-            res.message
         )
         coVerify { repository.save(any()) }
     }

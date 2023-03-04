@@ -1,6 +1,6 @@
 package blanco.maldonado.mendoza.apiproductos.service
 
-import blanco.maldonado.mendoza.apiproductos.config.securyty.jwt.JwtTokensUtils
+import blanco.maldonado.mendoza.apiproductos.config.security.jwt.JwtTokensUtils
 import blanco.maldonado.mendoza.apiproductos.user.User
 import kotlinx.coroutines.runBlocking
 import org.springframework.security.core.userdetails.UserDetails
