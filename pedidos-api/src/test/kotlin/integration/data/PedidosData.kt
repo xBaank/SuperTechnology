@@ -35,6 +35,6 @@ object PedidosData {
         .withClaim("rol", "ADMIN")
         .withAudience(audience)
         .withIssuer(issuer)
-        .sign(Algorithm.HMAC256(secret))
+        .sign(Algorithm.HMAC512(secret))
 
 }

@@ -71,7 +71,7 @@ fun Application.configureAuth() = install(Authentication) {
     val audience = this@configureAuth.environment.config.property("jwt.audience").getString()
 
     val issuerSigned = JWT
-        .require(Algorithm.HMAC256(secret))
+        .require(Algorithm.HMAC512(secret))
         .withAudience(audience)
         .withIssuer(issuer)
         .build()
