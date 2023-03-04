@@ -272,269 +272,265 @@ class ProductoControllerTest {
     }
 
 
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun createProductoNombreBlanco() = runTest {
-//        coEvery { repository.save(any()) } returns producto
-//        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-//
-//        val productoCreateDto1 = ProductoCreateDto(
-//            nombre = "  ",
-//            categoria = Producto.Categoria.PIEZA.name,
-//            stock = 3,
-//            description = "Teclado para ordenador de sobremesa",
-//            precio = 15.50,
-//            activo = true.toString()
-//        )
-//
-//        val res = assertThrows<ResponseStatusException> {
-//            val result = controller.createProduct(productoCreateDto1)
-//        }
-//
-//        assertEquals(
-//            """400 BAD_REQUEST "El nombre no puede estar vacío"""", res.message
-//        )
-//
-//    }
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun createProductoCategoriaVacia() = runTest {
-//
-//        coEvery { repository.save(any()) } returns producto
-//        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-//
-//        val productoCreateDto2 = ProductoCreateDto(
-//            nombre = "nombre ",
-//            categoria = " ",
-//            stock = 3,
-//            description = "Teclado para ordenador de sobremesa",
-//            precio = 15.50,
-//            activo = true.toString()
-//        )
-//
-//        val res = assertThrows<ResponseStatusException> {
-//            val result = controller.createProduct(productoCreateDto2)
-//        }
-//
-//        assertEquals(
-//            """400 BAD_REQUEST "La categoría no puede estar vacía"""", res.message
-//        )
-//    }
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun createProductoCategoriaIncorrecta() = runTest {
-//
-//        coEvery { repository.save(any()) } returns producto
-//        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-//
-//        val productoCreateDto3 = ProductoCreateDto(
-//            nombre = "nombre ",
-//            categoria = "incorrecta",
-//            stock = 3,
-//            description = "Teclado para ordenador de sobremesa",
-//            precio = 15.50,
-//            activo = true.toString()
-//        )
-//
-//        val res = assertThrows<ResponseStatusException> {
-//            val result = controller.createProduct(productoCreateDto3)
-//        }
-//
-//        assertEquals(
-//            """400 BAD_REQUEST "La categoría no es una categoria correcta"""", res.message
-//        )
-//    }
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun createProductoStockNegativo() = runTest {
-//
-//        coEvery { repository.save(any()) } returns producto
-//        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-//
-//        val productoCreateDto4 = ProductoCreateDto(
-//            nombre = "nombre ",
-//            categoria = "MOVIL",
-//            stock = -1,
-//            description = "Teclado para ordenador de sobremesa",
-//            precio = 15.50,
-//            activo = true.toString()
-//        )
-//
-//        val res = assertThrows<ResponseStatusException> {
-//            val result = controller.createProduct(productoCreateDto4)
-//        }
-//
-//        assertEquals(
-//            """400 BAD_REQUEST "El stock no puede ser negativo"""", res.message
-//        )
-//    }
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun createProductoDescripcionVacia() = runTest {
-//
-//        coEvery { repository.save(any()) } returns producto
-//        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-//
-//        val productoCreateDto5 = ProductoCreateDto(
-//            nombre = "nombre ",
-//            categoria = "MOVIL",
-//            stock = 2,
-//            description = " ",
-//            precio = 15.50,
-//            activo = true.toString()
-//        )
-//
-//        val res = assertThrows<ResponseStatusException> {
-//            val result = controller.createProduct(productoCreateDto5)
-//        }
-//
-//        assertEquals(
-//            """400 BAD_REQUEST "La descripción no puede estar vacía"""", res.message
-//        )
-//    }
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun createProductoPrecioCero() = runTest {
-//        coEvery { repository.save(any()) } returns producto
-//        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-//
-//        val productoCreateDto5 = ProductoCreateDto(
-//            nombre = "nombre ",
-//            categoria = "MOVIL",
-//            stock = 2,
-//            description = "descripcion ",
-//            precio = 0.0,
-//            activo = true.toString()
-//        )
-//
-//        val res = assertThrows<ResponseStatusException> {
-//            val result = controller.createProduct(productoCreateDto5)
-//        }
-//
-//        assertEquals(
-//            """400 BAD_REQUEST "El precio no puede ser cero o negativo"""", res.message
-//        )
-//
-//    }
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun createProductoPrecioNegativo() = runTest {
-//        coEvery { repository.save(any()) } returns producto
-//        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-//
-//        val productoCreateDto5 = ProductoCreateDto(
-//            nombre = "nombre ",
-//            categoria = "MOVIL",
-//            stock = 2,
-//            description = "descripcion",
-//            precio = -1.00,
-//            activo = true.toString()
-//        )
-//
-//        val res = assertThrows<ResponseStatusException> {
-//            val result = controller.createProduct(productoCreateDto5)
-//        }
-//
-//        assertEquals(
-//            """400 BAD_REQUEST "El precio no puede ser cero o negativo"""", res.message
-//        )
-//
-//    }
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun createProductoActivoErroneo() = runTest {
-//        coEvery { repository.save(any()) } returns producto
-//        coEvery { repository.findByNombre(any()) } returns emptyFlow()
-//
-//        val productoCreateDto5 = ProductoCreateDto(
-//            nombre = "nombre ",
-//            categoria = "MOVIL",
-//            stock = 2,
-//            description = "descripcion",
-//            precio = 15.50,
-//            activo = "cosa"
-//        )
-//
-//        val res = assertThrows<ResponseStatusException> {
-//            val result = controller.createProduct(productoCreateDto5)
-//        }
-//
-//        assertEquals(
-//            """400 BAD_REQUEST "La característica activo solo puede ser true o false y estar en minúsculas"""", res.message
-//        )
-//
-//    }
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun updateProduct()= runTest {
-//
-//        coEvery { repository.update(any(),any())
-//        } returns producto
-//
-//        val result = controller.updateProduct("uuid", productoCreateDto)
-//        val res = result.body!!
-//
-//        assertAll(
-//            { assertNotNull(result) },
-//            { assertNotNull(res) },
-//            { assertEquals(result.statusCode, HttpStatus.OK) },
-//
-//        )
-//        coVerify { repository.update(any(), any()) }
-//
-//
-//
-//
-//    }
-//
-//
-//
-//
-//
-//
-//
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun deleteProduct() = runTest {
-//
-//        coEvery { repository.delete("uuid")
-//        } returns producto
-//
-//        val result = controller.deleteProduct("uuid")
-//
-//        assertAll(
-//            { assertNotNull(result) },
-//            { assertEquals(result.statusCode, HttpStatus.NO_CONTENT) },
-//
-//        )
-//        coVerify { repository.delete("uuid") }
-//    }
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun deleteProductNotFound() = runTest {
-//
-//        coEvery { repository.delete("uuid")
-//        } returns null
-//
-//        val result = controller.deleteProduct("uuid")
-//
-//        assertAll(
-//            { assertNotNull(result) },
-//            { assertEquals(result.statusCode, HttpStatus.NO_CONTENT) },
-//
-//            )
-//        coVerify { repository.delete("uuid") }
-//
-//    }
-//
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createProductoNombreBlanco() = runTest {
+        coEvery { repository.save(any()) } returns producto
+        coEvery { repository.findByNombre(any()) } returns emptyFlow()
+
+        val productoCreateDto1 = ProductoCreateDto(
+            nombre = "  ",
+            categoria = Producto.Categoria.PIEZA.name,
+            stock = 3,
+            description = "Teclado para ordenador de sobremesa",
+            precio = 15.50,
+            activo = true.toString()
+        )
+
+        val res = assertThrows<ResponseStatusException> {
+            val result = controller.createProduct(superAdmin, productoCreateDto1)
+        }
+
+        assertEquals(
+            """400 BAD_REQUEST "El nombre no puede estar vacío"""", res.message
+        )
+
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createProductoCategoriaVacia() = runTest {
+
+        coEvery { repository.save(any()) } returns producto
+        coEvery { repository.findByNombre(any()) } returns emptyFlow()
+
+        val productoCreateDto2 = ProductoCreateDto(
+            nombre = "nombre ",
+            categoria = " ",
+            stock = 3,
+            description = "Teclado para ordenador de sobremesa",
+            precio = 15.50,
+            activo = true.toString()
+        )
+
+        val res = assertThrows<ResponseStatusException> {
+            val result = controller.createProduct(superAdmin, productoCreateDto2)
+        }
+
+        assertEquals(
+            """400 BAD_REQUEST "La categoría no puede estar vacía"""", res.message
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createProductoCategoriaIncorrecta() = runTest {
+
+        coEvery { repository.save(any()) } returns producto
+        coEvery { repository.findByNombre(any()) } returns emptyFlow()
+
+        val productoCreateDto3 = ProductoCreateDto(
+            nombre = "nombre ",
+            categoria = "incorrecta",
+            stock = 3,
+            description = "Teclado para ordenador de sobremesa",
+            precio = 15.50,
+            activo = true.toString()
+        )
+
+        val res = assertThrows<ResponseStatusException> {
+            val result = controller.createProduct(superAdmin, productoCreateDto3)
+        }
+
+        assertEquals(
+            """400 BAD_REQUEST "La categoría no es una categoria correcta"""", res.message
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createProductoStockNegativo() = runTest {
+
+        coEvery { repository.save(any()) } returns producto
+        coEvery { repository.findByNombre(any()) } returns emptyFlow()
+
+        val productoCreateDto4 = ProductoCreateDto(
+            nombre = "nombre ",
+            categoria = "MOVIL",
+            stock = -1,
+            description = "Teclado para ordenador de sobremesa",
+            precio = 15.50,
+            activo = true.toString()
+        )
+
+        val res = assertThrows<ResponseStatusException> {
+            val result = controller.createProduct(superAdmin, productoCreateDto4)
+        }
+
+        assertEquals(
+            """400 BAD_REQUEST "El stock no puede ser negativo"""", res.message
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createProductoDescripcionVacia() = runTest {
+
+        coEvery { repository.save(any()) } returns producto
+        coEvery { repository.findByNombre(any()) } returns emptyFlow()
+
+        val productoCreateDto5 = ProductoCreateDto(
+            nombre = "nombre ",
+            categoria = "MOVIL",
+            stock = 2,
+            description = " ",
+            precio = 15.50,
+            activo = true.toString()
+        )
+
+        val res = assertThrows<ResponseStatusException> {
+            val result = controller.createProduct(superAdmin, productoCreateDto5)
+        }
+
+        assertEquals(
+            """400 BAD_REQUEST "La descripción no puede estar vacía"""", res.message
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createProductoPrecioCero() = runTest {
+        coEvery { repository.save(any()) } returns producto
+        coEvery { repository.findByNombre(any()) } returns emptyFlow()
+
+        val productoCreateDto5 = ProductoCreateDto(
+            nombre = "nombre ",
+            categoria = "MOVIL",
+            stock = 2,
+            description = "descripcion ",
+            precio = 0.0,
+            activo = true.toString()
+        )
+
+        val res = assertThrows<ResponseStatusException> {
+            val result = controller.createProduct(superAdmin,productoCreateDto5)
+        }
+
+        assertEquals(
+            """400 BAD_REQUEST "El precio no puede ser cero o negativo"""", res.message
+        )
+
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createProductoPrecioNegativo() = runTest {
+        coEvery { repository.save(any()) } returns producto
+        coEvery { repository.findByNombre(any()) } returns emptyFlow()
+
+        val productoCreateDto5 = ProductoCreateDto(
+            nombre = "nombre ",
+            categoria = "MOVIL",
+            stock = 2,
+            description = "descripcion",
+            precio = -1.00,
+            activo = true.toString()
+        )
+
+        val res = assertThrows<ResponseStatusException> {
+            val result = controller.createProduct(superAdmin,productoCreateDto5)
+        }
+
+        assertEquals(
+            """400 BAD_REQUEST "El precio no puede ser cero o negativo"""", res.message
+        )
+
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun createProductoActivoErroneo() = runTest {
+        coEvery { repository.save(any()) } returns producto
+        coEvery { repository.findByNombre(any()) } returns emptyFlow()
+        val productoCreateDto5 = ProductoCreateDto(
+            nombre = "nombre ",
+            categoria = "MOVIL",
+            stock = 2,
+            description = "descripcion",
+            precio = 15.50,
+            activo = "cosa"
+        )
+
+        val res = assertThrows<ResponseStatusException> {
+            val result = controller.createProduct(superAdmin,productoCreateDto5)
+        }
+
+        assertEquals(
+            """400 BAD_REQUEST "La característica activo solo puede ser true o false y estar en minúsculas"""",
+            res.message
+        )
+
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun updateProduct() = runTest {
+
+        coEvery {
+            repository.update(any(), any())
+        } returns producto
+
+        val result = controller.updateProduct(superAdmin,"uuid", productoCreateDto)
+        val res = result.body!!
+
+        assertAll(
+            { assertNotNull(result) },
+            { assertNotNull(res) },
+            { assertEquals(result.statusCode, HttpStatus.OK) },
+
+            )
+        coVerify { repository.update(any(), any()) }
+
+
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun deleteProduct() = runTest {
+
+        coEvery {
+            repository.delete("uuid")
+        } returns producto
+
+        val result = controller.deleteProduct(superAdmin,"uuid")
+
+        assertAll(
+            { assertNotNull(result) },
+            { assertEquals(result.statusCode, HttpStatus.NO_CONTENT) },
+
+            )
+        coVerify { repository.delete("uuid") }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun deleteProductNotFound() = runTest {
+
+        coEvery {
+            repository.delete("uuid")
+        } returns null
+
+        val result = controller.deleteProduct(superAdmin, "uuid")
+
+        assertAll(
+            { assertNotNull(result) },
+            { assertEquals(result.statusCode, HttpStatus.NO_CONTENT) },
+
+            )
+        coVerify { repository.delete("uuid") }
+
+    }
+
 
 }
