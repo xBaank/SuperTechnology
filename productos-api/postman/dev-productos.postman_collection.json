@@ -1,31 +1,23 @@
 {
 	"info": {
-		"_postman_id": "e43e2ce9-9b1e-43df-a29f-e1e7bcbe2d6e",
+		"_postman_id": "2b396c5d-6014-492b-acfe-f2646473ad9a",
 		"name": "dev-productos",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "19419657"
 	},
 	"item": [
 		{
-			"name": "Test",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
 			"name": "Get All Productos",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/productos",
+					"raw": "http://localhost:6963/api/productos",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "6963",
 					"path": [
 						"api",
 						"productos"
@@ -44,11 +36,21 @@
 		{
 			"name": "Post Producto",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3OTQzMDhmYi1kZmZkLTQ4YTktODNmMy00NjVhMzJlM2ZlOTQiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3Nzk1MTIzMywiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.5ce5GGKk3hhsMhkpalPBveAHVs5J2T7kp7eLtedp_MjFotqBNyM6b_6xmtfIZTkgUr9Q-J-pf6_wJF64BP3nlw",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"uuid\": \"39a02278-abd2-11ed-afa1-0242ac120002\",\r\n    \"nombre\": \"perro\",\r\n    \"categoria\":\"MOVIL\",\r\n    \"stock\":3,\r\n    \"description\":\"prueba\",\r\n    \"precio\": 20.3,\r\n    \"activo\": true\r\n}",
+					"raw": "{\r\n    \"uuid\": \"39a02278-abd2-11ed-afa1-0242ac120002\",\r\n    \"nombre\": \"Gallina\",\r\n    \"categoria\":\"MOVIL\",\r\n    \"stock\":3,\r\n    \"description\":\"prueba\",\r\n    \"precio\": 20.3,\r\n    \"activo\": true\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -56,12 +58,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/productos",
+					"raw": "http://localhost:6963/api/productos",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "6963",
 					"path": [
 						"api",
 						"productos"
@@ -76,16 +78,16 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/productos/2",
+					"raw": "http://localhost:6963/api/productos/ce13c3ba-b9fa-11ed-ac76-0242ac120002",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "6963",
 					"path": [
 						"api",
 						"productos",
-						"2"
+						"ce13c3ba-b9fa-11ed-ac76-0242ac120002"
 					],
 					"query": [
 						{
@@ -104,12 +106,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/productos/categoria/MOVIL",
+					"raw": "http://localhost:6963/api/productos/categoria/MOVIL",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "6963",
 					"path": [
 						"api",
 						"productos",
@@ -126,12 +128,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/productos/nombre/perro",
+					"raw": "http://localhost:6963/api/productos/nombre/perro",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+
+					"port": "6963",
+
 					"path": [
 						"api",
 						"productos",
@@ -141,6 +145,109 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get All Paging",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:6963/api/productos/paging?page=0&size=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"productos",
+						"paging"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3OTQzMDhmYi1kZmZkLTQ4YTktODNmMy00NjVhMzJlM2ZlOTQiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3Nzk1MTIzMywiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.5ce5GGKk3hhsMhkpalPBveAHVs5J2T7kp7eLtedp_MjFotqBNyM6b_6xmtfIZTkgUr9Q-J-pf6_wJF64BP3nlw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre\": \"Prueba\",\r\n    \"categoria\": \"MONTAJE\",\r\n    \"stock\": 5,\r\n    \"description\": \"Probando el put\",\r\n    \"precio\": 10.5,\r\n    \"activo\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:6963/api/productos/fc7d8353-babe-11ed-a1c6-0242ac120002",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"productos",
+						"fc7d8353-babe-11ed-a1c6-0242ac120002"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3OTQzMDhmYi1kZmZkLTQ4YTktODNmMy00NjVhMzJlM2ZlOTQiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3Nzk1MTIzMywiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.5ce5GGKk3hhsMhkpalPBveAHVs5J2T7kp7eLtedp_MjFotqBNyM6b_6xmtfIZTkgUr9Q-J-pf6_wJF64BP3nlw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:6963/api/productos/fc7d8353-babe-11ed-a1c6-0242ac120002",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"productos",
+						"fc7d8353-babe-11ed-a1c6-0242ac120002"
+					]
+				}
+			},
+			"response": []
+
 		}
 	]
 }
