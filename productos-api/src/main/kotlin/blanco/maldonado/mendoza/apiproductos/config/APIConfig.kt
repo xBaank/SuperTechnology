@@ -12,5 +12,11 @@ class APIConfig {
     companion object {
         @Value("\${api.path}")
         const val API_PATH = "/api"
+
+        @Value("\${pagination.init}")
+        const val PAGINATION_INIT = "0"
+
+        @Value("\${pagination.size}")
+        const val PAGINATION_SIZE = "10"
     }
 }

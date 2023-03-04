@@ -7,12 +7,17 @@ package blanco.maldonado.mendoza.apiproductos.repositories
 
 import blanco.maldonado.mendoza.apiproductos.model.Producto
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import java.util.*
@@ -135,5 +140,12 @@ class ProductoCachedRepositoryImpl
             productosRepository.delete(it!!)
         }
         return null
+    }
+
+    override suspend fun findAllPage(pageRequest: PageRequest): Flow<Page<Producto>> {
+        logger.info { "Repositorio de productos findAllPage" }
+        return productosRepository.findAllBy(pageRequest).toList()
+            .windowed(pageRequest.pageSize, pageRequest.pageSize, true)
+            .map { PageImpl(it, pageRequest, productosRepository.count()) }.asFlow()
     }
 }
