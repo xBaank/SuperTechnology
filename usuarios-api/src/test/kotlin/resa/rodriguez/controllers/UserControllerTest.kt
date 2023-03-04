@@ -27,6 +27,7 @@ import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
 import resa.rodriguez.repositories.address.AddressRepositoryCached
 import resa.rodriguez.services.UserService
+import resa.rodriguez.services.storage.StorageService
 import java.time.LocalDate
 import java.util.*
 
@@ -65,6 +66,7 @@ class UserControllerTest {
     @MockK private lateinit var aRepo: AddressRepositoryCached
     @MockK private lateinit var authenticationManager: AuthenticationManager
     @MockK private lateinit var jwtTokenUtils: JwtTokensUtils
+    @MockK private lateinit var storageService: StorageService
     @InjectMockKs private lateinit var controller: UserController
 
     init { MockKAnnotations.init(this) }
