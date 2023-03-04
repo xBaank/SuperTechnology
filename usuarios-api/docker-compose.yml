@@ -14,6 +14,12 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
 
+  supertechnology-usuarios:
+    build: .
+    container_name: "supertechnology-usuarios"
+    ports:
+      - '6969:6969'
+
 volumes:
   db:
     driver: local
