@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
@@ -65,21 +64,6 @@ class ProductoControllerTest {
         email = "superadmin@admin.com",
         password = "super1234",
         role = User.UserRole.SUPER_ADMIN,
-        active = true
-    )
-    val admin = User(
-        username = "admin",
-        email = "admin@admin.com",
-        password = "admin1234",
-        role = User.UserRole.ADMIN,
-        active = true
-    )
-
-    val usuario = User(
-        username = "usuario",
-        email = "usuario@usuario.com",
-        password = "usuario1234",
-        role = User.UserRole.USER,
         active = true
     )
 
@@ -239,8 +223,6 @@ class ProductoControllerTest {
         assertEquals(
             """404 NOT_FOUND "El nombre que ha introducido es nulo."""", res.message
         )
-
-        //si el nombre es nulo el metodo no llama a el repositorio
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -253,12 +235,8 @@ class ProductoControllerTest {
         assertEquals(
             """404 NOT_FOUND "La categoria que ha introducido es nula."""", res.message
         )
-
-        //si la categoria es nula el metodo no llama a el repositorio
     }
 
-
-    //todo no va y no se porque
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun createProduct() = runTest {
@@ -293,7 +271,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin, productoCreateDto1)
+            controller.createProduct(superAdmin, productoCreateDto1)
         }
 
         assertEquals(
@@ -319,7 +297,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin, productoCreateDto2)
+            controller.createProduct(superAdmin, productoCreateDto2)
         }
 
         assertEquals(
@@ -344,7 +322,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin, productoCreateDto3)
+            controller.createProduct(superAdmin, productoCreateDto3)
         }
 
         assertEquals(
@@ -369,7 +347,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin, productoCreateDto4)
+            controller.createProduct(superAdmin, productoCreateDto4)
         }
 
         assertEquals(
@@ -394,7 +372,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin, productoCreateDto5)
+            controller.createProduct(superAdmin, productoCreateDto5)
         }
 
         assertEquals(
@@ -418,7 +396,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin, productoCreateDto5)
+            controller.createProduct(superAdmin, productoCreateDto5)
         }
 
         assertEquals(
@@ -443,7 +421,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin, productoCreateDto5)
+            controller.createProduct(superAdmin, productoCreateDto5)
         }
 
         assertEquals(
@@ -467,7 +445,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin, productoCreateDto5)
+            controller.createProduct(superAdmin, productoCreateDto5)
         }
 
         assertEquals(
@@ -536,6 +514,5 @@ class ProductoControllerTest {
         coVerify { repository.delete("uuid") }
 
     }
-
 
 }
