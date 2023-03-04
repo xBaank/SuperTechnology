@@ -13,12 +13,13 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import java.lang.Boolean.TRUE
 
 @ExtendWith(MockKExtension::class)
-@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProductoCachedRepositoryImplTest {
     private val producto = Producto(
         uuid = "91e0c247-c611-4ed2-8db8-a495f1f16fee",

@@ -5,6 +5,7 @@ import blanco.maldonado.mendoza.apiproductos.mapper.toDto
 import blanco.maldonado.mendoza.apiproductos.model.Producto
 import blanco.maldonado.mendoza.apiproductos.repositories.ProductoCachedRepositoryImpl
 import blanco.maldonado.mendoza.apiproductos.user.User
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.InjectMockKs
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -23,15 +25,18 @@ import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
-@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProductoControllerTest {
 
     @MockK
     private lateinit var repository: ProductoCachedRepositoryImpl
 
-
     @InjectMockKs
     lateinit var controller: ProductoController
+
+    init {
+        MockKAnnotations.init(this)
+    }
 
     private var producto = Producto(
         id = 0L,
@@ -413,7 +418,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin,productoCreateDto5)
+            val result = controller.createProduct(superAdmin, productoCreateDto5)
         }
 
         assertEquals(
@@ -438,7 +443,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin,productoCreateDto5)
+            val result = controller.createProduct(superAdmin, productoCreateDto5)
         }
 
         assertEquals(
@@ -462,7 +467,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
-            val result = controller.createProduct(superAdmin,productoCreateDto5)
+            val result = controller.createProduct(superAdmin, productoCreateDto5)
         }
 
         assertEquals(
@@ -480,7 +485,7 @@ class ProductoControllerTest {
             repository.update(any(), any())
         } returns producto
 
-        val result = controller.updateProduct(superAdmin,"uuid", productoCreateDto)
+        val result = controller.updateProduct(superAdmin, "uuid", productoCreateDto)
         val res = result.body!!
 
         assertAll(
@@ -503,7 +508,7 @@ class ProductoControllerTest {
             repository.delete("uuid")
         } returns producto
 
-        val result = controller.deleteProduct(superAdmin,"uuid")
+        val result = controller.deleteProduct(superAdmin, "uuid")
 
         assertAll(
             { assertNotNull(result) },
