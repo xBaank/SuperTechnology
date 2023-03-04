@@ -236,7 +236,6 @@ class ProductoControllerTest {
             """404 NOT_FOUND "La categoria que ha introducido es nula."""", res.message
         )
     }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun createProduct() = runTest {
@@ -347,6 +346,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
+
             controller.createProduct(superAdmin, productoCreateDto4)
         }
 
