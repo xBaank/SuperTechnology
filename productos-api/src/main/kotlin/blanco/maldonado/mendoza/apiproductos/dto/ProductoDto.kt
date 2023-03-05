@@ -19,6 +19,21 @@ data class ProductoDto(
     val deleteAt: String? = null
 )
 
+data class ProductoDtoUser(
+    val uuid: String? = null,
+    val nombre: String,
+    val categoria: String,
+    val stock: Int,
+    val description: String,
+    val precio: Double,
+)
+
+data class ProductoPageDtoUser(
+    val content: List<ProductoDtoUser>,
+    val currentPage: Int,
+    val pageSize: Int
+)
+
 data class ProductoPageDto(
     val content: List<ProductoDto>,
     val currentPage: Int,

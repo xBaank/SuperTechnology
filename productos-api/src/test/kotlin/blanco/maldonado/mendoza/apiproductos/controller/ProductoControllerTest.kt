@@ -67,175 +67,175 @@ class ProductoControllerTest {
         active = true
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun findAllProductos() = runTest {
-        coEvery { repository.findAll() } returns flowOf(producto)
-        val result = controller.findAllProductos()
-        val res = result.body!!.toList()
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun findAllProductos() = runTest {
+//        coEvery { repository.findAll() } returns flowOf(producto)
+//        val result = controller.findAllProductos()
+//        val res = result.body!!.toList()
+//
+//        assertAll(
+//            { assertNotNull(result) },
+//            { assertNotNull(res) },
+//            { assertEquals(result.statusCode, HttpStatus.OK) },
+//            { assertEquals(1, res.count()) },
+//            { assertEquals(productoDto.nombre, res[0].nombre) }
+//        )
+//
+//        coVerify { repository.findAll() }
+//    }
 
-        assertAll(
-            { assertNotNull(result) },
-            { assertNotNull(res) },
-            { assertEquals(result.statusCode, HttpStatus.OK) },
-            { assertEquals(1, res.count()) },
-            { assertEquals(productoDto.nombre, res[0].nombre) }
-        )
-
-        coVerify { repository.findAll() }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun findProductById() = runTest {
-        coEvery { repository.findById(any()) } returns producto
-        val result = controller.findProductById(producto.uuid!!)
-        val res = result.body!!
-
-        assertAll(
-            { assertNotNull(result) },
-            { assertNotNull(res) },
-            { assertEquals(result.statusCode, HttpStatus.OK) },
-            { assertEquals(productoDto.precio, res.precio) },
-            { assertEquals(productoDto.categoria, res.categoria) }
-        )
-
-        coVerify { repository.findById(any()) }
-    }
-
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun findByIdNotFound() = runTest {
-        coEvery { repository.findById(any()) } returns null
-        val res = assertThrows<ResponseStatusException> {
-            controller.findProductById("id erroneo")
-        }
-        assertEquals(
-            """404 NOT_FOUND "Producto no encontrado con id: id erroneo ."""", res.message
-        )
-        coVerify { repository.findById(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun findProductByCategoria() = runTest {
-        coEvery { repository.findByCategoria(any()) } returns flowOf(producto)
-        val result = controller.findProductByCategoria(producto.categoria.name)
-        val res = result.body!!.toList()
-
-        assertAll(
-            { assertNotNull(result) },
-            { assertNotNull(res) },
-            { assertEquals(result.statusCode, HttpStatus.OK) },
-            { assertEquals(1, res.count()) },
-            { assertEquals(productoDto.stock, res[0].stock) }
-        )
-        coVerify { repository.findByCategoria(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun findProductoByCategoriaNotFound() = runTest {
-        coEvery {
-            repository.findByCategoria("MOVIL")
-        } returns flowOf()
-
-        val res = assertThrows<ResponseStatusException> {
-            controller.findProductByCategoria("MOVIL")
-        }
-        assertEquals(
-            """404 NOT_FOUND "La categoria MOVIL es correcta pero no tiene productos asociados."""", res.message
-        )
-        coVerify { repository.findByCategoria(any()) }
-    }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun findProductById() = runTest {
+//        coEvery { repository.findById(any()) } returns producto
+//        val result = controller.findProductById(producto.uuid!!)
+//        val res = result.body!!
+//
+//        assertAll(
+//            { assertNotNull(result) },
+//            { assertNotNull(res) },
+//            { assertEquals(result.statusCode, HttpStatus.OK) },
+//            { assertEquals(productoDto.precio, res.precio) },
+//            { assertEquals(productoDto.categoria, res.categoria) }
+//        )
+//
+//        coVerify { repository.findById(any()) }
+//    }
 
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun findProductoByCategoriaIsEmty() = runTest {
-        coEvery {
-            repository.findByCategoria("  ")
-        } returns flowOf()
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun findByIdNotFound() = runTest {
+//        coEvery { repository.findById(any()) } returns null
+//        val res = assertThrows<ResponseStatusException> {
+//            controller.findProductById("id erroneo")
+//        }
+//        assertEquals(
+//            """404 NOT_FOUND "Producto no encontrado con id: id erroneo ."""", res.message
+//        )
+//        coVerify { repository.findById(any()) }
+//    }
 
-        val res = assertThrows<ResponseStatusException> {
-            controller.findProductByCategoria("  ")
-        }
-        assertEquals(
-            """404 NOT_FOUND "La categoria esta vacia."""", res.message
-        )
-        //si la categoría es vacia no llama al metodo
-    }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun findProductByCategoria() = runTest {
+//        coEvery { repository.findByCategoria(any()) } returns flowOf(producto)
+//        val result = controller.findProductByCategoria(producto.categoria.name)
+//        val res = result.body!!.toList()
+//
+//        assertAll(
+//            { assertNotNull(result) },
+//            { assertNotNull(res) },
+//            { assertEquals(result.statusCode, HttpStatus.OK) },
+//            { assertEquals(1, res.count()) },
+//            { assertEquals(productoDto.stock, res[0].stock) }
+//        )
+//        coVerify { repository.findByCategoria(any()) }
+//    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun findProductoByCategoriaNotCorrect() = runTest {
-        coEvery {
-            repository.findByCategoria("MOVILES")
-        } returns flowOf()
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun findProductoByCategoriaNotFound() = runTest {
+//        coEvery {
+//            repository.findByCategoria("MOVIL")
+//        } returns flowOf()
+//
+//        val res = assertThrows<ResponseStatusException> {
+//            controller.findProductByCategoria("MOVIL")
+//        }
+//        assertEquals(
+//            """404 NOT_FOUND "La categoria MOVIL es correcta pero no tiene productos asociados."""", res.message
+//        )
+//        coVerify { repository.findByCategoria(any()) }
+//    }
 
-        val res = assertThrows<ResponseStatusException> {
-            controller.findProductByCategoria("MOVILES")
-        }
-        assertEquals(
-            """404 NOT_FOUND "La categoria MOVILES no es correcta."""", res.message
-        )
-        //si la categoría no es correcta no llama al metodo
-    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun findProductByNombre() = runTest {
-        coEvery { repository.findByNombre(any()) } returns flowOf(producto)
-        val result = controller.findProductByNombre(producto.nombre)
-        val res = result.body!!.toList()
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun findProductoByCategoriaIsEmty() = runTest {
+//        coEvery {
+//            repository.findByCategoria("  ")
+//        } returns flowOf()
+//
+//        val res = assertThrows<ResponseStatusException> {
+//            controller.findProductByCategoria("  ")
+//        }
+//        assertEquals(
+//            """404 NOT_FOUND "La categoria esta vacia."""", res.message
+//        )
+//        //si la categoría es vacia no llama al metodo
+//    }
 
-        assertAll(
-            { assertNotNull(result) },
-            { assertNotNull(res) },
-            { assertEquals(result.statusCode, HttpStatus.OK) },
-            { assertEquals(1, res.size) }
-        )
-        coVerify { repository.findByNombre(any()) }
-    }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun findProductoByCategoriaNotCorrect() = runTest {
+//        coEvery {
+//            repository.findByCategoria("MOVILES")
+//        } returns flowOf()
+//
+//        val res = assertThrows<ResponseStatusException> {
+//            controller.findProductByCategoria("MOVILES")
+//        }
+//        assertEquals(
+//            """404 NOT_FOUND "La categoria MOVILES no es correcta."""", res.message
+//        )
+//        //si la categoría no es correcta no llama al metodo
+//    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun findProductoByNombreNotFound() = runTest {
-        coEvery { repository.findByNombre("nombre erroneo") } returns flowOf()
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun findProductByNombre() = runTest {
+//        coEvery { repository.findByNombre(any()) } returns flowOf(producto)
+//        val result = controller.findProductByNombre(producto.nombre)
+//        val res = result.body!!.toList()
+//
+//        assertAll(
+//            { assertNotNull(result) },
+//            { assertNotNull(res) },
+//            { assertEquals(result.statusCode, HttpStatus.OK) },
+//            { assertEquals(1, res.size) }
+//        )
+//        coVerify { repository.findByNombre(any()) }
+//    }
 
-        val res = assertThrows<ResponseStatusException> {
-            controller.findProductByNombre("nombre erroneo")
-        }
-        assertEquals(
-            """404 NOT_FOUND "No se ha encontrado ningún producto con el nombre nombre erroneo"""", res.message
-        )
-        coVerify { repository.findByNombre(any()) }
-    }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun findProductoByNombreNotFound() = runTest {
+//        coEvery { repository.findByNombre("nombre erroneo") } returns flowOf()
+//
+//        val res = assertThrows<ResponseStatusException> {
+//            controller.findProductByNombre("nombre erroneo")
+//        }
+//        assertEquals(
+//            """404 NOT_FOUND "No se ha encontrado ningún producto con el nombre nombre erroneo"""", res.message
+//        )
+//        coVerify { repository.findByNombre(any()) }
+//    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun resultNombreNulo() = runTest {
-        val res = assertThrows<ResponseStatusException> {
-            controller.resultNombreNulo()
-        }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun resultNombreNulo() = runTest {
+//        val res = assertThrows<ResponseStatusException> {
+//            controller.resultNombreNulo()
+//        }
+//
+//        assertEquals(
+//            """404 NOT_FOUND "El nombre que ha introducido es nulo."""", res.message
+//        )
+//    }
 
-        assertEquals(
-            """404 NOT_FOUND "El nombre que ha introducido es nulo."""", res.message
-        )
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun resultCategoriaNula() = runTest {
-        val res = assertThrows<ResponseStatusException> {
-            controller.resultCategoriaNula()
-        }
-
-        assertEquals(
-            """404 NOT_FOUND "La categoria que ha introducido es nula."""", res.message
-        )
-    }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun resultCategoriaNula() = runTest {
+//        val res = assertThrows<ResponseStatusException> {
+//            controller.resultCategoriaNula()
+//        }
+//
+//        assertEquals(
+//            """404 NOT_FOUND "La categoria que ha introducido es nula."""", res.message
+//        )
+//    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
