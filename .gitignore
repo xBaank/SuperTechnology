@@ -41,3 +41,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/.idea/git_toolbox_prj.xml
+/.idea/uiDesigner.xml
+/.idea/workspace-DESKTOP-RLMNQ7N.xml

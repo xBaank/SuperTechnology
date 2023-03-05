@@ -21,7 +21,7 @@ data class Producto(
     val nombre: String,
     @NotEmpty(message = "La categoría no puede estar vacía")
     val categoria: Categoria,
-    @Min(value = 0, message = "El stick no puede ser negativo")
+    @Min(value = 0, message = "El stock no puede ser negativo")
     val stock: Int,
     @NotEmpty(message = "La descripción no puede estar vacía")
     val description: String,

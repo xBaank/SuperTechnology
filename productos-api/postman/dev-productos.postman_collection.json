@@ -12,7 +12,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:6963/api/productos",
+					"raw": "http://localhost:6963/api/products",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -20,14 +20,38 @@
 					"port": "6963",
 					"path": [
 						"api",
-						"productos"
-					],
-					"query": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Productos ADMINS",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "",
-							"value": "",
-							"disabled": true
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3OTQzMDhmYi1kZmZkLTQ4YTktODNmMy00NjVhMzJlM2ZlOTQiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3Nzk1MTIzMywiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.5ce5GGKk3hhsMhkpalPBveAHVs5J2T7kp7eLtedp_MjFotqBNyM6b_6xmtfIZTkgUr9Q-J-pf6_wJF64BP3nlw",
+							"type": "string"
 						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:6963/api/products/admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"admin"
 					]
 				}
 			},
@@ -78,7 +102,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:6963/api/productos/ce13c3ba-b9fa-11ed-ac76-0242ac120002",
+					"raw": "http://localhost:6963/api/products/6a4bf948-bb7a-11ed-a08b-0242ac120002",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -86,8 +110,8 @@
 					"port": "6963",
 					"path": [
 						"api",
-						"productos",
-						"ce13c3ba-b9fa-11ed-ac76-0242ac120002"
+						"products",
+						"6a4bf948-bb7a-11ed-a08b-0242ac120002"
 					],
 					"query": [
 						{
@@ -101,12 +125,12 @@
 			"response": []
 		},
 		{
-			"name": "GetByCategoria",
+			"name": "GetByID Producto ADMINS",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:6963/api/productos/categoria/MOVIL",
+					"raw": "http://localhost:6963/api/products/admin/6a4bf948-bb7a-11ed-a08b-0242ac120002",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -114,9 +138,54 @@
 					"port": "6963",
 					"path": [
 						"api",
-						"productos",
-						"categoria",
-						"MOVIL"
+						"products",
+						"admin",
+						"6a4bf948-bb7a-11ed-a08b-0242ac120002"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByCategoria",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:6963/api/products/category/PIEZA",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"category",
+						"PIEZA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByCategoria ADMINS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:6963/api/products/admin/category/PIEZA",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"admin",
+						"category",
+						"PIEZA"
 					]
 				}
 			},
@@ -128,7 +197,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:6963/api/productos/nombre/perro",
+					"raw": "http://localhost:6963/api/products/name/perro",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -138,8 +207,30 @@
 
 					"path": [
 						"api",
-						"productos",
-						"nombre",
+						"products",
+						"name",
+						"perro"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByNombre ADMINS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:6963/api/products/name/perro",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"name",
 						"perro"
 					]
 				}
@@ -152,7 +243,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:6963/api/productos/paging?page=0&size=2",
+					"raw": "http://localhost:6963/api/products/paging?page=0&size=2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -160,7 +251,7 @@
 					"port": "6963",
 					"path": [
 						"api",
-						"productos",
+						"products",
 						"paging"
 					],
 					"query": [

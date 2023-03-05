@@ -64,32 +64,39 @@ class SecurityConfig
             .disable()
             .exceptionHandling()
             .and()
-            // Para token JWT
             .authenticationManager(authenticationManager)
-            // No usamos estado de sesion
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            // Aceptamos request del tipo Http
             .authorizeHttpRequests()
-            // Spring desplaza a esta ruta todos los errores y excepciones, asi podemos mostrarlas en vez de un Forbidden
             .requestMatchers("/error/**").permitAll()
             .requestMatchers("/api/**").permitAll()
+            .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
             .requestMatchers(
                 HttpMethod.GET,
-                "/productos",
-                "/productos/{id}",
-                "/productos/**",
-                "/productos/categoria/{categoria}",
-                "/productos/categoria/**",
-                "/productos/nombre/{nombre}",
-                "/productos/nombre/**"
+                "/products",
+                "/products/{id}",
+                "/products/**",
+                "/products/category/{categoria}",
+                "/products/category/**",
+                "/products/nombre/{nombre}",
+                "/products/nombre/**"
             ).permitAll()
-            .requestMatchers(HttpMethod.POST, "/productos").hasRole("SUPER_ADMIN")
-            .requestMatchers(HttpMethod.PUT, "/productos/{id}").hasAnyRole("SUPER_ADMIN", "ADMIN")
-            .requestMatchers(HttpMethod.DELETE, "/productos/{id}").hasRole("SUPER_ADMIN")
+            .requestMatchers(
+                HttpMethod.GET,
+                "/products/admin",
+                "/products/admin/{id}",
+                "/products/admin/category/{categoria}",
+                "/products/admin/name/{nombre}",
+                "/products/admin/category/**",
+                "/products/admin/name/**",
+                "/products/admin/paging"
+            ).hasAnyRole("SUPER_ADMIN", "ADMIN")
+            .requestMatchers(HttpMethod.POST, "/products").hasRole("SUPER_ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/products/{id}").hasAnyRole("SUPER_ADMIN", "ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/products/{id}").hasRole("SUPER_ADMIN")
             .anyRequest().authenticated()
             .and()
-            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, authenticationManager, service)) // Autorizacion
+            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, authenticationManager, service))
 
         return http.build()
     }
