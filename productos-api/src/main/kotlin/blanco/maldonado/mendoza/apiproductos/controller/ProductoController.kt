@@ -198,11 +198,11 @@ class ProductoController
         withContext(Dispatchers.IO) {
             logger.info { "Get products by category name" }
             try {
-                if (!categoria.trim().isEmpty()) {
+                if (!categoria.trim().uppercase().isEmpty()) {
                     try {
-                        Producto.Categoria.valueOf(categoria.trim())
+                        Producto.Categoria.valueOf(categoria.trim().uppercase())
                         val res =
-                            repository.findByCategoria(categoria.trim()).filter { it.activo }.map { it.toDtoUser() }
+                            repository.findByCategoria(categoria.trim().uppercase()).filter { it.activo }.map { it.toDtoUser() }
                         if (!res.toList().isEmpty()) {
                             return@withContext ResponseEntity.ok(res)
                         } else {
