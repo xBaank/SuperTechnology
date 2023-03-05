@@ -1,5 +1,8 @@
 package resa.rodriguez.controllers
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,6 +30,12 @@ class StorageController
 @Autowired constructor(
     private val storageService: IStorageService
 ) {
+    @Operation(summary = "Serve File", description = "Metodo que devuelve el recurso cuyo nombre fue pasado por parametro.", tags = ["STORAGE"])
+    @Parameter(name = "Filename", description = "Nombre del archivo a buscar.", required = true)
+    @Parameter(name = "Request", description = "Peticion http.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el archivo como cuerpo y un content type con el tipo de recurso que es.")
+    @ApiResponse(responseCode = "400", description = "Cuando no puede resolver el tipo de archivo que es.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra el archivo o no lo puede leer.")
     @GetMapping(value = ["{filename:.+}"])
     @ResponseBody
     fun serveFile(@PathVariable filename: String?, request: HttpServletRequest): ResponseEntity<Resource> = runBlocking {
@@ -41,6 +50,10 @@ class StorageController
         ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(file)
     }
 
+    @Operation(summary = "Upload File", description = "Metodo que guarda el recurso cuyo nombre fue pasado por parametro y devuelve un mapa con sus caracteristicas.", tags = ["STORAGE"])
+    @Parameter(name = "File", description = "Archivo multiparte a guardar.", required = true)
+    @ApiResponse(responseCode = "201", description = "Response Entity con la url del recurso guardado, su nombre y su fecha de creacion.")
+    @ApiResponse(responseCode = "400", description = "Cuando no puede guardar el archivo.")
     @PostMapping(value = [""], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadFile(@RequestPart("file") file: MultipartFile): ResponseEntity<Map<String, String>> = runBlocking {
         try {
@@ -56,6 +69,11 @@ class StorageController
         }
     }
 
+    @Operation(summary = "Delete File", description = "Metodo que borra un recurso cuyo nombre fue pasado por parametro y devuelve el recurso borrado.", tags = ["STORAGE"])
+    @Parameter(name = "Filename", description = "Nombre del archivo a buscar.", required = false)
+    @Parameter(name = "Request", description = "Peticion http.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el recurso borrado.")
+    @ApiResponse(responseCode = "400", description = "Cuando no puede borrar el archivo.")
     @DeleteMapping(value = ["{filename:.+}"])
     @ResponseBody
     fun deleteFile(@PathVariable filename: String?, request: HttpServletRequest): ResponseEntity<Resource> = runBlocking {
