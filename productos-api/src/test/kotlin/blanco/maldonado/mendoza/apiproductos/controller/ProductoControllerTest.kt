@@ -67,6 +67,7 @@ class ProductoControllerTest {
         active = true
     )
 
+
 //    @OptIn(ExperimentalCoroutinesApi::class)
 //    @Test
 //    fun findAllProductos() = runTest {
@@ -347,6 +348,7 @@ class ProductoControllerTest {
         )
 
         val res = assertThrows<ResponseStatusException> {
+
             controller.createProduct(superAdmin, productoCreateDto4)
         }
 

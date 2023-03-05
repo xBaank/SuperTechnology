@@ -437,6 +437,7 @@ class ProductoController
      */
     @Operation(summary = "Create Product", description = "Create the product object", tags = ["Super admin"])
     @ApiResponse(responseCode = "201", description = "Product created")
+    @ApiResponse(responseCode = "401", description = "Forbidden because you don't have permission with this account.")
     @ApiResponse(responseCode = "403", description = "You don`t have permission with this user.")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
     @PostMapping("")
@@ -475,6 +476,7 @@ class ProductoController
     @ApiResponse(responseCode = "200", description = "Product modified")
     @ApiResponse(responseCode = "403", description = "You don`t have permission with this user.")
     @ApiResponse(responseCode = "404", description = "Product not found with this id.")
+    @ApiResponse(responseCode = "401", description = "Forbidden because you don't have permission with this account.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PutMapping("/{id}")
     suspend fun updateProduct(
@@ -509,6 +511,7 @@ class ProductoController
     @ApiResponse(responseCode = "204", description = "Product deleted.")
     @ApiResponse(responseCode = "403", description = "You don`t have permission with this user.")
     @ApiResponse(responseCode = "404", description = "Error to delete product with this id.")
+    @ApiResponse(responseCode = "401", description = "Forbidden because you don't have permission with this account.")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     suspend fun deleteProduct(@AuthenticationPrincipal u: User, @PathVariable id: String): ResponseEntity<ProductoDto> =

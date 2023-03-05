@@ -142,6 +142,12 @@ class ProductoCachedRepositoryImpl
         return null
     }
 
+    /**
+     * Find all page: Function to get all paginated products
+     *
+     * @param pageRequest
+     * @return
+     */
     override suspend fun findAllPage(pageRequest: PageRequest): Flow<Page<Producto>> {
         logger.info { "Repositorio de productos findAllPage" }
         return productosRepository.findAllBy(pageRequest).toList()

@@ -1,0 +1,329 @@
+{
+	"info": {
+		"_postman_id": "639b4609-1305-4118-87df-932e0265c2b6",
+		"name": "Pedidos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET PAGED",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": [
+				{
+					"name": "GET PAGED",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/pedidos?page=0&size=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"pedidos"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Length",
+							"value": "501"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"page\": 0,\n    \"size\": 1,\n    \"result\": [\n        {\n            \"id\": \"63eb63db256c9c2385fbf9d5\",\n            \"usuario\": {\n                \"id\": \"fake\",\n                \"username\": \"Fake User\",\n                \"email\": \"test@gmail.com\"\n            },\n            \"tareas\": [\n                {\n                    \"id\": \"63eb63db256c9c2385fbf9d4\",\n                    \"productos\": [\n                        {\n                            \"id\": \"fake\",\n                            \"nombre\": \"Fake Producto\",\n                            \"categoria\": \"Fake Categoria\",\n                            \"stock\": 10,\n                            \"descripcion\": \"Fake Descripcion\",\n                            \"precio\": 10,\n                            \"avatar\": \"Fake Avatar\"\n                        }\n                    ],\n                    \"empleado\": {\n                        \"id\": \"fake\",\n                        \"username\": \"Fake User\",\n                        \"email\": \"test@gmail.com\"\n                    },\n                    \"createdAt\": 1676370907162\n                }\n            ],\n            \"iva\": 21,\n            \"estado\": \"PENDIENTE\",\n            \"createdAt\": 1676370907162\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "POST",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"usuario\": \"fake\",\r\n    \"productos\": [\"fake\"],\r\n    \"iva\": 21\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/pedidos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"pedidos"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "POST",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"usuario\": \"fake\",\r\n    \"productos\": [\"fake\"],\r\n    \"iva\": 21\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/pedidos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"pedidos"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Length",
+							"value": "470"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"63eb63db256c9c2385fbf9d5\",\n    \"usuario\": {\n        \"id\": \"fake\",\n        \"username\": \"Fake User\",\n        \"email\": \"test@gmail.com\"\n    },\n    \"tareas\": [\n        {\n            \"id\": \"63eb63db256c9c2385fbf9d4\",\n            \"productos\": [\n                {\n                    \"id\": \"fake\",\n                    \"nombre\": \"Fake Producto\",\n                    \"categoria\": \"Fake Categoria\",\n                    \"stock\": 10,\n                    \"descripcion\": \"Fake Descripcion\",\n                    \"precio\": 10,\n                    \"avatar\": \"Fake Avatar\"\n                }\n            ],\n            \"empleado\": {\n                \"id\": \"fake\",\n                \"username\": \"Fake User\",\n                \"email\": \"test@gmail.com\"\n            },\n            \"createdAt\": 1676370907162\n        }\n    ],\n    \"iva\": 21,\n    \"estado\": \"PENDIENTE\",\n    \"createdAt\": 1676370907162\n}"
+				}
+			]
+		},
+		{
+			"name": "PUT",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"estado\" : \"COMPLETADO\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/pedidos/{id}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"pedidos",
+						"{id}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "PUT",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"estado\" : \"COMPLETADO\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/pedidos/63eb63db256c9c2385fbf9d5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"pedidos",
+								"63eb63db256c9c2385fbf9d5"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Length",
+							"value": "471"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"63eb63db256c9c2385fbf9d5\",\n    \"usuario\": {\n        \"id\": \"fake\",\n        \"username\": \"Fake User\",\n        \"email\": \"test@gmail.com\"\n    },\n    \"tareas\": [\n        {\n            \"id\": \"63eb63db256c9c2385fbf9d4\",\n            \"productos\": [\n                {\n                    \"id\": \"fake\",\n                    \"nombre\": \"Fake Producto\",\n                    \"categoria\": \"Fake Categoria\",\n                    \"stock\": 10,\n                    \"descripcion\": \"Fake Descripcion\",\n                    \"precio\": 10,\n                    \"avatar\": \"Fake Avatar\"\n                }\n            ],\n            \"empleado\": {\n                \"id\": \"fake\",\n                \"username\": \"Fake User\",\n                \"email\": \"test@gmail.com\"\n            },\n            \"createdAt\": 1676370907162\n        }\n    ],\n    \"iva\": 21,\n    \"estado\": \"COMPLETADO\",\n    \"createdAt\": 1676370907162\n}"
+				}
+			]
+		},
+		{
+			"name": "DELETE",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/pedidos/63eb63db256c9c2385fbf9d5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"pedidos",
+						"63eb63db256c9c2385fbf9d5"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "DELETE",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/pedidos/63eb63db256c9c2385fbf9d5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"pedidos",
+								"63eb63db256c9c2385fbf9d5"
+							]
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": "plain",
+					"header": [
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "GET BY USUARIO PAGED",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/pedidos/usuario/fake",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"pedidos",
+						"usuario",
+						"fake"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "GET BY USUARIO PAGED",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/pedidos/usuario/fake",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"pedidos",
+								"usuario",
+								"fake"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Length",
+							"value": "501"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"page\": 0,\n    \"size\": 1,\n    \"result\": [\n        {\n            \"id\": \"63eb6509256c9c2385fbf9d8\",\n            \"usuario\": {\n                \"id\": \"fake\",\n                \"username\": \"Fake User\",\n                \"email\": \"test@gmail.com\"\n            },\n            \"tareas\": [\n                {\n                    \"id\": \"63eb6509256c9c2385fbf9d7\",\n                    \"productos\": [\n                        {\n                            \"id\": \"fake\",\n                            \"nombre\": \"Fake Producto\",\n                            \"categoria\": \"Fake Categoria\",\n                            \"stock\": 10,\n                            \"descripcion\": \"Fake Descripcion\",\n                            \"precio\": 10,\n                            \"avatar\": \"Fake Avatar\"\n                        }\n                    ],\n                    \"empleado\": {\n                        \"id\": \"fake\",\n                        \"username\": \"Fake User\",\n                        \"email\": \"test@gmail.com\"\n                    },\n                    \"createdAt\": 1676371209941\n                }\n            ],\n            \"iva\": 21,\n            \"estado\": \"PENDIENTE\",\n            \"createdAt\": 1676371209941\n        }\n    ]\n}"
+				}
+			]
+		}
+	]
+}
