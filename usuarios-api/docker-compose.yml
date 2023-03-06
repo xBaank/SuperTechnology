@@ -17,8 +17,14 @@ services:
   supertechnology-usuarios:
     build: .
     container_name: "supertechnology-usuarios"
+    environment:
+      - POSTGRES_CONNECTION=r2dbc:postgresql://postgres:postgres1234@db:5432/usuarios
+      - JWT_SECRET=Zanahoria_Turbopropulsada9
+      - KEY_STORE_PATH=classpath:cert/server_key.p12
     ports:
       - '6969:6969'
+    depends_on:
+      - db
 
 volumes:
   db:
