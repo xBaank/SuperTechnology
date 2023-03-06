@@ -11,16 +11,18 @@ import java.time.LocalDate
 import java.util.UUID
 
 /**
- * Modelo para usuarios
- * @property id Identificador principal, UUID
- * @property username Nombre de usuario, String
- * @property email Correo electronico del usuario, String
- * @property password Clave del usuario, String
- * @property phone Telefono del usuario, String
- * @property avatar Imagen asociada al usuario, String
- * @property role Rol del usuario, [UserRole]
- * @property createdAt Fecha de creacion del usuario, LocalDate
- * @property active Eliminacion logica y no definitiva del usuario, Boolean
+ * Model for users.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ * @property id Main identifier, UUID.
+ * @property username Username, String.
+ * @property email E-mail, String.
+ * @property password Password, String.
+ * @property phone Phone number, String.
+ * @property avatar Associated image or profile picture, String.
+ * @property role Role, [UserRole].
+ * @property createdAt Creation date, LocalDate.
+ * @property active Logic and non-permanent elimination property, Boolean.
  */
 @Table(name = "users")
 data class User(
@@ -49,7 +51,9 @@ data class User(
 ) : UserDetails {
 
     /**
-     * Clase usado para los distintos roles de los usuarios
+     * Clase enum usada para los distintos roles de los usuarios
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      */
     enum class UserRole {
         USER, ADMIN, SUPER_ADMIN

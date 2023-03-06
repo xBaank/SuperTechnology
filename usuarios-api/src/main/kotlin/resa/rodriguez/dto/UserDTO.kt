@@ -6,8 +6,9 @@ import resa.rodriguez.services.LocalDateSerializer
 import java.time.LocalDate
 
 /**
- * Dto usada para el login de usuarios
- *
+ * DTO used for login.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property username
  * @property password
  */
@@ -18,8 +19,9 @@ data class UserDTOlogin(
 )
 
 /**
- * Dto usada para el registro de un usuario personalmente
- *
+ * DTO used for register.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property username
  * @property email
  * @property password
@@ -38,8 +40,9 @@ data class UserDTOregister(
 )
 
 /**
- * Dto usada para el registro de un usuario por parte de un SUPER_ADMIN
- *
+ * DTO used for creation.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property username
  * @property email
  * @property password
@@ -62,8 +65,9 @@ data class UserDTOcreate(
 )
 
 /**
- * Dto usada para mostrar al usuario al cliente, evitando los datos mas sensibles.
- *
+ * DTO used for the responses.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property username
  * @property email
  * @property role
@@ -85,8 +89,9 @@ data class UserDTOresponse(
 )
 
 /**
- * Dto usada para los campos que permitimos que sean actualizados.
- *
+ * DTO used for updating.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property password
  * @property addresses
  */
@@ -97,8 +102,9 @@ data class UserDTOUpdated(
 )
 
 /**
- * DTO usada para actualizar el rol de usuario especificamente
- *
+ * DTO used for updating a role.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property email
  * @property role
  */
@@ -109,8 +115,10 @@ data class UserDTORoleUpdated(
 )
 
 /**
- * DTO usada para la respuesta en operaciones de login y register
- *
+ * DTO used for the login/register/create responses.
+ * It not only has the user's data, but also their token.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property user
  * @property token
  */

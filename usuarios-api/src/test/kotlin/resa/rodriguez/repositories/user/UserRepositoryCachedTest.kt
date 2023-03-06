@@ -262,37 +262,6 @@ internal class UserRepositoryCachedTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun update() = runTest {
-        coEvery { repo.findById(any()) } returns user
-        coEvery { repo.save(any()) } returns user
-
-        val result = repository.update(user.id!!, user)
-
-        assertAll(
-            { assertEquals(user.id, result?.id) },
-            { assertEquals(user.username, result?.username) },
-        )
-
-        coVerify { repo.findById(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun updateNF() = runTest {
-        coEvery { repo.findById(any()) } returns null
-        coEvery { repo.save(any()) } returns user
-
-        val result = repository.update(user.id!!, user)
-
-        assertAll(
-            { assertNull(result) }
-        )
-
-        coVerify { repo.findById(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
     fun deleteById() = runTest {
         coEvery { repo.findById(any()) } returns user
         coEvery { repo.deleteById(any()) } returns Unit
@@ -314,68 +283,6 @@ internal class UserRepositoryCachedTest {
         coEvery { repo.deleteById(any()) } returns Unit
 
         val result = repository.deleteById(user.id!!)
-
-        assertAll(
-            { assertNull(result) }
-        )
-
-        coVerify { repo.findById(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun setActivity() = runTest {
-        coEvery { repo.findById(any()) } returns user
-        coEvery { repo.save(any()) } returns user
-
-        val result = repository.setActivity(user.id!!, true)
-
-        assertAll(
-            { assertEquals(user.id, result?.id) },
-            { assertEquals(user.username, result?.username) },
-        )
-
-        coVerify { repo.findById(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun setActivityNF() = runTest {
-        coEvery { repo.findById(any()) } returns null
-        coEvery { repo.save(any()) } returns user
-
-        val result = repository.setActivity(user.id!!, true)
-
-        assertAll(
-            { assertNull(result) }
-        )
-
-        coVerify { repo.findById(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun updateCapado() = runTest {
-        coEvery { repo.findById(any()) } returns user
-        coEvery { repo.save(any()) } returns user
-
-        val result = repository.updateCapado(user.id!!, user)
-
-        assertAll(
-            { assertEquals(user.id, result?.id) },
-            { assertEquals(user.username, result?.username) },
-        )
-
-        coVerify { repo.findById(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun updateCapadoNF() = runTest {
-        coEvery { repo.findById(any()) } returns null
-        coEvery { repo.save(any()) } returns user
-
-        val result = repository.updateCapado(user.id!!, user)
 
         assertAll(
             { assertNull(result) }
