@@ -40,7 +40,7 @@ const val DEFAULT_SIZE = 10
 fun Routing.pedidosRouting() = route("/pedidos") {
     val repository by inject<PedidosRepository>()
     authenticate("user") {
-        get("/usuario/me", builder = OpenApiRoute::getByUsuarioId) {
+        get("/usuario/me", builder = OpenApiRoute::getByUsuarioMe) {
             val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
             val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
             val userId = call.principal<JWTPrincipal>()?.getClaim("id", String::class) ?: ""
