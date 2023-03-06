@@ -20,10 +20,10 @@ IES Luis Vives (Leganés) curso 22/23.
 Este micro servicio se ha diseñado usando [PostgreSQL](https://www.postgresql.org/) como
 *base de datos relacional* + [Spring](https://spring.io/) como *framework*.
 
-El proyecto fue creado haciendo uso de la herramienta online [Spring Initializr](https://start.spring.io/)
+El proyecto fue creado haciendo uso de la herramienta online [Spring Initializr](https://start.spring.io/).
 
-Luego de una discusión con el equipo de desarrollo, decidimos hacer este microservicio de manera reactiva,
-aplicando [R2DBC](https://r2dbc.io/)
+Luego de una discusión con el equipo de desarrollo, decidimos hacer este micro servicio de manera reactiva,
+aplicando [R2DBC](https://r2dbc.io/).
 
 ## Configuración del proyecto
 
