@@ -17,13 +17,13 @@ IES Luis Vives (Leganés) curso 22/23.
 
 ## Introducción
 
-Este micro servicio se ha diseñado usando [PostgreSQL](https://www.postgresql.org/) como
+Este micro servicio se ha diseñado usando **PostgreSQL** como
 *base de datos relacional* + [Spring](https://spring.io/) como *framework*.
 
 El proyecto fue creado haciendo uso de la herramienta online [Spring Initializr](https://start.spring.io/).
 
 Luego de una discusión con el equipo de desarrollo, decidimos hacer este micro servicio de manera reactiva,
-aplicando [R2DBC](https://r2dbc.io/).
+aplicando **R2DBC**.
 
 ## Configuración del proyecto
 
@@ -49,6 +49,32 @@ cargadas desde el archivo [schema.sql](./src/main/resources/schema.sql); los dat
 cargados desde la clase Main (en este caso, *UsuariosApiApplication.kt*) haciendo uso de una lista de
 usuarios base y un método del controlador.
 
+## Dominio
+
+Gestionar usuarios y direcciones:
+
+### Usuario
+
+| Campo     | Tipo      | Descripción                                |
+|-----------|-----------|--------------------------------------------|
+| id        | UUID      | Identificador único.                       |
+| username  | String    | Nombre del usuario.                        |
+| email     | String    | Email del usuario.                         |
+| password  | String    | Contraseña del usuario.                    |
+| phone     | String    | Teléfono del usuario                       |
+| avatar    | String    | Avatar del usuario.                        |
+| role      | UserRole  | Rol del usuario(USER, ADMIN O SUPER_ADMIN) |
+| createdAt | LocalDate | Fecha de creación del usuario.             |
+| active    | Boolean   | Estado activo del usuario.                 |
+
+### Dirección
+
+| Campo   | Tipo   | Descripción                               |
+|---------|--------|-------------------------------------------|
+| id      | UUID   | Identificador único.                      |
+| userId  | UUID   | Identificador único del usuario asociado. |
+| address | String | Nombre de la dirección.                   |
+
 # Estructura del proyecto
 
 ## Documentación
@@ -63,6 +89,9 @@ Además, los endpoints se encuentran documentados con **Swagger-OpenAPI**, visib
 Hemos aplicado [Spring Security v6](https://docs.spring.io/spring-security/reference/index.html) para garantizar
 la seguridad e integridad de la API y de los usuarios; la conexión es segura (SSL) y hemos usado **JWT Auth0** para
 la generación de tokens personales.
+
+Las contraseñas de los usuarios se encuentran encriptadas con [Bcrypt](https://en.wikipedia.org/wiki/Bcrypt) con una 
+implementación propia de **Spring Security** 
 
 # Endpoints
 
@@ -105,12 +134,19 @@ La ruta del micro servicio será: https://localhost:6969/usuarios
 
 # Funcionamiento de la aplicación
 
-Haciendo uso de un cliente permita recibir y enviar *request-response*, por ejemplo, 
+Haciendo uso de un cliente que permita recibir y enviar *request-response*, por ejemplo, 
 [Postman](https://www.postman.com/) o el plugin [Thunder Client](https://www.thunderclient.com/) 
-en [VSC](https://code.visualstudio.com/).
+en [VSC](https://code.visualstudio.com/) se realizan las operaciones mostradas en sus respectivos *end points*.
 
 # Tests
 
-Se han testeado los repositorios, los servicios y los controladores, usando **JUnit 5** y aplicando **Mockk**
+Se han testeado los repositorios, los servicios y los controladores, usando **JUnit 5** y aplicando **Mockk**.
+
+Se han testeado los end points usando **Postman** "E2E"; se adjunta el *json* exportado.
 
 # Autores
+
+[Mario Resa](https://github.com/Mario999X), [Daniel Rodríguez](https://github.com/Idliketobealoli), 
+[Sebastian Mendoza](https://github.com/SebsMendoza), [Alfredo Rafael Maldonado](https://github.com/reyalfre),
+[Azahara Blanco](https://github.com/Azaharabl), [Roberto Blázquez](https://github.com/xBaank), 
+[Iván Azagra](https://github.com/IvanAzagraTroya).
