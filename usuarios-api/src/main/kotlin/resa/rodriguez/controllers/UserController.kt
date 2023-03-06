@@ -23,9 +23,7 @@ import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
-import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
-import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.mappers.toDTO
 import resa.rodriguez.mappers.toDTOlist
 import resa.rodriguez.models.Address
@@ -64,7 +62,7 @@ class UserController
     @ApiResponse(responseCode = "200", description = "Mensaje de bienvenida.")
     @GetMapping("")
     fun bienvenida() = ResponseEntity(
-        "Microservicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
+        "Micro servicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
                 "Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
         HttpStatus.OK
     )
@@ -73,7 +71,7 @@ class UserController
     @ApiResponse(responseCode = "200", description = "Mensaje de bienvenida.")
     @GetMapping("/")
     fun bienvenida2() = ResponseEntity(
-        "Microservicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
+        "Micro servicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
                 "Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
         HttpStatus.OK
     )
@@ -196,9 +194,7 @@ class UserController
 
         val pageResponse = service.findAllPaging(page, size, sortBy)
 
-        return if (pageResponse != null) {
-            ResponseEntity.ok(pageResponse)
-        } else throw UserExceptionNotFound("Page not found.")
+        return ResponseEntity.ok(pageResponse)
     }
 
     @Operation(summary = "List Users Active", description = "Metodo para encontrar a todos los usuarios filtrados por su actividad.", tags = ["USER"])
@@ -461,9 +457,7 @@ class UserController
 
         val pageResponse = service.findAllPagingAddresses(page, size, sortBy)
 
-        return if (pageResponse != null) {
-            ResponseEntity.ok(pageResponse)
-        } else throw AddressExceptionNotFound("Page not found.")
+        return ResponseEntity.ok(pageResponse)
     }
 
     @Operation(summary = "List Addresses By User ID", description = "Metodo para encontrar todas las direcciones de un usuario concreto.", tags = ["ADDRESS"])

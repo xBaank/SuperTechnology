@@ -67,7 +67,7 @@ dependencies {
 	// Serialization JSON
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
-	// Swagger
+	// Swagger-SpringDoc-OpenAPI
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 }
 

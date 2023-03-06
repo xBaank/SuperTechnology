@@ -114,7 +114,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -144,7 +144,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -185,7 +185,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -216,7 +216,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -247,7 +247,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -278,7 +278,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -309,7 +309,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -340,7 +340,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -371,7 +371,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -410,7 +410,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -451,7 +451,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -482,7 +482,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -521,7 +521,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -551,7 +551,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -581,7 +581,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -612,7 +612,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -654,7 +654,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -686,7 +686,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -717,7 +717,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -746,14 +746,14 @@
 			"response": []
 		},
 		{
-			"name": "Eliminar Dirección Por Nombre",
+			"name": "Eliminar Dirección Me Por Nombre",
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{Token}}",
+							"value": "{{Token_SUPER_ADMIN}}",
 							"type": "string"
 						}
 					]
@@ -761,7 +761,44 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "https://localhost:6969/usuarios/address?name=C/2",
+					"raw": "https://localhost:6969/usuarios/me/address?name=C/1_1",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6969",
+					"path": [
+						"usuarios",
+						"me",
+						"address"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "C/1_1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar Dirección Por Nombre",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Token_SUPER_ADMIN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6969/usuarios/address?name=C/5&email=test5@example.com",
 					"protocol": "https",
 					"host": [
 						"localhost"
@@ -774,7 +811,11 @@
 					"query": [
 						{
 							"key": "name",
-							"value": "C/2"
+							"value": "C/5"
+						},
+						{
+							"key": "email",
+							"value": "test5@example.com"
 						}
 					]
 				}
@@ -782,10 +823,31 @@
 			"response": []
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
-			"key": "Token",
-			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIwNTVkODhiMC04ZmU5LTRmMzYtYTYwNy03YmQwNmM4YmU1MjgiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3ODAxNTQzOSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.4voGGDgm983XtktGMi8Qnzh-bRbM_MAxSguTurgvgY_f66N9KpG0tDVA5DC2-5ZWj5XXxmLaGXrzcJom5Mah4Q"
+			"key": "Token_SUPER_ADMIN",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0ZTVlNDE1Ni0wZDAzLTRkNDYtODVmYi05M2M4YjZjOTZhNzkiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3ODE4MDM1NSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.t6i0-Op76y6y3AE6ruEpFzAFc6vWEMX5bazJMZQwceM5ZWLv-W9zbFwkCu1rGsT7nchkIhdMq2gdF3CGH1YN3Q",
+			"type": "string"
 		}
 	]
 }

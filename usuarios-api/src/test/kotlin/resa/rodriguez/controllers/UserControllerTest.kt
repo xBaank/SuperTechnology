@@ -197,7 +197,7 @@ class UserControllerTest {
         coEvery { aRepo.findAllFromUserId(any()) } returns flowOf(address)
         coEvery { jwtTokenUtils.create(any()) } returns "token"
 
-        val result = controller.create(dto)
+        val result = controller.create(dto, entity)
         val res = result.body
 
         Assertions.assertAll(
@@ -214,7 +214,7 @@ class UserControllerTest {
     @Test
     fun createMal1() = runTest {
         val result = assertThrows<UserExceptionBadRequest> {
-            controller.create(dtoMal1)
+            controller.create(dtoMal1, entity)
         }
         assertEquals("Username cannot be blank.", result.message)
     }
@@ -223,7 +223,7 @@ class UserControllerTest {
     @Test
     fun createMal2() = runTest {
         val result = assertThrows<UserExceptionBadRequest> {
-            controller.create(dtoMal2)
+            controller.create(dtoMal2, entity)
         }
         assertEquals("Email cannot be blank.", result.message)
     }
@@ -232,7 +232,7 @@ class UserControllerTest {
     @Test
     fun createMal3() = runTest {
         val result = assertThrows<UserExceptionBadRequest> {
-            controller.create(dtoMal3)
+            controller.create(dtoMal3, entity)
         }
         assertEquals("Invalid email.", result.message)
     }
@@ -241,7 +241,7 @@ class UserControllerTest {
     @Test
     fun createMal4() = runTest {
         val result = assertThrows<UserExceptionBadRequest> {
-            controller.create(dtoMal4)
+            controller.create(dtoMal4, entity)
         }
         assertEquals("Password must at least be 7 characters long.", result.message)
     }
@@ -250,7 +250,7 @@ class UserControllerTest {
     @Test
     fun createMal5() = runTest {
         val result = assertThrows<UserExceptionBadRequest> {
-            controller.create(dtoMal5)
+            controller.create(dtoMal5, entity)
         }
         assertEquals("Phone must at least be 9 characters long.", result.message)
     }
@@ -259,7 +259,7 @@ class UserControllerTest {
     @Test
     fun createMal6() = runTest {
         val result = assertThrows<UserExceptionBadRequest> {
-            controller.create(dtoMal6)
+            controller.create(dtoMal6, entity)
         }
         assertEquals("Must at least have one address.", result.message)
     }
@@ -268,7 +268,7 @@ class UserControllerTest {
     @Test
     fun createMal7() = runTest {
         val result = assertThrows<UserExceptionBadRequest> {
-            controller.create(dtoMal7)
+            controller.create(dtoMal7, entity)
         }
         assertEquals("Address cannot be blank.", result.message)
     }
@@ -872,7 +872,7 @@ class UserControllerTest {
     fun deleteAddress() = runTest {
         coEvery { service.deleteAddress(any(), any()) } returns address.address
 
-        val result = controller.deleteAddress(address.address, entity)
+        val result = controller.deleteAddress(address.address, entity.username, entity)
         val res = result.body!!
 
         Assertions.assertAll(
@@ -892,7 +892,7 @@ class UserControllerTest {
                 AddressExceptionNotFound("Address not found.")
 
         val result = assertThrows<AddressExceptionNotFound> {
-            controller.deleteAddress(address.address, entity)
+            controller.deleteAddress(address.address, entity.username, entity)
         }
 
         assertEquals("Address not found.", result.message)
@@ -907,7 +907,7 @@ class UserControllerTest {
                 AddressExceptionNotFound("User not found.")
 
         val result = assertThrows<AddressExceptionNotFound> {
-            controller.deleteAddress(address.address, entity)
+            controller.deleteAddress(address.address, entity.username, entity)
         }
 
         assertEquals("User not found.", result.message)
@@ -922,7 +922,7 @@ class UserControllerTest {
                 AddressExceptionBadRequest("No ha sido posible eliminar la direccion.")
 
         val result = assertThrows<AddressExceptionBadRequest> {
-            controller.deleteAddress(address.address, entity)
+            controller.deleteAddress(address.address, entity.username, entity)
         }
 
         assertEquals("No ha sido posible eliminar la direccion.", result.message)
