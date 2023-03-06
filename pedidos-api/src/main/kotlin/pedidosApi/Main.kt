@@ -72,14 +72,14 @@ fun Application.configureAuth() = install(Authentication) {
 
     val issuerSigned = JWT
         .require(Algorithm.HMAC512(secret))
-        .withAudience(audience)
-        .withIssuer(issuer)
         .build()
 
     jwt("admin") {
         verifier(issuerSigned)
         validate { credential ->
-            if (credential.payload.getClaim("rol").asString() == "ADMIN") {
+            if (credential.payload.getClaim("role").asString() == "ADMIN") {
+                JWTPrincipal(credential.payload)
+            } else if (credential.payload.getClaim("role").asString() == "SUPER_ADMIN") {
                 JWTPrincipal(credential.payload)
             } else {
                 null
@@ -90,9 +90,11 @@ fun Application.configureAuth() = install(Authentication) {
     jwt("user") {
         verifier(issuerSigned)
         validate { credential ->
-            if (credential.payload.getClaim("rol").asString() == "USER") {
+            if (credential.payload.getClaim("role").asString() == "USER") {
                 JWTPrincipal(credential.payload)
-            } else if (credential.payload.getClaim("rol").asString() == "ADMIN") {
+            } else if (credential.payload.getClaim("role").asString() == "ADMIN") {
+                JWTPrincipal(credential.payload)
+            } else if (credential.payload.getClaim("role").asString() == "SUPER_ADMIN") {
                 JWTPrincipal(credential.payload)
             } else {
                 null

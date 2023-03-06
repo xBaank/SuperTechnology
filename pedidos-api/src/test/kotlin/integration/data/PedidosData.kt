@@ -1,7 +1,5 @@
 package integration.data
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import com.typesafe.config.ConfigFactory
 import pedidosApi.dto.requests.CreatePedidoDto
 import pedidosApi.dto.requests.CreateTareaDto
@@ -31,10 +29,13 @@ object PedidosData {
     val issuer = config.getString("jwt.issuer")
     val secret = config.getString("jwt.secret")
 
-    val token: String = JWT.create()
-        .withClaim("rol", "ADMIN")
-        .withAudience(audience)
-        .withIssuer(issuer)
-        .sign(Algorithm.HMAC512(secret))
+    /*
+        val token: String = JWT.create()
+            .withClaim("rol", "ADMIN")
+            .withAudience(audience)
+            .withIssuer(issuer)
+            .sign(Algorithm.HMAC512(secret))*/
+    val token =
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0ZTVlNDE1Ni0wZDAzLTRkNDYtODVmYi05M2M4YjZjOTZhNzkiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3ODE4MDM1NSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.t6i0-Op76y6y3AE6ruEpFzAFc6vWEMX5bazJMZQwceM5ZWLv-W9zbFwkCu1rGsT7nchkIhdMq2gdF3CGH1YN3Q"
 
 }
