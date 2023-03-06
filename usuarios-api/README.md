@@ -65,6 +65,19 @@ la generación de tokens personales.
 
 # Endpoints
 
+| Método | Endpoint(/usuarios)                 | Auth | Descripción                                       | Status Code | Return Content |
+|--------|-------------------------------------|------|---------------------------------------------------|-------------|----------------|
+| GET    |                                     | NO   | Mensaje de bienvenida                             | 200         | String         |
+| GET    | /                                   | NO   | Mensaje de bienvenida Alt                         | 200         | String         |
+| POST   | /register                           | NO   | Registro de usuario                               | 200         | JSON           |
+| POST   | /create                             | SI   | Creación de usuario por un Administrador          | 200         | JSON           |
+| GET    | /login                              | NO   | Iniciar sesión                                    | 200         | JSON           |
+| GET    | /list                               | SI   | Mostrar un listado completo de usuarios           | 200         | JSON           |
+| GET    | /list/paging?page=X&size=Y&sortBy=Z | SI   | Mostrar un listado paginado de usuarios           | 200         | JSON           |
+| GET    | /list/{active}                      | SI   | Mostrar un listado según la actividad de usuarios | 200         | JSON           |
+| GET    | /username/{username}                | SI   | Búsqueda de un usuario por nombre de usuario      | 200         | JSON           |
+|        |                                     |      |                                                   |             |                |
+
 # Funcionamiento de la aplicación
 
 # Tests
