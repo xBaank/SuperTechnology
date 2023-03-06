@@ -15,10 +15,16 @@ import resa.rodriguez.db.getUsersInit
 @EnableCaching
 class UsuariosApiApplication
 @Autowired constructor(
-    private val controller: UserController
+	private val controller: UserController
 ) : CommandLineRunner {
-    override fun run(vararg args: String?): Unit = runBlocking {
-        // Datos iniciales
+	override fun run(vararg args: String?): Unit = runBlocking {
+		// Datos iniciales
+
+		getUsersInit().forEach {
+			controller.createByAdminInitializer(it)
+		}
+	}
+}
 
         getUsersInit().forEach {
             controller.createByAdminInitializer(it)

@@ -30,6 +30,7 @@ class StorageController
 @Autowired constructor(
     private val storageService: IStorageService
 ) {
+
     @Operation(summary = "Serve File", description = "Metodo que devuelve el recurso cuyo nombre fue pasado por parametro.", tags = ["STORAGE"])
     @Parameter(name = "Filename", description = "Nombre del archivo a buscar.", required = true)
     @Parameter(name = "Request", description = "Peticion http.", required = true)
