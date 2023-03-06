@@ -14,7 +14,7 @@ fun getUsersInit() = listOf(
         password = "1234567",
         phone = "123456789",
         role = User.UserRole.SUPER_ADMIN,
-        addresses = setOf("C/1"),
+        addresses = setOf("C/1", "C/1_1"),
         active = true
     ),
     UserDTOcreate(
@@ -23,7 +23,7 @@ fun getUsersInit() = listOf(
         password = "1234567",
         phone = "123456788",
         role = User.UserRole.ADMIN,
-        addresses = setOf("C/2"),
+        addresses = setOf("C/2", "C/2_2"),
         active = true
     ),
     UserDTOcreate(
@@ -42,6 +42,15 @@ fun getUsersInit() = listOf(
         phone = "123459999",
         role = User.UserRole.USER,
         addresses = setOf("C/4"),
+        active = false
+    ),
+    UserDTOcreate(
+        username = "Test_User5",
+        email = "test5@example.com",
+        password = "1234567",
+        phone = "123499999",
+        role = User.UserRole.USER,
+        addresses = setOf("C/5", "C/5_5"),
         active = false
     )
 )

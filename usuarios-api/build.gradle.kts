@@ -16,7 +16,7 @@ version = "0.0.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
@@ -58,7 +58,7 @@ dependencies {
 	// Corrutinas en test
 	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 
-	// Dokka Documentación Kotlin
+	// Dokka
 	dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.20")
 
 	// JWT
@@ -67,17 +67,17 @@ dependencies {
 	// Serialization JSON
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
-	// Swagger
+	// Swagger-SpringDoc-OpenAPI
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 }
 
 tasks.withType<KotlinCompile> {
-	kotlinOptions {
-		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "17"
-	}
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "17"
+    }
 }
 
 tasks.withType<Test> {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

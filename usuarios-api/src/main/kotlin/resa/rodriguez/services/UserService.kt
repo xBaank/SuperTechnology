@@ -231,7 +231,7 @@ class UserService
         addressRepositoryCached.findAll().toList()
     }
 
-    suspend fun findAllPagingAddresses(page: Int, size: Int, sortBy: String ): Page<Address> =
+    suspend fun findAllPagingAddresses(page: Int, size: Int, sortBy: String): Page<Address> =
         withContext(Dispatchers.IO) {
             log.info { "Obteniendo direcciones de la pagina: $page " }
 
@@ -263,16 +263,16 @@ class UserService
         addr.address
     }
 
-    suspend fun deleteAddress(name: String, user: User): String = withContext(Dispatchers.IO) {
+    suspend fun deleteAddress(name: String, email: String): String = withContext(Dispatchers.IO) {
         val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
-        val u = userRepositoryCached.findByEmail(user.email)
+        val u = userRepositoryCached.findByEmail(email)
 
         if (address == null) throw AddressExceptionNotFound("Address not found.")
         if (u == null) throw UserExceptionNotFound("User not found.")
 
         val addresses = addressRepositoryCached.findAllFromUserId(u.id!!).toSet()
 
-        if (address.userId == u.id && addresses.isNotEmpty()) {
+        if (address.userId == u.id && addresses.size > 1) {
             val addr = addressRepositoryCached.deleteById(address.id!!)
             "Direccion ${addr?.address} eliminada."
         } else throw AddressExceptionBadRequest("No ha sido posible eliminar la direccion.")

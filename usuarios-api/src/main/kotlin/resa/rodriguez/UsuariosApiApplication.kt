@@ -27,5 +27,5 @@ class UsuariosApiApplication
 }
 
 fun main(args: Array<String>) {
-	runApplication<UsuariosApiApplication>(*args)
+    runApplication<UsuariosApiApplication>(*args)
 }

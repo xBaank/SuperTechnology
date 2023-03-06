@@ -23,7 +23,6 @@ import resa.rodriguez.dto.UserDTOcreate
 import resa.rodriguez.dto.UserDTOregister
 import resa.rodriguez.exceptions.AddressExceptionBadRequest
 import resa.rodriguez.exceptions.AddressExceptionNotFound
-import resa.rodriguez.exceptions.UserExceptionBadRequest
 import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.models.Address
 import resa.rodriguez.models.User
@@ -116,8 +115,8 @@ class UserServiceTest {
 
         Assertions.assertAll(
             { Assertions.assertNotNull(result) },
-            { Assertions.assertEquals(dto.email, result!!.email) },
-            { Assertions.assertEquals(dto.phone, result!!.phone) },
+            { Assertions.assertEquals(dto.email, result.email) },
+            { Assertions.assertEquals(dto.phone, result.phone) },
         )
         coVerify { uRepo.findByUsername(any()) }
     }
@@ -148,8 +147,8 @@ class UserServiceTest {
 
         Assertions.assertAll(
             { Assertions.assertNotNull(result) },
-            { Assertions.assertEquals(dto.email, result!!.email) },
-            { Assertions.assertEquals(dto.phone, result!!.phone) },
+            { Assertions.assertEquals(dto.email, result.email) },
+            { Assertions.assertEquals(dto.phone, result.phone) },
         )
         coVerify(exactly = 1) { uRepo.findById(any()) }
     }
@@ -180,8 +179,8 @@ class UserServiceTest {
 
         Assertions.assertAll(
             { Assertions.assertNotNull(result) },
-            { Assertions.assertEquals(dto.email, result!!.email) },
-            { Assertions.assertEquals(dto.phone, result!!.phone) },
+            { Assertions.assertEquals(dto.email, result.email) },
+            { Assertions.assertEquals(dto.phone, result.phone) },
         )
         coVerify { uRepo.findByEmail(any()) }
     }
@@ -212,8 +211,8 @@ class UserServiceTest {
 
         Assertions.assertAll(
             { Assertions.assertNotNull(result) },
-            { Assertions.assertEquals(dto.email, result!!.email) },
-            { Assertions.assertEquals(dto.phone, result!!.phone) },
+            { Assertions.assertEquals(dto.email, result.email) },
+            { Assertions.assertEquals(dto.phone, result.phone) },
         )
         coVerify { uRepo.findByPhone(any()) }
     }
@@ -592,7 +591,7 @@ class UserServiceTest {
         coEvery { aRepo.findAllFromUserId(any()) } returns flowOf(address)
         coEvery { aRepo.deleteById(any()) } returns address
 
-        val result = service.deleteAddress(address.address, entity)
+        val result = service.deleteAddress(address.address, entity.email)
 
         Assertions.assertAll(
             { Assertions.assertEquals("Direccion ${address.address} eliminada.", result) }
@@ -613,7 +612,7 @@ class UserServiceTest {
         coEvery { aRepo.deleteById(any()) } returns address
 
         val result = assertThrows<AddressExceptionNotFound> {
-            service.deleteAddress(address.address, entity)
+            service.deleteAddress(address.address, entity.email)
         }
 
         Assertions.assertAll(
@@ -635,7 +634,7 @@ class UserServiceTest {
         coEvery { aRepo.deleteById(any()) } returns address
 
         val result = assertThrows<UserExceptionNotFound> {
-            service.deleteAddress(address.address, entity)
+            service.deleteAddress(address.address, entity.email)
         }
 
         Assertions.assertAll(
@@ -657,7 +656,7 @@ class UserServiceTest {
         coEvery { aRepo.deleteById(any()) } returns address
 
         val result = assertThrows<AddressExceptionBadRequest> {
-            service.deleteAddress(address.address, entity)
+            service.deleteAddress(address.address, entity.email)
         }
 
         Assertions.assertAll(

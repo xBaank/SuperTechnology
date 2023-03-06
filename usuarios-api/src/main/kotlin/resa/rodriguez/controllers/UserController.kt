@@ -1,5 +1,8 @@
 package resa.rodriguez.controllers
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.Valid
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.toSet
@@ -20,9 +23,7 @@ import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.dto.*
-import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.UserExceptionBadRequest
-import resa.rodriguez.exceptions.UserExceptionNotFound
 import resa.rodriguez.mappers.toDTO
 import resa.rodriguez.mappers.toDTOlist
 import resa.rodriguez.models.Address
@@ -56,16 +57,21 @@ class UserController
 ) {
 
     // -- GET DEFAULT --
+    
+    @Operation(summary = "Bienvenida 1", description = "Metodo que devuelve un mensaje de bienvenida.", tags = ["USER"])
+    @ApiResponse(responseCode = "200", description = "Mensaje de bienvenida.")
     @GetMapping("")
     fun bienvenida() = ResponseEntity(
-        "Microservicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
+        "Micro servicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
                 "Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
         HttpStatus.OK
     )
 
+    @Operation(summary = "Bienvenida 2", description = "Metodo que devuelve un mensaje de bienvenida.", tags = ["USER"])
+    @ApiResponse(responseCode = "200", description = "Mensaje de bienvenida.")
     @GetMapping("/")
     fun bienvenida2() = ResponseEntity(
-        "Microservicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
+        "Micro servicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
                 "Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
         HttpStatus.OK
     )
@@ -73,6 +79,11 @@ class UserController
     // -- USERS --
 
     // Register, Create & Login Methods
+    
+    @Operation(summary = "Register", description = "Metodo para registrarse.", tags = ["USER"])
+    @Parameter(name = "userDTO", description = "DTO de registro valido.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario registrado y su token JWT.")
+    @ApiResponse(responseCode = "400", description = "Cuando no puede llevar a cabo el registro.")
     @PostMapping("/register")
     suspend fun register(@Valid @RequestBody userDto: UserDTOregister): ResponseEntity<UserDTOwithToken> =
         withContext(Dispatchers.IO) {
@@ -89,9 +100,16 @@ class UserController
             }
         }
 
+    @Operation(summary = "Create", description = "Metodo para que los administradores puedan crear usuarios.", tags = ["USER"])
+    @Parameter(name = "userDTOcreate", description = "DTO de creacion valido.", required = true)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario creado y su token JWT.")
+    @ApiResponse(responseCode = "400", description = "Cuando no puede llevar a cabo la creacion debido a que el DTO es invalido.")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping("/create")
     suspend fun create(
         @Valid @RequestBody userDTOcreate: UserDTOcreate,
+        @AuthenticationPrincipal user: User
     ): ResponseEntity<UserDTOwithToken> =
         withContext(Dispatchers.IO) {
             log.info { "Creando usuario por parte de un administrador" }
@@ -118,6 +136,10 @@ class UserController
             ResponseEntity(UserDTOwithToken(userSaved.toDTO(addresses), jwtTokenUtils.create(userSaved)), HttpStatus.CREATED)
         }
 
+    @Operation(summary = "Login", description = "Metodo para el logado.", tags = ["USER"])
+    @Parameter(name = "userDTOlogin", description = "DTO de logado valido.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario y su token JWT.")
+    @ApiResponse(responseCode = "400", description = "Cuando no puede llevar a cabo el logado debido a que el DTO es invalido.")
     @GetMapping("/login")
     suspend fun login(@Valid @RequestBody userDto: UserDTOlogin): ResponseEntity<UserDTOwithToken> {
         log.info { "Login de usuario: ${userDto.username}" }
@@ -140,6 +162,10 @@ class UserController
     }
 
     // "Find All" Methods
+    
+    @Operation(summary = "List users", description = "Metodo para encontrar a todos los usuarios.", tags = ["USER"])
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con una lista de DTO de visualizacion de todos los usuarios.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list")
     suspend fun listUsers(@AuthenticationPrincipal user: User): ResponseEntity<List<UserDTOresponse>> {
@@ -149,6 +175,13 @@ class UserController
         return ResponseEntity.ok(res.toDTOlist(aRepo))
     }
 
+    @Operation(summary = "Find All Paging", description = "Metodo para encontrar a todos los usuarios de forma paginada.", tags = ["USER"])
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @Parameter(name = "page", description = "Numero de pagina.", required = false)
+    @Parameter(name = "size", description = "Tamaño de pagina.", required = false)
+    @Parameter(name = "sortBy", description = "Tipo de ordenacion.", required = false)
+    @ApiResponse(responseCode = "200", description = "Response Entity con una pagina de DTO de visualizacion de usuarios.")
+    @ApiResponse(responseCode = "404", description = "Cuando no existe esa pagina.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/paging")
     suspend fun getAllPaging(
@@ -161,11 +194,13 @@ class UserController
 
         val pageResponse = service.findAllPaging(page, size, sortBy)
 
-        return if (pageResponse != null) {
-            ResponseEntity.ok(pageResponse)
-        } else throw UserExceptionNotFound("Page not found.")
+        return ResponseEntity.ok(pageResponse)
     }
 
+    @Operation(summary = "List Users Active", description = "Metodo para encontrar a todos los usuarios filtrados por su actividad.", tags = ["USER"])
+    @Parameter(name = "active", description = "Tipo de actividad.", required = true)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con una lista de DTO de visualizacion de usuarios con el tipo de actividad pasado por parametro.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/{active}")
     suspend fun listUsersActive(
@@ -180,6 +215,12 @@ class UserController
     }
 
     // "Find One" Methods
+    
+    @Operation(summary = "Find By Username", description = "Metodo para encontrar a un usuario por su username.", tags = ["USER"])
+    @Parameter(name = "u", description = "Token de autenticacion.", required = true)
+    @Parameter(name = "username", description = "Nombre de usuario a buscar.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra al usuario.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/username/{username}")
     suspend fun findByUsername(
@@ -195,6 +236,11 @@ class UserController
             ResponseEntity.ok(user.toDTO(addresses))
         }
 
+    @Operation(summary = "Find By Id", description = "Metodo para encontrar a un usuario por su id.", tags = ["USER"])
+    @Parameter(name = "u", description = "Token de autenticacion.", required = true)
+    @Parameter(name = "userId", description = "UUID a buscar.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra al usuario.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/id/{userId}")
     suspend fun findByUserId(
@@ -210,6 +256,11 @@ class UserController
             ResponseEntity.ok(user.toDTO(addresses))
         }
 
+    @Operation(summary = "Find By Email", description = "Metodo para encontrar a un usuario por su email.", tags = ["USER"])
+    @Parameter(name = "u", description = "Token de autenticacion.", required = true)
+    @Parameter(name = "userEmail", description = "Email a buscar.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra al usuario.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/email/{userEmail}")
     suspend fun findByUserEmail(
@@ -225,6 +276,11 @@ class UserController
             ResponseEntity.ok(user.toDTO(addresses))
         }
 
+    @Operation(summary = "Find By Phone", description = "Metodo para encontrar a un usuario por su telefono.", tags = ["USER"])
+    @Parameter(name = "u", description = "Token de autenticacion.", required = true)
+    @Parameter(name = "userPhone", description = "Telefono a buscar.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra al usuario.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/phone/{userPhone}")
     suspend fun findByUserPhone(
@@ -242,6 +298,11 @@ class UserController
 
     // "Update" Methods
 
+    @Operation(summary = "Update Myself", description = "Metodo para cambiar la contraseña o las direcciones de tu propio usuario.", tags = ["USER"])
+    @Parameter(name = "u", description = "Token de autenticacion.", required = true)
+    @Parameter(name = "userDTOUpdated", description = "DTO valido con los datos a cambiar.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion de tu usuario.")
+    @ApiResponse(responseCode = "400", description = "Cuando el DTO no es valido.")
     @PutMapping("/me")
     suspend fun updateMySelf(
         @AuthenticationPrincipal user: User,
@@ -256,6 +317,12 @@ class UserController
         ResponseEntity.ok(userSaved.toDTO(addresses))
     }
 
+    @Operation(summary = "Update Avatar", description = "Metodo para cambiar el avatar de tu propio usuario.", tags = ["USER"])
+    @Parameter(name = "u", description = "Token de autenticacion.", required = true)
+    @Parameter(name = "file", description = "Avatar nuevo.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion de tu usuario.")
+    @ApiResponse(responseCode = "400", description = "Cuando no puede guardar el archivo o no puede resolver el tipo de archivo que es.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra el archivo o no lo puede leer.")
     @PutMapping("/me/avatar", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     suspend fun updateAvatar(
         @AuthenticationPrincipal user: User,
@@ -278,6 +345,11 @@ class UserController
         return@runBlocking ResponseEntity.ok(userUpdated.toDTO(addresses))
     }
 
+    @Operation(summary = "Switch Activity By Email", description = "Metodo para cambiar el tipo de actividad de un usuario buscado por su email.", tags = ["USER"])
+    @Parameter(name = "email", description = "Email a buscar.", required = true)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra el usuario.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PutMapping("/activity/{email}")
     suspend fun switchActivityByEmail(
@@ -293,6 +365,12 @@ class UserController
             ResponseEntity.ok(userSaved.toDTO(addresses))
         }
 
+    @Operation(summary = "Update Role By Email", description = "Metodo para cambiar el rol de un usuario buscado por su email.", tags = ["USER"])
+    @Parameter(name = "userDTORoleUpdated", description = "DTO valido con el nuevo rol y el email del usuario.", required = true)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario.")
+    @ApiResponse(responseCode = "400", description = "Cuando el DTO es invalido.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra el usuario.")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @PutMapping("/role")
     suspend fun updateRoleByEmail(
@@ -309,6 +387,12 @@ class UserController
     }
 
     // "Delete" Methods
+    
+    @Operation(summary = "Delete User", description = "Metodo para borrar un usuario buscado por su email.", tags = ["USER"])
+    @Parameter(name = "email", description = "Email del usuario a borrar.", required = true)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra el usuario.")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{email}")
     suspend fun deleteUser(
@@ -324,6 +408,11 @@ class UserController
     }
 
     // "Me" Method
+    
+    @Operation(summary = "Find Myself", description = "Metodo para buscarse a uno mismo.", tags = ["USER"])
+    @Parameter(name = "userDTORoleUpdated", description = "DTO valido con el nuevo rol y el email del usuario.", required = true)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario.")
     @GetMapping("/me")
     suspend fun findMySelf(@AuthenticationPrincipal user: User): ResponseEntity<UserDTOresponse> =
         withContext(Dispatchers.IO) {
@@ -336,6 +425,10 @@ class UserController
     // -- ADDRESSES --
 
     // "Find All" Methods
+    
+    @Operation(summary = "List Addresses", description = "Metodo para encontrar todas las direcciones registradas.", tags = ["ADDRESS"])
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con una lista de todas las direcciones.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/address")
     suspend fun listAddresses(@AuthenticationPrincipal user: User): ResponseEntity<List<Address>> =
@@ -345,6 +438,13 @@ class UserController
             ResponseEntity.ok(service.findAllAddresses())
         }
 
+    @Operation(summary = "List Addresses Paginadas", description = "Metodo para encontrar todas las direcciones registradas de forma paginada.", tags = ["ADDRESS"])
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @Parameter(name = "page", description = "Numero de la pagina.", required = false)
+    @Parameter(name = "size", description = "Tamaño de la pagina.", required = false)
+    @Parameter(name = "sortBy", description = "Forma de ordenacion.", required = false)
+    @ApiResponse(responseCode = "200", description = "Response Entity con una pagina de direcciones.")
+    @ApiResponse(responseCode = "404", description = "Cuando la pagina no existe.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/address/paging")
     suspend fun getAllPagingAddresses(
@@ -357,11 +457,14 @@ class UserController
 
         val pageResponse = service.findAllPagingAddresses(page, size, sortBy)
 
-        return if (pageResponse != null) {
-            ResponseEntity.ok(pageResponse)
-        } else throw AddressExceptionNotFound("Page not found.")
+        return ResponseEntity.ok(pageResponse)
     }
 
+    @Operation(summary = "List Addresses By User ID", description = "Metodo para encontrar todas las direcciones de un usuario concreto.", tags = ["ADDRESS"])
+    @Parameter(name = "userId", description = "UUID del usuario cuyas direcciones queremos encontrar.", required = true)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con una cadena de texto que contiene todas las direcciones de ese usuario separadas por comas.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra ninguna direccion.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/list/address/{userId}")
     suspend fun listAddressesByUserId(
@@ -374,6 +477,12 @@ class UserController
     }
 
     // "Find One" Methods
+    
+    @Operation(summary = "Find By ID", description = "Metodo para encontrar una direccion por su UUID.", tags = ["ADDRESS"])
+    @Parameter(name = "id", description = "UUID de la direccion.", required = true)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el nombre de la direccion.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra ninguna direccion con ese UUID.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/address/{id}")
     suspend fun findById(@PathVariable id: UUID, @AuthenticationPrincipal user: User): ResponseEntity<String> =
@@ -383,6 +492,11 @@ class UserController
             ResponseEntity.ok(service.findAddressById(id))
         }
 
+    @Operation(summary = "Find By Name", description = "Metodo para encontrar una direccion por su nombre.", tags = ["ADDRESS"])
+    @Parameter(name = "name", description = "Nombre de la direccion.", required = false)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el nombre de la direccion.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra ninguna direccion con ese nombre.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/address")
     suspend fun findByName(
@@ -396,15 +510,39 @@ class UserController
         }
 
     // "Delete" Methods
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @DeleteMapping("/address")
-    suspend fun deleteAddress(
+    
+    @Operation(summary = "Delete My Address", description = "Metodo para borrar una direccion de tu usuario por su nombre.", tags = ["ADDRESS"])
+    @Parameter(name = "name", description = "Nombre de la direccion.", required = false)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el nombre de la direccion.")
+    @ApiResponse(responseCode = "400", description = "Cuando no consigue borrar la direccion.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra ninguna direccion con ese nombre o ningun usuario con ese email.")
+    @DeleteMapping("/me/address")
+    suspend fun deleteMyAddress(
         @RequestParam(defaultValue = "") name: String = "",
         @AuthenticationPrincipal user: User
     ): ResponseEntity<String> = withContext(Dispatchers.IO) {
         log.info { "Eliminando direccion: $name" }
 
-        ResponseEntity.ok(service.deleteAddress(name, user))
+        ResponseEntity.ok(service.deleteAddress(name, user.email))
+    }
+
+    @Operation(summary = "Delete Address", description = "Metodo para borrar una direccion por su nombre.", tags = ["ADDRESS"])
+    @Parameter(name = "name", description = "Nombre de la direccion.", required = false)
+    @Parameter(name = "email", description = "Email del usuario.", required = false)
+    @Parameter(name = "user", description = "Token de autenticacion.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity con el nombre de la direccion.")
+    @ApiResponse(responseCode = "400", description = "Cuando no consigue borrar la direccion.")
+    @ApiResponse(responseCode = "404", description = "Cuando no encuentra ninguna direccion con ese nombre o ningun usuario con ese email.")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @DeleteMapping("/address")
+    suspend fun deleteAddress(
+        @RequestParam(defaultValue = "") name: String = "",
+        @RequestParam(defaultValue = "") email: String = "",
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<String> = withContext(Dispatchers.IO) {
+        log.info { "Eliminando direccion: $name" }
+
+        ResponseEntity.ok(service.deleteAddress(name, email))
     }
 }
