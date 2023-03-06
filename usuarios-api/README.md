@@ -11,6 +11,7 @@ IES Luis Vives (Leganés) curso 22/23.
 - [Endpoints](#endpoints)
 - [Funcionamiento de la aplicación](#funcionamiento-de-la-aplicación)
 - [Tests](#tests)
+- [Autores](#autores)
 
 # Diseño
 
@@ -44,8 +45,8 @@ en las siguientes tecnologías:
 ## Configuración de la base de datos
 
 La base de datos es ejecutada desde un [docker](https://www.docker.com/), y nos conectamos a ella; las tablas son
-cargadas desde el archivo [schema.sql](./src/main/resources/schema.sql); los datos iniciales son 
-cargados desde la clase Main (en este caso, *UsuariosApiApplication.kt*) haciendo uso de una lista de 
+cargadas desde el archivo [schema.sql](./src/main/resources/schema.sql); los datos iniciales son
+cargados desde la clase Main (en este caso, *UsuariosApiApplication.kt*) haciendo uso de una lista de
 usuarios base y un método del controlador.
 
 # Estructura del proyecto
@@ -65,19 +66,51 @@ la generación de tokens personales.
 
 # Endpoints
 
-| Método | Endpoint(/usuarios)                 | Auth | Descripción                                       | Status Code | Return Content |
-|--------|-------------------------------------|------|---------------------------------------------------|-------------|----------------|
-| GET    |                                     | NO   | Mensaje de bienvenida                             | 200         | String         |
-| GET    | /                                   | NO   | Mensaje de bienvenida Alt                         | 200         | String         |
-| POST   | /register                           | NO   | Registro de usuario                               | 200         | JSON           |
-| POST   | /create                             | SI   | Creación de usuario por un Administrador          | 200         | JSON           |
-| GET    | /login                              | NO   | Iniciar sesión                                    | 200         | JSON           |
-| GET    | /list                               | SI   | Mostrar un listado completo de usuarios           | 200         | JSON           |
-| GET    | /list/paging?page=X&size=Y&sortBy=Z | SI   | Mostrar un listado paginado de usuarios           | 200         | JSON           |
-| GET    | /list/{active}                      | SI   | Mostrar un listado según la actividad de usuarios | 200         | JSON           |
-| GET    | /username/{username}                | SI   | Búsqueda de un usuario por nombre de usuario      | 200         | JSON           |
-|        |                                     |      |                                                   |             |                |
+La ruta del micro servicio será: https://localhost:6969/usuarios
+
+## Usuarios
+
+| Método | Endpoint(/usuarios)                 | Auth | Descripción                                        | Status Code | Return Content |
+|--------|-------------------------------------|------|----------------------------------------------------|-------------|----------------|
+| GET    |                                     | NO   | Mensaje de bienvenida.                             | 200         | String         |
+| GET    | /                                   | NO   | Mensaje de bienvenida Alt.                         | 200         | String         |
+| POST   | /register                           | NO   | Registro de usuario.                               | 200         | JSON           |
+| POST   | /create                             | JWT  | Creación de usuario por un Administrador.          | 200         | JSON           |
+| GET    | /login                              | NO   | Iniciar sesión.                                    | 200         | JSON           |
+| GET    | /list                               | JWT  | Mostrar un listado completo de usuarios.           | 200         | JSON           |
+| GET    | /list/paging?page=X&size=Y&sortBy=Z | JWT  | Mostrar un listado paginado de usuarios.           | 200         | JSON           |
+| GET    | /list/{active}                      | JWT  | Mostrar un listado según la actividad de usuarios. | 200         | JSON           |
+| GET    | /username/{username}                | JWT  | Búsqueda de un usuario por nombre de usuario.      | 200         | JSON           |
+| GET    | /id/{id}                            | JWT  | Búsqueda de un usuario por ID.                     | 200         | JSON           |
+| GET    | /email/{userEmail}                  | JWT  | Búsqueda de un usuario por email.                  | 200         | JSON           |
+| GET    | /phone/{userPhone}                  | JWT  | Búsqueda de un usuario por teléfono.               | 200         | JSON           |
+| PUT    | /me                                 | JWT  | Actualización de un usuario a si mismo.            | 200         | JSON           |
+| PUT    | /me/avatar                          | JWT  | Actualización del avatar de un usuario a si mismo. | 200         | JSON           |
+| PUT    | /activity/{email}                   | JWT  | Cambio de actividad de un usuario.                 | 200         | JSON           |
+| PUT    | /role                               | JWT  | Actualización de rol de un usuario.                | 200         | JSON           |
+| DELETE | /{email}                            | JWT  | Eliminación de un usuario.                         | 200         | JSON           |
+| GET    | /me                                 | JWT  | Obtener información de un usuario a si mismo.      | 200         | JSON           |
+
+## Direcciones
+
+| Método | Endpoint(/usuarios)                 | Auth | Descripción                                                                 | Status Code | Return Content |
+|--------|-------------------------------------|------|-----------------------------------------------------------------------------|-------------|----------------|
+| GET    | /list/address                       | JWT  | Mostrar listado completo de direcciones.                                    | 200         | JSON           |
+| GET    | /list/paging?page=X&size=Y&sortBy=Z | JWT  | Mostrar listado paginado de direcciones.                                    | 200         | JSON           |
+| GET    | /list/address/{userId}              | JWT  | Mostrar direcciones de un usuario.                                          | 200         | JSON           |
+| GET    | /address/{id}                       | JWT  | Búsqueda de una dirección por ID.                                           | 200         | String         |
+| GET    | /address?name=X                     | JWT  | Búsqueda de una dirección por nombre.                                       | 200         | String         |
+| DELETE | /me/address?name=X                  | JWT  | Eliminación de una dirección propia por nombre.                             | 200         | String         |
+| DELETE | /address?name=X&email=Y             | JWT  | Eliminación de una dirección de un usuario por nombre de dirección y email. | 200         | String         |
 
 # Funcionamiento de la aplicación
 
+Haciendo uso de un cliente permita recibir y enviar *request-response*, por ejemplo, 
+[Postman](https://www.postman.com/) o el plugin [Thunder Client](https://www.thunderclient.com/) 
+en [VSC](https://code.visualstudio.com/).
+
 # Tests
+
+Se han testeado los repositorios, los servicios y los controladores, usando **JUnit 5** y aplicando **Mockk**
+
+# Autores
