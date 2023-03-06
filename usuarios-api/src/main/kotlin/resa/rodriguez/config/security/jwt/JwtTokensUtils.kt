@@ -24,8 +24,6 @@ class JwtTokensUtils {
             .withHeader(mapOf("typ" to TOKEN_TYPE))
             .withClaim("username", user.username)
             .withClaim("email", user.email)
-            .withClaim("password", user.email)
-            .withClaim("role", user.role.name)
             .withClaim("active", user.active)
             .withExpiresAt(Date(System.currentTimeMillis() + (24 * 60 * 60 * 1_000)))
             .sign(Algorithm.HMAC512(algorithmSecret))
