@@ -127,7 +127,7 @@ class ProductoController
         withContext(Dispatchers.IO) {
             logger.info { "Get product by ID" }
             try {
-                val res = repository.findById(id).takeIf { it!!.activo }?.toDtoUser()
+                val res = repository.findById(id).takeIf { it?.activo ?: true }?.toDtoUser()
                     ?: throw ProductoNotFoundException("Product not found with this id: $id.")
                 return@withContext ResponseEntity.ok(res)
             } catch (e: ProductoNotFoundException) {
