@@ -1,0 +1,16 @@
+version: '3.1'
+services:
+  mariadb:
+    container_name: mariadbProducts
+    image: mariadb:latest
+    restart: 'always'
+    environment:
+      MYSQL_ROOT_PASSWORD: mariadbpass
+      MYSQL_DATABASE: productos
+      MYSQL_USER: mariadb
+      MYSQL_PASSWORD: mariadb1234
+    volumes:
+      - db:/var/lib/mariadb/data
+volumes:
+  db:
+    driver: local

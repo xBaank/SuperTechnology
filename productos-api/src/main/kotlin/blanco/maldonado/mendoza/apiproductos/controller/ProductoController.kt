@@ -202,7 +202,8 @@ class ProductoController
                     try {
                         Producto.Categoria.valueOf(categoria.trim().uppercase())
                         val res =
-                            repository.findByCategoria(categoria.trim().uppercase()).filter { it.activo }.map { it.toDtoUser() }
+                            repository.findByCategoria(categoria.trim().uppercase()).filter { it.activo }
+                                .map { it.toDtoUser() }
                         if (!res.toList().isEmpty()) {
                             return@withContext ResponseEntity.ok(res)
                         } else {

@@ -18,10 +18,6 @@ data class User(
     @NotEmpty(message = "El usuario debe tener un email.")
     val email: String,
 
-    @NotEmpty(message = "El usuario debe tener una password.")
-    @get:JvmName("userPassword")
-    val password: String,
-
     @NotEmpty(message = "El usuario debe tener un rol.")
     val role: UserRole,
     val active: Boolean
@@ -36,7 +32,7 @@ data class User(
     }
 
     override fun getPassword(): String {
-        return password
+        return "a"
     }
 
     override fun getUsername(): String {

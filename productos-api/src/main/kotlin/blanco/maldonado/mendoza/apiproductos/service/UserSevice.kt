@@ -17,10 +17,9 @@ import java.util.*
             val id = tokenDecoded.subject.toString().replace("\"", "")
             val username = tokenDecoded.getClaim("username").toString().replace("\"", "")
             val email = tokenDecoded.getClaim("email").toString().replace("\"", "")
-            val password = tokenDecoded.getClaim("password").toString().replace("\"", "")
             val role = tokenDecoded.getClaim("role").toString().replace("\"", "")
             val active = tokenDecoded.getClaim("active").toString().replace("\"", "")
 
-            User(UUID.fromString(id), username, email, password, User.UserRole.valueOf(role), active.toBoolean())
+            User(UUID.fromString(id), username, email, User.UserRole.valueOf(role), active.toBoolean())
         }
     }
