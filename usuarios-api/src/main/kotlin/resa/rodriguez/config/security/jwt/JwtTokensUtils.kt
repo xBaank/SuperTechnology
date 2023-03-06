@@ -25,7 +25,7 @@ class JwtTokensUtils {
             .withClaim("username", user.username)
             .withClaim("email", user.email)
             .withClaim("active", user.active)
-            .withExpiresAt(Date(System.currentTimeMillis() + (24 * 60 * 60 * 1_000)))
+            .withExpiresAt(Date(System.currentTimeMillis() + (24 * 60 * 60 * 1_000) * 2)) // 2 dias
             .sign(Algorithm.HMAC512(algorithmSecret))
     }
 
