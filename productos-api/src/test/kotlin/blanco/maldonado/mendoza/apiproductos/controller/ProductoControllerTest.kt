@@ -1,9 +1,6 @@
 package blanco.maldonado.mendoza.apiproductos.controller
 
 import blanco.maldonado.mendoza.apiproductos.dto.ProductoCreateDto
-import blanco.maldonado.mendoza.apiproductos.dto.ProductoDto
-import blanco.maldonado.mendoza.apiproductos.dto.ProductoPageDto
-import blanco.maldonado.mendoza.apiproductos.dto.ProductoPageDtoUser
 import blanco.maldonado.mendoza.apiproductos.mapper.toDto
 import blanco.maldonado.mendoza.apiproductos.model.Producto
 import blanco.maldonado.mendoza.apiproductos.repositories.ProductoCachedRepositoryImpl
@@ -22,9 +19,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.jaxb.SpringDataJaxb.PageDto
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
@@ -54,9 +48,9 @@ class ProductoControllerTest {
         activo = true
     )
 
-    val productoDto = producto.toDto()
+    private val productoDto = producto.toDto()
 
-    val productoCreateDto = ProductoCreateDto(
+    private val productoCreateDto = ProductoCreateDto(
         nombre = "Movil",
         categoria = Producto.Categoria.PIEZA.name,
         stock = 3,
@@ -65,17 +59,10 @@ class ProductoControllerTest {
         activo = true.toString()
     )
 
-    val superAdmin = User(
+    private val superAdmin = User(
         username = "superadmin",
         email = "superadmin@admin.com",
         role = User.UserRole.SUPER_ADMIN,
-        active = true
-    )
-    val usuario = User(
-        username = "superadminz",
-        email = "superadmin@admin.com",
-        password = "super1234",
-        role = User.UserRole.USER,
         active = true
     )
 
@@ -138,7 +125,6 @@ class ProductoControllerTest {
     fun findProductByIdNotFoundUsers() = runTest {
         coEvery { repository.findById(any()) } returns null
         val res = assertThrows<ResponseStatusException> {
-            //  controller.findProductById("id erroneo")
             controller.findProductByIdUsers("error")
         }
         assertEquals(
@@ -171,7 +157,6 @@ class ProductoControllerTest {
     fun findByIdNotFoundAdmin() = runTest {
         coEvery { repository.findById(any()) } returns null
         val res = assertThrows<ResponseStatusException> {
-            //  controller.findProductById("id erroneo")
             controller.findProductByIdAdmins(superAdmin, "id erroneo")
         }
         assertEquals(
@@ -227,7 +212,6 @@ class ProductoControllerTest {
         assertEquals(
             """404 NOT_FOUND "Category is empty."""", res.message
         )
-        //si la categoría es vacia no llama al metodo
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -243,7 +227,6 @@ class ProductoControllerTest {
         assertEquals(
             """404 NOT_FOUND "Category is empty."""", res.message
         )
-        //si la categoría es vacia no llama al metodo
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -254,13 +237,11 @@ class ProductoControllerTest {
         } returns flowOf()
 
         val res = assertThrows<ResponseStatusException> {
-            //controller.findProductByCategoria("MOVILES")
             controller.findProductByCategoriaUsers("MOVILES")
         }
         assertEquals(
             """404 NOT_FOUND "The MOVILES category is not correct."""", res.message
         )
-        //si la categoría no es correcta no llama al metodo
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -271,13 +252,11 @@ class ProductoControllerTest {
         } returns flowOf()
 
         val res = assertThrows<ResponseStatusException> {
-            //controller.findProductByCategoria("MOVILES")
             controller.findProductByCategoriaAdmins(superAdmin, "MOVILES")
         }
         assertEquals(
             """404 NOT_FOUND "The MOVILES category is not correct."""", res.message
         )
-        //si la categoría no es correcta no llama al metodo
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
