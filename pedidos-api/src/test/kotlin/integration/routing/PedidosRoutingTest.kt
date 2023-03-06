@@ -2,6 +2,7 @@ package integration.routing
 
 import com.typesafe.config.ConfigValueFactory.fromAnyRef
 import integration.data.PedidosData
+import integration.data.testModule
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -25,6 +26,7 @@ import pedidosApi.dto.responses.ErrorDto
 import pedidosApi.dto.responses.PagedFlowDto
 import pedidosApi.dto.responses.PedidoDto
 import pedidosApi.models.EstadoPedido
+import pedidosApi.module
 
 
 @Testcontainers
@@ -58,6 +60,8 @@ class PedidosRoutingTest {
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
+
+        module = testModule
     }
 
     @Test

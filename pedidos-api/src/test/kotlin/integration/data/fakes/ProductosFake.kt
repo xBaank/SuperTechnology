@@ -1,4 +1,4 @@
-package pedidosApi.clients.fakes
+package integration.data.fakes
 
 import arrow.core.Either
 import arrow.core.left

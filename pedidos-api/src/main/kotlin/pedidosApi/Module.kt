@@ -10,28 +10,33 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
-import pedidosApi.clients.fakes.fakeProductosClient
-import pedidosApi.clients.fakes.fakeUserClient
+import pedidosApi.clients.ProductosClient
+import pedidosApi.clients.UsuariosClient
 import pedidosApi.models.Pedido
 import pedidosApi.repositories.PedidosRepository
 import retrofit2.Retrofit
+import retrofit2.create
 
 val retrofit = Retrofit.Builder()
     .addCallAdapterFactory(EitherCallAdapterFactory.create())
     .addConverterFactory(Json.asConverterFactory(MediaType.get("application/json")))
 
+var module: Module? = null
 val Application.mainModule: Module
-    get() = module {
-        val connectionString = environment.config.property("mongo.connectionString").getString()
-        val database = environment.config.property("mongo.database").getString()
-        single {
-            KMongo.createClient(connectionString).coroutine.getDatabase(database).getCollection<Pedido>()
+    get() {
+        if (module == null) module = module {
+            val connectionString = environment.config.property("mongo.connectionString").getString()
+            val database = environment.config.property("mongo.database").getString()
+            val usuarioUrl = environment.config.property("usuarios.url").getString()
+            val productosUrl = environment.config.property("productos.url").getString()
+            single {
+                KMongo.createClient(connectionString).coroutine.getDatabase(database).getCollection<Pedido>()
+            }
+            singleOf(::PedidosRepository)
+            single { retrofit.baseUrl(usuarioUrl).build().create<UsuariosClient>() }
+            single { retrofit.baseUrl(productosUrl).build().create<ProductosClient>() }
         }
-        singleOf(::PedidosRepository)
-        singleOf(::fakeUserClient)
-        singleOf(::fakeProductosClient)
-        /*    single { retrofit.baseUrl(Config.usuariosUrl).build().create<UsuariosClient>() }
-            single { retrofit.baseUrl(Config.productosUrl).build().create<ProductosClient>() }*/
+        return module!!
     }
 
 
