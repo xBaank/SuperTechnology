@@ -62,7 +62,6 @@ class ProductoControllerTest {
     val superAdmin = User(
         username = "superadmin",
         email = "superadmin@admin.com",
-        password = "super1234",
         role = User.UserRole.SUPER_ADMIN,
         active = true
     )

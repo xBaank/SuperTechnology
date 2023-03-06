@@ -1,1 +1,1 @@
-rootProject.name = "api-productos"
+rootProject.name = "productos-api"
