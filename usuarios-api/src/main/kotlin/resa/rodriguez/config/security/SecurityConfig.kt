@@ -3,6 +3,7 @@ package resa.rodriguez.config.security
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -72,7 +73,7 @@ class SecurityConfig
             .requestMatchers("/usuarios", "/usuarios/", "/usuarios/login", "/usuarios/register").permitAll()
 
             // Para acceder al /me se necesitara estar autenticado
-            .requestMatchers("/usuarios/me").authenticated()
+            .requestMatchers("/usuarios/me", "/usuarios/me/address", "/usuarios/me/avatar").authenticated()
 
             .requestMatchers(
                 "/usuarios/create", "/usuarios/list", "/usuarios/list/paging",
@@ -86,6 +87,9 @@ class SecurityConfig
 
             .requestMatchers(
                 "/usuarios/role", "/usuarios/delete"
+            ).hasRole("SUPER_ADMIN")
+            .requestMatchers(
+                HttpMethod.DELETE, "/usuarios/address"
             ).hasRole("SUPER_ADMIN")
 
             // El resto, se necesitara autenticacion estandar

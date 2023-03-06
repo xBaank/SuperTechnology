@@ -263,9 +263,9 @@ class UserService
         addr.address
     }
 
-    suspend fun deleteAddress(name: String, user: User): String = withContext(Dispatchers.IO) {
+    suspend fun deleteAddress(name: String, email: String): String = withContext(Dispatchers.IO) {
         val address = addressRepositoryCached.findAllByAddress(name).firstOrNull()
-        val u = userRepositoryCached.findByEmail(user.email)
+        val u = userRepositoryCached.findByEmail(email)
 
         if (address == null) throw AddressExceptionNotFound("Address not found.")
         if (u == null) throw UserExceptionNotFound("User not found.")
