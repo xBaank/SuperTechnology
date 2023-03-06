@@ -9,8 +9,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres1234
       - POSTGRES_DB=usuarios
-    ports:
-      - '5555:5432'
     volumes:
       - db:/var/lib/postgresql/data
 
@@ -18,13 +16,13 @@ services:
     build: .
     container_name: "supertechnology-usuarios"
     environment:
-      - POSTGRES_CONNECTION=r2dbc:postgresql://postgres:postgres1234@postgresUsers:5555/usuarios
+      - POSTGRES_CONNECTION=r2dbc:postgresql://postgres:postgres1234@postgresUsers/usuarios
       - JWT_SECRET=Zanahoria_Turbopropulsada9
       - KEY_STORE_PATH=classpath:cert/server_key.p12
     ports:
       - '6969:6969'
     depends_on:
-      - db
+      - postgresUsers
 
 volumes:
   db:
