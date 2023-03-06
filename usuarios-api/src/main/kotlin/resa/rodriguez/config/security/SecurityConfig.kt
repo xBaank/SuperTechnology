@@ -88,6 +88,7 @@ class SecurityConfig
             .requestMatchers(
                 "/usuarios/role", "/usuarios/delete"
             ).hasRole("SUPER_ADMIN")
+            
             .requestMatchers(
                 HttpMethod.DELETE, "/usuarios/address"
             ).hasRole("SUPER_ADMIN")

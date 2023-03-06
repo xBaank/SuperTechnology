@@ -59,6 +59,7 @@ class UserController
 ) {
 
     // -- GET DEFAULT --
+    
     @Operation(summary = "Bienvenida 1", description = "Metodo que devuelve un mensaje de bienvenida.", tags = ["USER"])
     @ApiResponse(responseCode = "200", description = "Mensaje de bienvenida.")
     @GetMapping("")
@@ -80,6 +81,7 @@ class UserController
     // -- USERS --
 
     // Register, Create & Login Methods
+    
     @Operation(summary = "Register", description = "Metodo para registrarse.", tags = ["USER"])
     @Parameter(name = "userDTO", description = "DTO de registro valido.", required = true)
     @ApiResponse(responseCode = "200", description = "Response Entity con el DTO de visualizacion del usuario registrado y su token JWT.")
@@ -162,6 +164,7 @@ class UserController
     }
 
     // "Find All" Methods
+    
     @Operation(summary = "List users", description = "Metodo para encontrar a todos los usuarios.", tags = ["USER"])
     @Parameter(name = "user", description = "Token de autenticacion.", required = true)
     @ApiResponse(responseCode = "200", description = "Response Entity con una lista de DTO de visualizacion de todos los usuarios.")
@@ -216,6 +219,7 @@ class UserController
     }
 
     // "Find One" Methods
+    
     @Operation(summary = "Find By Username", description = "Metodo para encontrar a un usuario por su username.", tags = ["USER"])
     @Parameter(name = "u", description = "Token de autenticacion.", required = true)
     @Parameter(name = "username", description = "Nombre de usuario a buscar.", required = true)
@@ -387,6 +391,7 @@ class UserController
     }
 
     // "Delete" Methods
+    
     @Operation(summary = "Delete User", description = "Metodo para borrar un usuario buscado por su email.", tags = ["USER"])
     @Parameter(name = "email", description = "Email del usuario a borrar.", required = true)
     @Parameter(name = "user", description = "Token de autenticacion.", required = true)
@@ -407,6 +412,7 @@ class UserController
     }
 
     // "Me" Method
+    
     @Operation(summary = "Find Myself", description = "Metodo para buscarse a uno mismo.", tags = ["USER"])
     @Parameter(name = "userDTORoleUpdated", description = "DTO valido con el nuevo rol y el email del usuario.", required = true)
     @Parameter(name = "user", description = "Token de autenticacion.", required = true)
@@ -423,6 +429,7 @@ class UserController
     // -- ADDRESSES --
 
     // "Find All" Methods
+    
     @Operation(summary = "List Addresses", description = "Metodo para encontrar todas las direcciones registradas.", tags = ["ADDRESS"])
     @Parameter(name = "user", description = "Token de autenticacion.", required = true)
     @ApiResponse(responseCode = "200", description = "Response Entity con una lista de todas las direcciones.")
@@ -476,6 +483,7 @@ class UserController
     }
 
     // "Find One" Methods
+    
     @Operation(summary = "Find By ID", description = "Metodo para encontrar una direccion por su UUID.", tags = ["ADDRESS"])
     @Parameter(name = "id", description = "UUID de la direccion.", required = true)
     @Parameter(name = "user", description = "Token de autenticacion.", required = true)
@@ -508,6 +516,7 @@ class UserController
         }
 
     // "Delete" Methods
+    
     @Operation(summary = "Delete My Address", description = "Metodo para borrar una direccion de tu usuario por su nombre.", tags = ["ADDRESS"])
     @Parameter(name = "name", description = "Nombre de la direccion.", required = false)
     @Parameter(name = "user", description = "Token de autenticacion.", required = true)
