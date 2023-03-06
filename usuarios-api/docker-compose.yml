@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db:
+  postgresUsers:
     container_name: "postgresUsers"
     image: postgres:14.1-alpine
     restart: always
@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=postgres1234
       - POSTGRES_DB=usuarios
     ports:
-      - '5432:5432'
+      - '5555:5432'
     volumes:
       - db:/var/lib/postgresql/data
 
@@ -18,7 +18,7 @@ services:
     build: .
     container_name: "supertechnology-usuarios"
     environment:
-      - POSTGRES_CONNECTION=r2dbc:postgresql://postgres:postgres1234@db:5432/usuarios
+      - POSTGRES_CONNECTION=r2dbc:postgresql://postgres:postgres1234@postgresUsers:5555/usuarios
       - JWT_SECRET=Zanahoria_Turbopropulsada9
       - KEY_STORE_PATH=classpath:cert/server_key.p12
     ports:
