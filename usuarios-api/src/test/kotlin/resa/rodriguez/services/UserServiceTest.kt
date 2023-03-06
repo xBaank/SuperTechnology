@@ -49,6 +49,7 @@ class UserServiceTest {
         dto.avatar, dto.role, LocalDate.now(), dto.active
     )
     private val address = Address(UUID.randomUUID(), entity.id!!, dto.addresses.first())
+    private val address2 = Address(UUID.randomUUID(), entity.id!!, dto.addresses.first())
 
     @MockK private lateinit var uRepo: UserRepositoryCached
     @MockK private lateinit var aRepo: AddressRepositoryCached
@@ -591,10 +592,31 @@ class UserServiceTest {
         coEvery { aRepo.findAllFromUserId(any()) } returns flowOf(address)
         coEvery { aRepo.deleteById(any()) } returns address
 
+        val result = assertThrows<AddressExceptionBadRequest> {
+            service.deleteAddress(address.address, entity.email)
+        }
+
+        Assertions.assertAll(
+            { Assertions.assertEquals("No ha sido posible eliminar la direccion.", result.message) }
+        )
+
+        coVerify { aRepo.findAllByAddress(any()) }
+        coVerify { uRepo.findByEmail(any()) }
+        coVerify { aRepo.findAllFromUserId(any()) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun deleteAddress2() = runTest {
+        coEvery { aRepo.findAllByAddress(any()) } returns flowOf(address)
+        coEvery { uRepo.findByEmail(any()) } returns entity
+        coEvery { aRepo.findAllFromUserId(any()) } returns flowOf(address, address2)
+        coEvery { aRepo.deleteById(any()) } returns address
+
         val result = service.deleteAddress(address.address, entity.email)
 
         Assertions.assertAll(
-            { Assertions.assertEquals("Direccion ${address.address} eliminada.", result) }
+            { Assertions.assertEquals("Direccion ${address?.address} eliminada.", result) }
         )
 
         coVerify { aRepo.findAllByAddress(any()) }

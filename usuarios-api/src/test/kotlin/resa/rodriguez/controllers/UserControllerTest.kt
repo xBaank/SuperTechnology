@@ -82,8 +82,8 @@ class UserControllerTest {
             { Assertions.assertNotNull(res) },
             { assertEquals(result.statusCode, HttpStatus.OK) },
             { assertEquals(
-                "Microservicio de gestión de usuarios de una tienda de tecnología para las asignaturas de Acceso a Datos y " +
-                "Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
+                "Micro servicio de gestión de usuarios de una tienda de tecnología para las asignaturas de " +
+                        "Acceso a Datos y Programación de Procesos y Servicios del IES Luis Vives (Leganés) curso 22/23.",
                 res) }
         )
     }
@@ -926,6 +926,24 @@ class UserControllerTest {
         }
 
         assertEquals("No ha sido posible eliminar la direccion.", result.message)
+
+        coVerify { service.deleteAddress(any(), any()) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun deleteMyAddress() = runTest {
+        coEvery { service.deleteAddress(any(), any()) } returns address.address
+
+        val result = controller.deleteMyAddress(entity.username, entity)
+        val res = result.body!!
+
+        Assertions.assertAll(
+            { Assertions.assertNotNull(result) },
+            { Assertions.assertNotNull(res) },
+            { assertEquals(result.statusCode, HttpStatus.OK) },
+            { assertEquals(address.address, res) }
+        )
 
         coVerify { service.deleteAddress(any(), any()) }
     }
