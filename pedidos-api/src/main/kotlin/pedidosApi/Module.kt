@@ -19,12 +19,14 @@ import retrofit2.create
 
 val retrofit = Retrofit.Builder()
     .addCallAdapterFactory(EitherCallAdapterFactory.create())
+    .client(getUnsafeOkHttpClient())
     .addConverterFactory(Json.asConverterFactory(MediaType.get("application/json")))
 
+// used for testing
 var module: Module? = null
 val Application.mainModule: Module
-    get() {
-        if (module == null) module = module {
+    get() =
+        module {
             val connectionString = environment.config.property("mongo.connectionString").getString()
             val database = environment.config.property("mongo.database").getString()
             val usuarioUrl = environment.config.property("usuarios.url").getString()
@@ -36,8 +38,6 @@ val Application.mainModule: Module
             single { retrofit.baseUrl(usuarioUrl).build().create<UsuariosClient>() }
             single { retrofit.baseUrl(productosUrl).build().create<ProductosClient>() }
         }
-        return module!!
-    }
 
 
 

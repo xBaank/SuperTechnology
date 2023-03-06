@@ -1,6 +1,5 @@
 package integration.routing
 
-import com.typesafe.config.ConfigValueFactory.fromAnyRef
 import integration.data.PedidosData
 import integration.data.testModule
 import io.ktor.client.*
@@ -51,17 +50,12 @@ class PedidosRoutingTest {
 
     private fun ApplicationTestBuilder.createJsonClient(): HttpClient = createClient {
         this@createJsonClient.environment {
-            config = HoconApplicationConfig(
-                PedidosData.config
-                    .withValue("mongo.connectionString", fromAnyRef(mongoDBContainer.connectionString))
-                    .withValue("mongo.database", fromAnyRef("pedidos"))
-            )
+            config = HoconApplicationConfig(PedidosData.config)
         }
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
-
-        module = testModule
+        module = testModule(mongoDBContainer.connectionString, "pedidos")
     }
 
     @Test

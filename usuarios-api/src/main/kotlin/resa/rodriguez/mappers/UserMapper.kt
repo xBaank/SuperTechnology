@@ -21,6 +21,7 @@ fun User.toDTO(addresses: Set<Address>): UserDTOresponse {
     val addressesString = mutableSetOf<String>()
     addresses.forEach { addressesString.add(it.address) }
     return UserDTOresponse(
+        id = id?.toString(),
         username = username,
         email = email,
         role = role,

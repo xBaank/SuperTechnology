@@ -10,17 +10,14 @@ import org.litote.kmongo.reactivestreams.KMongo
 import pedidosApi.models.Pedido
 import pedidosApi.repositories.PedidosRepository
 
-val testModule: Module
-    get() = module {
-        val connectionString = PedidosData.config.getString("mongo.connectionString")
-        val database = PedidosData.config.getString("mongo.database")
-        single {
-            KMongo.createClient(connectionString).coroutine.getDatabase(database).getCollection<Pedido>()
-        }
-        singleOf(::PedidosRepository)
-        singleOf(::fakeUserClient)
-        singleOf(::fakeProductosClient)
+fun testModule(connectionString: String, database: String): Module = module {
+    single {
+        KMongo.createClient(connectionString).coroutine.getDatabase(database).getCollection<Pedido>()
     }
+    singleOf(::PedidosRepository)
+    singleOf(::fakeUserClient)
+    singleOf(::fakeProductosClient)
+}
 
 
 

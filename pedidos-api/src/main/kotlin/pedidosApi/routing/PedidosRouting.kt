@@ -86,7 +86,9 @@ fun Routing.pedidosRouting() = route("/pedidos") {
             val pedido = call.receiveOrNull<CreatePedidoDto>()
                 .let { it?.right() ?: PedidoError.InvalidPedidoFormat("Invalid body format").left() }
 
-            pedido.flatMap { createPedido(it) }
+            val token = call.request.headers["Authorization"] ?: ""
+
+            pedido.flatMap { createPedido(it, token) }
                 .flatMap { repository.save(it) }
                 .map { buildPedidoDto(it) }
                 .onLeft { call.handleError(it) }
@@ -96,8 +98,10 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         put("{id}", builder = OpenApiRoute::put) {
             val id = call.parameters.getOrFail("id")
             val pedido = call.receiveOrNull<UpdatePedidoDto>()
+            val token = call.request.headers["Authorization"] ?: ""
 
-            updatePedido(pedido, id)
+
+            updatePedido(pedido, id, token)
                 .flatMap { repository.save(it) }
                 .map { buildPedidoDto(it) }
                 .onLeft { call.handleError(it) }
@@ -116,18 +120,19 @@ fun Routing.pedidosRouting() = route("/pedidos") {
 
 private suspend fun createPedido(
     pedido: CreatePedidoDto,
+    token: String
 ): Either<ApiError, Pedido> = either {
     val userClient by inject<UsuariosClient>()
     val productoClient by inject<ProductosClient>()
 
 
-    val usuario = userClient.getUsuario(pedido.usuario).mapToApiError().bind()
+    val usuario = userClient.getUsuario(token, pedido.usuario).mapToApiError().bind()
 
     val current = System.currentTimeMillis()
 
     val tareas = pedido.tareas.map { tarea ->
         Tarea(
-            producto = productoClient.getProducto(tarea.producto).mapToApiError().bind(),
+            producto = productoClient.getProducto(token, tarea.producto).mapToApiError().bind(),
             empleado = usuario,
             createdAt = current
         )
@@ -146,7 +151,11 @@ private suspend fun createPedido(
 /**
  * Update user, iva and estado
  */
-private suspend fun updatePedido(updatePedidoDto: UpdatePedidoDto?, id: String): Either<DomainError, Pedido> = either {
+private suspend fun updatePedido(
+    updatePedidoDto: UpdatePedidoDto?,
+    id: String,
+    token: String
+): Either<DomainError, Pedido> = either {
     val userClient by inject<UsuariosClient>()
     val pedidosRepository by inject<PedidosRepository>()
 
@@ -154,7 +163,7 @@ private suspend fun updatePedido(updatePedidoDto: UpdatePedidoDto?, id: String):
         ?: shift(PedidoError.InvalidPedidoId("Invalid id format"))
 
     val pedidoToUpdate = pedidosRepository.getById(_id.toString()).bind()
-    val usuario = userClient.getUsuario(pedidoToUpdate.usuario.id).mapToApiError().bind()
+    val usuario = userClient.getUsuario(token, pedidoToUpdate.usuario.id).mapToApiError().bind()
 
     pedidoToUpdate.copy(
         usuario = usuario,
@@ -196,6 +205,9 @@ suspend fun ApplicationCall.handleError(error: DomainError) = when (error) {
 
     is ApiError -> respond(
         HttpStatusCode.FailedDependency,
-        buildErrorDto(error.message, HttpStatusCode.FailedDependency.value)
+        buildErrorDto(
+            "Dependency failed with message : ${error.message.ifEmpty { "No message" }} and code ${error.code}",
+            HttpStatusCode.FailedDependency.value
+        )
     )
 }

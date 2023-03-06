@@ -74,6 +74,7 @@ data class UserDTOcreate(
  */
 @Serializable
 data class UserDTOresponse(
+    val id: String?,
     val username: String,
     val email: String,
     val role: User.UserRole,

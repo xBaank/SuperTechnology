@@ -33,16 +33,25 @@ class PedidosRepositoryTest {
 
 
     private val userId = UUID.randomUUID().toString()
-    private val usuario = UsuarioDto(userId, "Nombre", "correo@email.com", Role.USER)
+    private val usuario = UsuarioDto(
+        id = userId,
+        username = "Nombre",
+        email = "correo@email.com",
+        role = Role.USER,
+        addresses = emptySet(),
+        avatar = "",
+        createdAt = "1",
+        active = true
+    )
 
     private val producto = ProductoDto(
         UUID.randomUUID().toString(),
-        "NombreProd", Categoria.COMPONENTES, 5, "descrProd", 12.2, ""
+        "NombreProd", Categoria.MONTAJE, 5, "descrProd", 12.2, ""
     )
 
     private val tarea = Tarea(
         producto = producto,
-        empleado = UsuarioDto(UUID.randomUUID().toString(), "empleadoUsername", "emp@email.com", Role.USER),
+        empleado = usuario,
         createdAt = 12356L
     )
 
