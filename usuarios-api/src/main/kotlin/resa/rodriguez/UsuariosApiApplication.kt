@@ -26,6 +26,12 @@ class UsuariosApiApplication
 	}
 }
 
+        getUsersInit().forEach {
+            controller.createByAdminInitializer(it)
+        }
+    }
+}
+
 fun main(args: Array<String>) {
-	runApplication<UsuariosApiApplication>(*args)
+    runApplication<UsuariosApiApplication>(*args)
 }
