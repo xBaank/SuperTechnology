@@ -67,8 +67,6 @@ private fun Application.configureCORS() {
 
 fun Application.configureAuth() = install(Authentication) {
     val secret = this@configureAuth.environment.config.property("jwt.secret").getString()
-    val issuer = this@configureAuth.environment.config.property("jwt.issuer").getString()
-    val audience = this@configureAuth.environment.config.property("jwt.audience").getString()
 
     val issuerSigned = JWT
         .require(Algorithm.HMAC512(secret))
