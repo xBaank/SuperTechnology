@@ -4,11 +4,10 @@ import resa.rodriguez.dto.*
 import resa.rodriguez.exceptions.UserExceptionBadRequest
 
 /**
- * Clase encargada de validar los usuarios y sus campos
- *
+ * Functions that validate every kind of user DTO along with their fields.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
-
-
 fun UserDTOcreate.validate(): UserDTOcreate {
     if (this.username.isBlank())
         throw UserExceptionBadRequest("Username cannot be blank.")

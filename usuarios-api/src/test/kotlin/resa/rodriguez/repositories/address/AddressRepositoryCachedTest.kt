@@ -243,35 +243,4 @@ internal class AddressRepositoryCachedTest {
 
         coVerify { uRepo.findById(allAny()) }
     }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun update() = runTest {
-        coEvery { repo.findById(any()) } returns address
-        coEvery { repo.save(any()) } returns address
-
-        val result = repository.update(address.id!!, address.address)
-
-        assertAll(
-            { Assertions.assertEquals(address.id, result?.id) },
-            { Assertions.assertEquals(address.address, result?.address) },
-        )
-
-        coVerify { repo.findById(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun updateNF() = runTest {
-        coEvery { repo.findById(any()) } returns null
-        coEvery { repo.save(any()) } returns address
-
-        val result = repository.update(address.id!!, address.address)
-
-        assertAll(
-            { Assertions.assertNull(result) }
-        )
-
-        coVerify { repo.findById(any()) }
-    }
 }

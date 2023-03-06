@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
+import resa.rodriguez.exceptions.StorageExceptionNotFound
 import resa.rodriguez.exceptions.StorageException
 import resa.rodriguez.exceptions.StorageExceptionBadRequest
 import resa.rodriguez.services.storage.IStorageService
@@ -24,19 +25,36 @@ import java.time.LocalDateTime
  *
  * @property storageService
  */
+/**
+ * Controller that will manage every endpoint related to the storage system
+ * by calling the storage service.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ * @property storageService
+ */
 @RestController
 @RequestMapping("${APIConfig.API_PATH}/storage")
 class StorageController
 @Autowired constructor(
     private val storageService: IStorageService
 ) {
-
-    @Operation(summary = "Serve File", description = "Metodo que devuelve el recurso cuyo nombre fue pasado por parametro.", tags = ["STORAGE"])
-    @Parameter(name = "Filename", description = "Nombre del archivo a buscar.", required = true)
-    @Parameter(name = "Request", description = "Peticion http.", required = true)
-    @ApiResponse(responseCode = "200", description = "Response Entity con el archivo como cuerpo y un content type con el tipo de recurso que es.")
-    @ApiResponse(responseCode = "400", description = "Cuando no puede resolver el tipo de archivo que es.")
-    @ApiResponse(responseCode = "404", description = "Cuando no encuentra el archivo o no lo puede leer.")
+    /**
+     * Endpoint for finding a resource with the given filename.
+     * It will return a response entity with a resource whose name corresponds to the filename parameter.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param filename Filename to be searched.
+     * @param request Http request.
+     * @return Response Entity with a resource whose name corresponds to the filename parameter.
+     * @throws StorageExceptionBadRequest When the type of file cannot be determined.
+     * @throws StorageExceptionNotFound When a file is not found or cannot be read.
+     */
+    @Operation(summary = "Serve File", description = "Endpoint for finding a resource with the given filename.", tags = ["STORAGE"])
+    @Parameter(name = "Filename", description = "Filename to be searched.", required = true)
+    @Parameter(name = "Request", description = "Http request.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity with a resource whose name corresponds to the filename parameter.")
+    @ApiResponse(responseCode = "400", description = "When the type of file cannot be determined.")
+    @ApiResponse(responseCode = "404", description = "When a file is not found or cannot be read.")
     @GetMapping(value = ["{filename:.+}"])
     @ResponseBody
     fun serveFile(@PathVariable filename: String?, request: HttpServletRequest): ResponseEntity<Resource> = runBlocking {
@@ -51,10 +69,21 @@ class StorageController
         ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(file)
     }
 
-    @Operation(summary = "Upload File", description = "Metodo que guarda el recurso cuyo nombre fue pasado por parametro y devuelve un mapa con sus caracteristicas.", tags = ["STORAGE"])
-    @Parameter(name = "File", description = "Archivo multiparte a guardar.", required = true)
-    @ApiResponse(responseCode = "201", description = "Response Entity con la url del recurso guardado, su nombre y su fecha de creacion.")
-    @ApiResponse(responseCode = "400", description = "Cuando no puede guardar el archivo.")
+    /**
+     * Endpoint for uploading a multipart file.
+     * It will return a response entity with a map of string to string with
+     * the url, name and creation date of the saved file.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param file Multipart file to be saved.
+     * @return Response Entity with a map of string to string with
+     * the url, name and creation date of the saved file.
+     * @throws StorageExceptionBadRequest When the file could not be saved.
+     */
+    @Operation(summary = "Upload File", description = "Endpoint for uploading a multipart file.", tags = ["STORAGE"])
+    @Parameter(name = "File", description = "Multipart file to be saved.", required = true)
+    @ApiResponse(responseCode = "201", description = "Response Entity with a map of string to string with the url, name and creation date of the saved file.")
+    @ApiResponse(responseCode = "400", description = "When the file could not be saved.")
     @PostMapping(value = [""], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadFile(@RequestPart("file") file: MultipartFile): ResponseEntity<Map<String, String>> = runBlocking {
         try {
@@ -70,11 +99,21 @@ class StorageController
         }
     }
 
-    @Operation(summary = "Delete File", description = "Metodo que borra un recurso cuyo nombre fue pasado por parametro y devuelve el recurso borrado.", tags = ["STORAGE"])
-    @Parameter(name = "Filename", description = "Nombre del archivo a buscar.", required = false)
-    @Parameter(name = "Request", description = "Peticion http.", required = true)
-    @ApiResponse(responseCode = "200", description = "Response Entity con el recurso borrado.")
-    @ApiResponse(responseCode = "400", description = "Cuando no puede borrar el archivo.")
+    /**
+     * Endpoint for deleting a resource whose name matches the one given.
+     * It will return a response entity with the deleted resource.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param filename Filename of the file to be deleted.
+     * @param request Http request.
+     * @return Response Entity with the deleted resource.
+     * @throws StorageExceptionBadRequest When the file could not be deleted.
+     */
+    @Operation(summary = "Delete File", description = "Endpoint for deleting a resource whose name matches the one given.", tags = ["STORAGE"])
+    @Parameter(name = "Filename", description = "Filename of the file to be deleted.", required = false)
+    @Parameter(name = "Request", description = "Http request.", required = true)
+    @ApiResponse(responseCode = "200", description = "Response Entity with the deleted resource.")
+    @ApiResponse(responseCode = "400", description = "When the file could not be deleted.")
     @DeleteMapping(value = ["{filename:.+}"])
     @ResponseBody
     fun deleteFile(@PathVariable filename: String?, request: HttpServletRequest): ResponseEntity<Resource> = runBlocking {

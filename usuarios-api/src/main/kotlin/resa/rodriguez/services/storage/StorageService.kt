@@ -10,8 +10,10 @@ import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder
 import resa.rodriguez.controllers.StorageController
+import resa.rodriguez.exceptions.AddressExceptionNotFound
 import resa.rodriguez.exceptions.StorageExceptionBadRequest
 import resa.rodriguez.exceptions.StorageExceptionNotFound
+import resa.rodriguez.exceptions.UserExceptionNotFound
 import java.io.IOException
 import java.net.MalformedURLException
 import java.nio.file.Files
@@ -23,6 +25,12 @@ import java.util.stream.Stream
 
 private val log = KotlinLogging.logger {}
 
+/**
+ * Service that will execute the corresponding queries using the repositories and then return the correct DTOs.
+ * @param path Path to the storage folder
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ */
 @Service
 class StorageService(
     @Value("\${upload.root-location}") path: String,
@@ -33,6 +41,12 @@ class StorageService(
         initStorageDirectory()
     }
 
+    /**
+     * Function that will initialize the Storage Service by creating a folder on which to save the images,
+     * if it has not already been created.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     */
     final override fun initStorageDirectory() {
         if (!Files.exists(rootLocation)) {
             log.info { "Creando directorio de almacenamiento: $rootLocation" }
@@ -40,11 +54,19 @@ class StorageService(
         } else {
             log.debug { "El directorio existe; eliminacion de datos en proceso..." }
             deleteAll()
-            // Volvemos a crear el directorio una vez se han eliminado los datos (eso incluye al propio directorio)
+            // We create the directory again once the data has been deleted, including the directory itself.
             Files.createDirectory(rootLocation)
         }
     }
 
+    /**
+     * Function that will save a multipart file into the storage folder.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param file Multipart file to be saved.
+     * @return Name of the stored file.
+     * @throws StorageExceptionBadRequest when it cannot save the file.
+     */
     override fun store(file: MultipartFile): String {
         val fileName = StringUtils.cleanPath(file.originalFilename.toString())
         val extension = StringUtils.getFilenameExtension(fileName).toString()
@@ -68,6 +90,15 @@ class StorageService(
         }
     }
 
+    /**
+     * Function that will save a multipart file with the given filename into the storage folder.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param file Multipart file to be saved.
+     * @param fileName Name that the saved file will have.
+     * @return Name of the stored file.
+     * @throws StorageExceptionBadRequest when it cannot save the file.
+     */
     override suspend fun storeFileFromUser(file: MultipartFile, fileName: String): String {
         val extension = StringUtils.getFilenameExtension(file.originalFilename)
         val fileSaved = "$fileName.$extension"
@@ -91,6 +122,13 @@ class StorageService(
         }
     }
 
+    /**
+     * Function that will load every file from the storage folder.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @return Stream with the paths of every file from the storage folder.
+     * @throws StorageExceptionBadRequest when it cannot read a file.
+     */
     override fun loadAll(): Stream<Path> {
         return try {
             Files.walk(rootLocation, 1)
@@ -101,10 +139,25 @@ class StorageService(
         }
     }
 
+    /**
+     * Function that will get the path of a given filename.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param fileName Name of the file to be searched.
+     * @return Path of the searched file.
+     */
     override fun load(fileName: String): Path {
         return rootLocation.resolve(fileName)
     }
 
+    /**
+     * Function that will get the resource of a given filename.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param fileName Name of the file to be searched.
+     * @return Resource of the searched file.
+     * @throws StorageExceptionNotFound when it cannot find or read the file.
+     */
     override fun loadAsResource(fileName: String): Resource {
         return try {
             val file = load(fileName)
@@ -116,6 +169,13 @@ class StorageService(
         }
     }
 
+    /**
+     * Function that will delete a file with the given filename from the storage folder.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param fileName The name of the file to be deleted.
+     * @throws StorageExceptionBadRequest when it cannot delete the file.
+     */
     override fun delete(fileName: String) {
         val name: String = StringUtils.getFilename(fileName).toString()
         try {
@@ -126,10 +186,21 @@ class StorageService(
         }
     }
 
+    /**
+     * Function that will delete every file in the storage folder.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     */
     override fun deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile())
     }
 
+    /**
+     * Function that will get the url from a given filename in the storage folder.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param fileName The name of the file to be searched.
+     */
     override fun getUrl(fileName: String): String {
         return MvcUriComponentsBuilder
             .fromMethodName(StorageController::class.java, "serveFile", fileName, null)

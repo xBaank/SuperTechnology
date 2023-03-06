@@ -6,12 +6,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 
 /**
- * Clase de configuracion para la encriptacion de claves de usuario
- *
+ * Configuration class for encrypting and decrypting passwords with Bcrypt.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Configuration
 class EncoderConfig {
-    // BCrypt de Spring
+    // Spring's Bcrypt.
     @Bean
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder(12)

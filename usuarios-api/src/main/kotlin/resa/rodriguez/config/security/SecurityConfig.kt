@@ -17,10 +17,11 @@ import resa.rodriguez.config.security.jwt.JwtTokensUtils
 import resa.rodriguez.services.UserService
 
 /**
- * Clase de configuracion de Spring Security
- *
+ * Configuration class for Spring Security.
  * @property service
  * @property jwtTokensUtils
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Configuration
 @EnableWebSecurity
@@ -50,29 +51,29 @@ class SecurityConfig
             .exceptionHandling()
             .and()
 
-            // Para token JWT
+            // For the JWT token.
             .authenticationManager(authenticationManager)
 
-            // No usamos estados de sesion
+            // We don't use session states, therefore an Stateless policy.
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
             .and()
-            // Aceptamos request del tipo Http
+            // We accept Http requests
             .authorizeHttpRequests()
 
-            // Spring desplaza a esta ruta todos los errores y excepciones, asi podemos mostrarlas en vez de un Forbidden
+            // This allows us to show the errors, instead of getting a code FORBIDDEN.
             .requestMatchers("/error/**").permitAll()
 
-            // Permitimos el acceso de swagger
+            // We allow swagger.
             .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
-            // Abrimos el acceso a los end points, luego se limitaran segun el rol/acceso
+            // Now we open the /usuarios/** endpoint.
             .requestMatchers("/usuarios/**").permitAll()
 
-            // Permitimos el acceso sin autenticacion ni verificacion a las siguientes rutas
+            // And we allow the following endpoints without verification nor authentication.
             .requestMatchers("/usuarios", "/usuarios/", "/usuarios/login", "/usuarios/register").permitAll()
 
-            // Para acceder al /me se necesitara estar autenticado
+            // In order to access /me it will be necessary to be authenticated.
             .requestMatchers("/usuarios/me", "/usuarios/me/address", "/usuarios/me/avatar").authenticated()
 
             .requestMatchers(
@@ -80,7 +81,7 @@ class SecurityConfig
                 "/usuarios/list/{active}", "/usuarios/username/{username}",
                 "/usuarios/id/{userId}", "/usuarios/email/{userEmail}",
                 "/usuarios/phone/{userPhone}", "/usuarios/activity/{email}",
-                "/usuarios/list/address", "/list/address/paging",
+                "/usuarios/list/address", "/usuarios/list/address/paging",
                 "/usuarios/list/address/{userId}",
                 "/usuarios/address/{id}", "/usuarios/address"
             ).hasAnyRole("ADMIN", "SUPER_ADMIN")
@@ -93,13 +94,15 @@ class SecurityConfig
                 HttpMethod.DELETE, "/usuarios/address"
             ).hasRole("SUPER_ADMIN")
 
-            // El resto, se necesitara autenticacion estandar
+            // Any other request will need standard authentication.
             .anyRequest().authenticated()
 
             .and()
 
-            .addFilter(JwtAuthenticationFilter(jwtTokensUtils, authenticationManager)) // Filtro de Autenticacion
-            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, service, authenticationManager)) // Filtro de Autorizacion
+            // We add our authentication filter.
+            .addFilter(JwtAuthenticationFilter(jwtTokensUtils, authenticationManager))
+            // And lastly, our authorization filter.
+            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, service, authenticationManager))
 
         return http.build()
     }

@@ -6,11 +6,12 @@ import org.springframework.data.relational.core.mapping.Table
 import java.util.*
 
 /**
- * Modelo para direcciones
- *
- * @property id Identificador principal, UUID
- * @property userId Identificador del usuario asociado, UUID
- * @property address Nombre de la direccion, String
+ * Model for addresses.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ * @property id Main identifier, UUID.
+ * @property userId Associated user's id, UUID.
+ * @property address Address name, String.
  */
 @Table(name = "addresses")
 data class Address(

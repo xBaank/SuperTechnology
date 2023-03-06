@@ -4,8 +4,9 @@ import resa.rodriguez.dto.UserDTOcreate
 import resa.rodriguez.models.User
 
 /**
- * Datos iniciales que se cargaran la primera vez que se lance el microservicio
- *
+ * Initial data that will be loaded when launching this microservice.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 fun getUsersInit() = listOf(
     UserDTOcreate(

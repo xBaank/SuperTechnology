@@ -6,23 +6,36 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import resa.rodriguez.exceptions.AddressExceptionNotFound
 import java.time.LocalDate
 
+/**
+ * Class for serializing LocalDate objects.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ */
 object LocalDateSerializer : KSerializer<LocalDate> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDate", PrimitiveKind.STRING)
 
     /**
-     * Deserializa el LocalDate: El decoder pasa la cadena serializada a su representacion string y
-     * esta la pasamos como parametro al metodo parse de la clase LocalDate,
-     * de tal manera que obtenemos el LocalDate.
+     * Function for deserializing a LocalDate.
+     * The decoder turns the serialized string into a String object
+     * and then said String is parsed into a LocalDate object.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param decoder Decoder containing the serialized localdate.
+     * @return The deserialized LocalDate object.
      */
     override fun deserialize(decoder: Decoder): LocalDate {
         return LocalDate.parse(decoder.decodeString())
     }
 
     /**
-     * Pasamos el LocalDate en forma de String al encoder (mediante un toString)
-     * y este mediante el metodo encodeString lo serializa.
+     * Function for serializing a LocalDate object.
+     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+     * @param encoder Encoder for serializing the LocalDate object.
+     * @param value LocalDate object to be serialized.
      */
     override fun serialize(encoder: Encoder, value: LocalDate) {
         encoder.encodeString(value.toString())

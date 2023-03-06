@@ -3,7 +3,9 @@ package resa.rodriguez.config
 import org.springframework.context.annotation.Configuration
 
 /**
- * Clase de configuracion que se encarga de configurar la ruta principal de la API, ademas de marcar la version
+ * Configuration class for specifying the API path, version and default values for pagination.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Configuration
 class APIConfig {
