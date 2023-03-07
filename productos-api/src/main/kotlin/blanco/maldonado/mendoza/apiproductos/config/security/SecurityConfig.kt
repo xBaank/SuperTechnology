@@ -1,7 +1,9 @@
 package blanco.maldonado.mendoza.apiproductos.config.security
+
 /**
  * @since 1/3/2023
- * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 import blanco.maldonado.mendoza.apiproductos.config.security.jwt.JwtAuthorizationFilter
 import blanco.maldonado.mendoza.apiproductos.config.security.jwt.JwtTokensUtils
@@ -35,10 +37,10 @@ class SecurityConfig
 ) {
 
     /**
-     * Auth manager
+     * Auth manager: ensures that only authorized users have access to the information and features they need to do their jobs.
      *
      * @param http
-     * @return
+     * @return authenticationManagerBuilder
      */
     @Bean
     fun authManager(http: HttpSecurity): AuthenticationManager {
@@ -50,7 +52,7 @@ class SecurityConfig
     }
 
     /**
-     * Filter chain
+     * Filter chain: Return the filter chain of security
      *
      * @param http
      * @return

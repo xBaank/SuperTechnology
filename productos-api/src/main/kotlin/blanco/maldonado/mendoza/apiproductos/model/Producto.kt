@@ -2,7 +2,8 @@ package blanco.maldonado.mendoza.apiproductos.model
 
 /**
  * @since 16/02/2023
- * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column

@@ -1,7 +1,9 @@
 package blanco.maldonado.mendoza.apiproductos.config.security.jwt
+
 /**
  * @since 28/02/2023
- * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -10,9 +12,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 /**
- * Jwt tokens utils
- *
- * @constructor Create empty Jwt tokens utils
+ * Jwt tokens utils: Class that generate the token with the secret passwords using HMAC512 encryption.
  */
 @Component
 class JwtTokensUtils {
@@ -20,7 +20,7 @@ class JwtTokensUtils {
     private val algorithmSecret: String = "Zanahoria_Turbopropulsada9"
 
     /**
-     * Decode
+     * Decode: Decode the password
      *
      * @param token
      * @return
@@ -36,7 +36,9 @@ class JwtTokensUtils {
         }
     }
 
-    // Nos permite obtener los campos importantes de manera sencilla
+    /**
+     * Companion: allow us to obtain the fields in a simple way.
+     */
     companion object {
 
         const val TOKEN_HEADER = "Authorization"

@@ -1,3 +1,8 @@
+/**
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ * @since 13/2/2023
+ */
 package blanco.maldonado.mendoza.apiproductos.validator
 
 import blanco.maldonado.mendoza.apiproductos.dto.ProductoCreateDto

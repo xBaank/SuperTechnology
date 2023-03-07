@@ -1,7 +1,8 @@
 package blanco.maldonado.mendoza.apiproductos.config.security.jwt
 /**
  * @since 1/3/2023
- * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 import blanco.maldonado.mendoza.apiproductos.service.UserService
 import jakarta.servlet.FilterChain
@@ -54,6 +55,12 @@ class JwtAuthorizationFilter(
         chain.doFilter(req, res)
     }
 
+    /**
+     * Get authentication
+     *
+     * @param token
+     * @return authenticating token
+     */
     private fun getAuthentication(token: String): UsernamePasswordAuthenticationToken? = runBlocking {
         log.info { "Obteniendo autenticación" }
         val user = service.loadUserByUsername(token) ?: return@runBlocking null
