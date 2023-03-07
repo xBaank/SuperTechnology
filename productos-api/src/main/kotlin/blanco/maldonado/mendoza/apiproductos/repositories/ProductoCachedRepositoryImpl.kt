@@ -122,6 +122,9 @@ class ProductoCachedRepositoryImpl
                 precio = producto.precio,
                 activo = producto.activo
             )
+            if (!updated.activo) {
+                updated.deleteAt = LocalDateTime.now()
+            }
             return productosRepository.save(updated)
         }
         return null

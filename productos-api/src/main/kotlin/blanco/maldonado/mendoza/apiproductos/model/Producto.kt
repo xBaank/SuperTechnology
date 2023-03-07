@@ -25,7 +25,7 @@ data class Producto(
     @Column("updated_at")
     val updateAt: LocalDateTime? = null,
     @Column("deleted_at")
-    val deleteAt: LocalDateTime? = null,
+    var deleteAt: LocalDateTime? = null,
     val precio: Double,
     val activo: Boolean
 ) {
