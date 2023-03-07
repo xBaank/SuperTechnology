@@ -7,7 +7,7 @@ import java.util.*
 
 /**
  * Model for addresses.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property id Main identifier, UUID.
  * @property userId Associated user's id, UUID.
