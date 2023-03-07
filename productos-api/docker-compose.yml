@@ -17,7 +17,8 @@ services:
     build: .
     container_name: "supertechnology-productos"
     environment:
-      - MARIADB_CONNECTION:r2dbc:mariadb://mariadb:mariadb1234@mariadbProductos/productos
+      - MARIADB_CONNECTION=r2dbc:mariadb://mariadb:mariadb1234@mariadbProductos/productos
+    restart: always
     ports:
       - '6963:6963'
     depends_on:
