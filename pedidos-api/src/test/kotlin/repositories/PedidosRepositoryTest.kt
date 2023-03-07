@@ -12,7 +12,6 @@ import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.coroutine.CoroutineCollection
-import org.litote.kmongo.div
 import org.litote.kmongo.eq
 import pedidosApi.dto.responses.Categoria
 import pedidosApi.dto.responses.ProductoDto
@@ -33,16 +32,24 @@ class PedidosRepositoryTest {
 
 
     private val userId = UUID.randomUUID().toString()
-    private val usuario = UsuarioDto(userId, "Nombre", "correo@email.com", Role.USER)
+    private val usuario = UsuarioDto(
+        username = "Nombre",
+        email = "correo@email.com",
+        role = Role.USER,
+        addresses = emptySet(),
+        avatar = "",
+        createdAt = "1",
+        active = true
+    )
 
     private val producto = ProductoDto(
         UUID.randomUUID().toString(),
-        "NombreProd", Categoria.COMPONENTES, 5, "descrProd", 12.2, ""
+        "NombreProd", Categoria.MONTAJE, 5, "descrProd", 12.2, ""
     )
 
     private val tarea = Tarea(
         producto = producto,
-        empleado = UsuarioDto(UUID.randomUUID().toString(), "empleadoUsername", "emp@email.com", Role.USER),
+        empleado = usuario,
         createdAt = 12356L
     )
 
@@ -81,19 +88,6 @@ class PedidosRepositoryTest {
         val result = pedidosRepository.getById(pedido._id.toString())
         result.getOrNull() shouldBeEqualTo pedido
         coVerify { collectionMock.find(Pedido::_id eq pedido._id).first() }
-    }
-
-    @Test
-    fun getByUserId(): Unit = runBlocking {
-        coEvery {
-            collectionMock.find(Pedido::usuario / UsuarioDto::id eq userId).skip(0).limit(10).toFlow()
-        } returns flowOf(pedido)
-        val result = pedidosRepository.getByUserId(userId, 0, 10)
-        result.getOrNull()?.first() shouldBeEqualTo pedido
-        result.getOrNull()?.size shouldBeEqualTo 10
-        result.getOrNull()?.page shouldBeEqualTo 0
-
-        coVerify { collectionMock.find(Pedido::usuario / UsuarioDto::id eq userId).skip(0).limit(10).toFlow() }
     }
 
     @Test

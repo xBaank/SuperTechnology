@@ -10,8 +10,3 @@ data class UpdatePedidoDto(
     val estado: EstadoPedido? = null,
 )
 
-@Serializable
-data class UpdateTareaDto(
-    val producto: String? = null,
-    val empleado: String? = null,
-)
