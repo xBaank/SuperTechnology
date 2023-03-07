@@ -32,7 +32,7 @@ fun Application.module() {
 
 private fun Application.configureKoin() {
     install(Koin) {
-        modules(mainModule)
+        modules(module ?: mainModule)
     }
 }
 

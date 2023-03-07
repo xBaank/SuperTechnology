@@ -1,7 +1,7 @@
 package resa.rodriguez.config.security.jwt
 
-import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -37,7 +37,8 @@ class JwtTokensUtils {
 
         return try {
             verifier.verify(token)
-        } catch (_: Exception) {
+        }
+        catch (_: Exception) {
             null
         }
     }

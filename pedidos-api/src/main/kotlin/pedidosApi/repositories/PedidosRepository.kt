@@ -35,10 +35,11 @@ class PedidosRepository(private val collection: CoroutineCollection<Pedido>) {
             ?: PedidoError.PedidoNotFound("Pedido with with id : '${id}' not found").left()
     }
 
-    suspend fun getByUserId(id: String, page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> = either {
+    suspend fun getByUsername(username: String, page: Int, size: Int): Either<PedidoError, PagedFlow<Pedido>> = either {
         validatePage(page, size).bind()
 
-        val flow = collection.find(Pedido::usuario / UsuarioDto::id eq id).skip(page * size).limit(size).toFlow()
+        val flow =
+            collection.find(Pedido::usuario / UsuarioDto::username eq username).skip(page * size).limit(size).toFlow()
         PagedFlow(page, size, flow)
     }
 

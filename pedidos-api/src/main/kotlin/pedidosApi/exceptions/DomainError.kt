@@ -10,4 +10,4 @@ sealed class PedidoError : DomainError() {
     class MissingPedidoId(override val message: String) : PedidoError()
 }
 
-class ApiError(override val message: String) : DomainError()
+class ApiError(override val message: String, val code: Int?) : DomainError()

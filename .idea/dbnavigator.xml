@@ -13,18 +13,7 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="d6a04f6e-5141-46cb-b2df-933e5ee376ff">
-      <console name="Proyecto Grupal" type="STANDARD" schema="usuarios" session="Main"><![CDATA[select
-    u.active,
-    u.avatar,
-    u.created_at,
-    u.email,
-    u."id",
-    u."password",
-    u.phone,
-    u."role",
-    u.username
-from
-    users u;]]></console>
+      <console name="Proyecto Grupal" type="STANDARD" schema="usuarios" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">

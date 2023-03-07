@@ -9,8 +9,8 @@ import pedidosApi.exceptions.ApiError
 
 fun <T> Either<CallError, T>.mapToApiError(): Either<ApiError, T> = mapLeft {
     when (it) {
-        is HttpError -> ApiError(it.message)
-        is IOError -> ApiError(it.cause.message ?: "Unknown error")
-        is UnexpectedCallError -> ApiError(it.cause.message ?: "Unknown error")
+        is HttpError -> ApiError(it.message, it.code)
+        is IOError -> ApiError(it.cause.message ?: "Unknown error", null)
+        is UnexpectedCallError -> ApiError(it.cause.message ?: "Unknown error", null)
     }
 }
