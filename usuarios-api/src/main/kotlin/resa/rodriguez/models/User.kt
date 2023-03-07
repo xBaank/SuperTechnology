@@ -1,14 +1,14 @@
 package resa.rodriguez.models
 
-import jakarta.validation.constraints.NotEmpty
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import resa.rodriguez.models.User.UserRole
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 /**
  * Model for users.
@@ -29,21 +29,17 @@ data class User(
     @Id
     val id: UUID? = null,
 
-    @NotEmpty(message = "El usuario debe tener un username.")
     @get:JvmName("userName")
     val username: String,
 
-    @NotEmpty(message = "El usuario debe tener un email.")
     val email: String,
 
-    @NotEmpty(message = "El usuario debe tener una password.")
     @get:JvmName("userPassword")
     val password: String,
 
-    @NotEmpty(message = "El usuario debe tener un numero de telefono.")
     val phone: String,
     val avatar: String = "",
-    @NotEmpty(message = "El usuario debe tener un rol.")
+
     val role: UserRole,
     @Column("created_at")
     val createdAt: LocalDate = LocalDate.now(),
