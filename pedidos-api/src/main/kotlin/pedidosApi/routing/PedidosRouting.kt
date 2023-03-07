@@ -168,10 +168,12 @@ private suspend fun updatePedido(
     val pedidoToUpdate = pedidosRepository.getById(_id.toString()).bind()
     //val usuario = userClient.getUsuario(token, pedidoToUpdate.usuario.id).mapToApiError().bind()
 
-    pedidoToUpdate.copy(
+    val updated = pedidoToUpdate.copy(
         iva = updatePedidoDto?.iva ?: pedidoToUpdate.iva,
         estado = updatePedidoDto?.estado ?: pedidoToUpdate.estado
     )
+    pedidosRepository.save(updated).bind()
+    updated
 }
 
 suspend fun ApplicationCall.handleError(error: DomainError) = when (error) {

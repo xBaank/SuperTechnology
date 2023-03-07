@@ -6,12 +6,12 @@ import pedidosApi.dto.responses.ProductoDto
 import retrofit2.http.*
 
 interface ProductosClient {
-    @GET("/api/productos/{id}")
+    @GET("/api/products/admin/{id}")
     suspend fun getProducto(
         @Header("Authorization") token: String,
         @Path("id") id: String
     ): Either<CallError, ProductoDto>
 
-    @GET("/api/productos")
+    @GET("/api/products")
     suspend fun getProductos(@Header("Authorization") token: String): Either<CallError, List<ProductoDto>>
 }
