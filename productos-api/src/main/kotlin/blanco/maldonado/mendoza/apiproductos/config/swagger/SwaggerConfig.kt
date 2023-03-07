@@ -27,7 +27,7 @@ class SwaggerConfig {
                     .description("API de productos para el curso de dam en el que se desarrolla una API REST con Spring Bot del curso Desarrollo de un API REST con Spring Boot")
                     .contact(
                         Contact()
-                            .name("Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza")
+                            .name("Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza, Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez")
                             .url("https://github.com/xBaank/SuperTechnology")
                     )
 
