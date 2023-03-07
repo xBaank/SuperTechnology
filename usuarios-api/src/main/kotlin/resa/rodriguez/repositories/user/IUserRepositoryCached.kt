@@ -8,6 +8,11 @@ import resa.rodriguez.dto.UserDTOresponse
 import resa.rodriguez.models.User
 import java.util.UUID
 
+/**
+ * Interface that the Cached Repository will implement.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ */
 @Repository
 interface IUserRepositoryCached {
     suspend fun findAll(): Flow<User>
@@ -19,7 +24,4 @@ interface IUserRepositoryCached {
     suspend fun findByPhone(phone: String): User?
     suspend fun save(user: User): User
     suspend fun deleteById(id: UUID): User?
-    suspend fun setActivity(id: UUID, active: Boolean): User?
-    suspend fun update(id: UUID, user: User): User?
-    suspend fun updateCapado(id: UUID, user: User): User?
 }

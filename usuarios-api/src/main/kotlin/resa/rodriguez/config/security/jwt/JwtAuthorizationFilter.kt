@@ -17,13 +17,11 @@ import java.io.IOException
 private val log = KotlinLogging.logger {}
 
 /**
- * JWT para Spring Secyrity Config: Filtro de autorizacion
- *
+ * Class for creating an authorization filter for Spring Security.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property jwtTokensUtils
  * @property service
- * @constructor
- * Se implementa AuthenticationManager
- *
  * @param authManager
  */
 class JwtAuthorizationFilter(

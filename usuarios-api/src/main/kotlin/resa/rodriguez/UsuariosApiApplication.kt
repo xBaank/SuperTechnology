@@ -18,8 +18,7 @@ class UsuariosApiApplication
 	private val controller: UserController
 ) : CommandLineRunner {
 	override fun run(vararg args: String?): Unit = runBlocking {
-		// Datos iniciales
-
+		// Initial data
 		getUsersInit().forEach {
 			controller.createByAdminInitializer(it)
 		}

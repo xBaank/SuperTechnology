@@ -9,8 +9,9 @@ import resa.rodriguez.models.User
 import java.util.*
 
 /**
- * Contiene los métodos necesarios para la creación de tokens, comprobación y decodificación para verificarlos
- *
+ * Component class for creating, verifying and decoding tokens.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Component
 class JwtTokensUtils {
@@ -26,7 +27,7 @@ class JwtTokensUtils {
             .withClaim("email", user.email)
             .withClaim("active", user.active)
             .withClaim("role", user.role.name)
-            .withExpiresAt(Date(System.currentTimeMillis() + (24 * 60 * 60 * 1_000)))
+            .withExpiresAt(Date(System.currentTimeMillis() + (24 * 60 * 60 * 1_000) * 2)) // 2 dias
             .sign(Algorithm.HMAC512(algorithmSecret))
     }
 
@@ -42,11 +43,10 @@ class JwtTokensUtils {
         }
     }
 
-    // Nos permite obtener los campos importantes de manera sencilla
+    // Allows us to obtain the important fields in an easy way.
     companion object {
-
         const val TOKEN_HEADER = "Authorization"
-        const val TOKEN_PREFIX = "Bearer " // Importante
+        const val TOKEN_PREFIX = "Bearer "
         const val TOKEN_TYPE = "JWT"
     }
 }

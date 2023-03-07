@@ -9,9 +9,12 @@ import org.springframework.r2dbc.connection.init.ConnectionFactoryInitializer
 import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator
 
 /**
- * Clase que se encarga de conectar con la base de datos y cargar el schema generado en resources.
- * Esta accion es necesaria por r2dbc.
- * Cuenta con las anotaciones necesarias para que Spring lo detecte.
+ * Configuration class for connecting with the database and
+ * loading the schema generated in the resources folder.
+ * This action is necessary for R2DBC.
+ * Uses the necessary annotations so that Spring can detect it.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Configuration
 class LoadSchema {

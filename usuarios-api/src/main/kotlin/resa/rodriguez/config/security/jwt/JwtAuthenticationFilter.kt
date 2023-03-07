@@ -16,8 +16,9 @@ import resa.rodriguez.models.User
 import java.util.*
 
 /**
- * JWT para Spring Secyrity Config: Filtro de autenticacion
- *
+ * Class for creating an authentication filter for Spring Security.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property jwtTokenUtil
  * @property authenticationManager
  */

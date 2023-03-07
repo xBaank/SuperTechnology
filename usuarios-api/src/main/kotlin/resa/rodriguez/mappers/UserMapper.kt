@@ -12,11 +12,10 @@ import java.time.LocalDate
 import java.util.*
 
 /**
- * Clase encargada del paso de dto a modelo y al contrario, tanto de user como de address
- *
- *
+ * Functions that will map a DTO to their respective model and vice versa.
+ * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
-
 fun User.toDTO(addresses: Set<Address>): UserDTOresponse {
     val addressesString = mutableSetOf<String>()
     addresses.forEach { addressesString.add(it.address) }
@@ -76,19 +75,6 @@ fun UserDTOcreate.fromDTOtoUser() = User(
 )
 
 fun UserDTOcreate.fromDTOtoAddresses(id: UUID): Set<Address> {
-    val result = mutableSetOf<Address>()
-    addresses.forEach {
-        result.add(
-            Address(
-                userId = id,
-                address = it
-            )
-        )
-    }
-    return result.toSet()
-}
-
-fun UserDTOUpdated.fromDTOtoAddresses(id: UUID): Set<Address> {
     val result = mutableSetOf<Address>()
     addresses.forEach {
         result.add(
