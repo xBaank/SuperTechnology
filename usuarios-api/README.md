@@ -90,8 +90,8 @@ Hemos aplicado [Spring Security v6](https://docs.spring.io/spring-security/refer
 la seguridad e integridad de la API y de los usuarios; la conexión es segura (SSL) y hemos usado **JWT Auth0** para
 la generación de tokens personales.
 
-Las contraseñas de los usuarios se encuentran encriptadas con [Bcrypt](https://en.wikipedia.org/wiki/Bcrypt) con una 
-implementación propia de **Spring Security** 
+Las contraseñas de los usuarios se encuentran encriptadas con [Bcrypt](https://en.wikipedia.org/wiki/Bcrypt) con una
+implementación propia de **Spring Security**
 
 # Endpoints
 
@@ -132,10 +132,18 @@ La ruta del micro servicio será: https://localhost:6969/usuarios
 | DELETE | /me/address?name=X                  | JWT  | Eliminación de una dirección propia por nombre.                             | 200         | String         |
 | DELETE | /address?name=X&email=Y             | JWT  | Eliminación de una dirección de un usuario por nombre de dirección y email. | 200         | String         |
 
+### Almacenamiento
+
+| Método | Endpoint(/usuarios/storage) | Auth | Descripción                              | Status Code | Return Content |
+|--------|-----------------------------|------|------------------------------------------|-------------|----------------|
+| GET    | /filename:.+                | NO   | Obtener archivo especificado almacenado. | 200         | Resource       |
+| POST   | " "                         | JWT  | Subir archivo multiparte.                | 200         | JSON           |
+| DELETE | /filename:.+                | JWT  | Eliminar archivo especifo almacenado.    | 200         | Resource       |
+
 # Funcionamiento de la aplicación
 
-Haciendo uso de un cliente que permita recibir y enviar *request-response*, por ejemplo, 
-[Postman](https://www.postman.com/) o el plugin [Thunder Client](https://www.thunderclient.com/) 
+Haciendo uso de un cliente que permita recibir y enviar *request-response*, por ejemplo,
+[Postman](https://www.postman.com/) o el plugin [Thunder Client](https://www.thunderclient.com/)
 en [VSC](https://code.visualstudio.com/) se realizan las operaciones mostradas en sus respectivos *end points*.
 
 # Tests
@@ -146,7 +154,7 @@ Se han testeado los end points usando **Postman** "E2E"; se adjunta el *json* ex
 
 # Autores
 
-[Mario Resa](https://github.com/Mario999X), [Daniel Rodríguez](https://github.com/Idliketobealoli), 
+[Mario Resa](https://github.com/Mario999X), [Daniel Rodríguez](https://github.com/Idliketobealoli),
 [Sebastian Mendoza](https://github.com/SebsMendoza), [Alfredo Rafael Maldonado](https://github.com/reyalfre),
-[Azahara Blanco](https://github.com/Azaharabl), [Roberto Blázquez](https://github.com/xBaank), 
+[Azahara Blanco](https://github.com/Azaharabl), [Roberto Blázquez](https://github.com/xBaank),
 [Iván Azagra](https://github.com/IvanAzagraTroya).
