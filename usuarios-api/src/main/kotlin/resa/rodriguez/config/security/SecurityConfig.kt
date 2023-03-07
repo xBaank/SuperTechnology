@@ -20,7 +20,7 @@ import resa.rodriguez.services.UserService
  * Configuration class for Spring Security.
  * @property service
  * @property jwtTokensUtils
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Configuration
@@ -91,8 +91,14 @@ class SecurityConfig
             ).hasRole("SUPER_ADMIN")
             
             .requestMatchers(
-                HttpMethod.DELETE, "/usuarios/address"
+                HttpMethod.DELETE, "/usuarios/address", "/usuarios/storage/**"
             ).hasRole("SUPER_ADMIN")
+            .requestMatchers(
+                HttpMethod.POST, "/usuarios/storage"
+            ).hasAnyRole("ADMIN", "SUPER_ADMIN")
+            .requestMatchers(
+                HttpMethod.GET, "/usuarios/storage/**"
+            ).permitAll()
 
             // Any other request will need standard authentication.
             .anyRequest().authenticated()

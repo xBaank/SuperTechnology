@@ -20,7 +20,7 @@ import java.util.*
  * It has a cache.
  * @property aRepo Address repository
  * @property uRepo User repository
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Repository
@@ -31,7 +31,7 @@ class AddressRepositoryCached
 ) : IAddressRepositoryCached {
     /**
      * Function that will return a flow with every address present in the database.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @return Flow with every address in the database.
      */
@@ -41,7 +41,7 @@ class AddressRepositoryCached
 
     /**
      * Function that will return a flow of pages of address DTOs.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param page Page request.
      * @return A flow of pages containing address DTOs.
@@ -54,7 +54,7 @@ class AddressRepositoryCached
 
     /**
      * Function that will return a flow with every address from the specified user.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param id UUID from the user whose addresses we want to search.
      * @return Flow with every address from the specified user.
@@ -66,7 +66,7 @@ class AddressRepositoryCached
     /**
      * Function that will return an address whose id is the same as the one given,
      * or null if there is none.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param id UUID from the address we want to search.
      * @return Address with the specified id, or null if there is none.
@@ -78,7 +78,7 @@ class AddressRepositoryCached
 
     /**
      * Function that will return a flow of addresses whose names are the same as the one given.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param address Name of the address we want to search.
      * @return Flow of addresses with the specified name.
@@ -89,7 +89,7 @@ class AddressRepositoryCached
 
     /**
      * Function that will return an address after saving it into the database.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param address Address to be saved.
      * @return The saved address.
@@ -102,7 +102,7 @@ class AddressRepositoryCached
     /**
      * Function that will return an address after deleting it from the database,
      * or null if it could not find it first.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param id UUID of the address to be deleted.
      * @return The deleted address, or null if it was not found.
@@ -117,7 +117,7 @@ class AddressRepositoryCached
     /**
      * Function that will return a flow of addresses after deleting them from the database,
      * all of them belonging to the user whose ID is specified.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param id UUID of the user whose addresses will be deleted.
      * @return The deleted addresses.

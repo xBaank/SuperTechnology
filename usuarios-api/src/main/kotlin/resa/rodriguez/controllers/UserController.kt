@@ -44,7 +44,7 @@ private val log = KotlinLogging.logger {}
 /**
  * Controller that will manage every endpoint related to users
  * by calling the necessary services and utility classes.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property service
  * @property AddressRepositoryCached
@@ -64,7 +64,7 @@ class UserController
 ) {
     /**
      * Endpoint that will return a response entity with a welcome message.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @return Welcome message.
      */
@@ -79,7 +79,7 @@ class UserController
 
     /**
      * Endpoint that will return a response entity with a welcome message.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @return Welcome message.
      */
@@ -95,7 +95,7 @@ class UserController
     /**
      * Endpoint for registering.
      * It will return a response entity with the registered user's DTO and its token.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userDto Valid user DTO for registering.
      * @return Response Entity with the DTO for visualization from the registered user, along with its JWT token.
@@ -124,7 +124,7 @@ class UserController
     /**
      * Endpoint for creating.
      * It will return a response entity with the created user's DTO and its token.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userDTOcreate Valid DTO for creation.
      * @param user Token for authentication.
@@ -158,7 +158,7 @@ class UserController
     /**
      * Function for the initial data load.
      * It will return a response entity with the created user's DTO and its token.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userDTOcreate Valid DTO for creation.
      * @return Response Entity with the DTO for visualization from the created user, along with its JWT token.
@@ -178,7 +178,7 @@ class UserController
     /**
      * Endpoint for login.
      * It will return a response entity with the logged-in user's DTO and its token.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userDto Valid DTO for logging in.
      * @return Response Entity with the DTO for visualization from the logged-in user, along with its JWT token.
@@ -212,7 +212,7 @@ class UserController
     /**
      * Endpoint for finding all users.
      * It will return a response entity with a list of all users mapped to their corresponding DTOs.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user Token for authentication.
      * @return Response Entity with a list of all users mapped to their corresponding DTOs.
@@ -232,7 +232,7 @@ class UserController
     /**
      * Endpoint for finding all users in a paginated way.
      * It will return a response entity with a page containing users mapped to their corresponding DTOs.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user Token for authentication.
      * @param page Page number to be searched.
@@ -267,7 +267,7 @@ class UserController
      * Endpoint for finding all users that are currently in the specified activity.
      * It will return a response entity with a list containing users mapped to
      * their corresponding DTOs and filtered by their activity.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param active Activity for filtering.
      * @param user Token for authentication.
@@ -293,7 +293,7 @@ class UserController
     /**
      * Endpoint for finding a user whose username matches the one specified.
      * It will return a response entity with a user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param u Token for authentication.
      * @param username Username to be searched.
@@ -323,7 +323,7 @@ class UserController
     /**
      * Endpoint for finding a user whose id matches the one specified.
      * It will return a response entity with a user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param u Token for authentication.
      * @param userId UUID to be searched.
@@ -353,7 +353,7 @@ class UserController
     /**
      * Endpoint for finding a user whose email matches the one specified.
      * It will return a response entity with a user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param u Token for authentication.
      * @param userEmail Email to be searched.
@@ -383,7 +383,7 @@ class UserController
     /**
      * Endpoint for finding a user whose phone number matches the one specified.
      * It will return a response entity with a user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param u Token for authentication.
      * @param userPhone Phone number to be searched.
@@ -413,7 +413,7 @@ class UserController
     /**
      * Endpoint for updating your own password and/or list of addresses.
      * It will return a response entity with a user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user Token for authentication.
      * @param userDTOUpdated Valid DTO containing the new information.
@@ -442,7 +442,7 @@ class UserController
     /**
      * Endpoint for updating your own avatar.
      * It will return a response entity with a user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user Token for authentication.
      * @param file New avatar.
@@ -481,7 +481,7 @@ class UserController
     /**
      * Endpoint for switching a user's activity by their email address.
      * It will return a response entity with a user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param email Email to be searched.
      * @param user Token for authentication.
@@ -511,7 +511,7 @@ class UserController
     /**
      * Endpoint for updating a user's role by their email address.
      * It will return a response entity with a user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userDTORoleUpdated DTO with the user's email and the new role.
      * @param user Token for authentication.
@@ -543,7 +543,7 @@ class UserController
     /**
      * Endpoint for deleting a user by their email address.
      * It will return a response entity with the deleted user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param email Email to be searched.
      * @param user Token for authentication.
@@ -572,7 +572,7 @@ class UserController
     /**
      * Endpoint for finding oneself.
      * It will return a response entity with the user mapped to their corresponding DTO.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user Token for authentication.
      * @return Response Entity with the user mapped to their corresponding DTO.
@@ -592,7 +592,7 @@ class UserController
     /**
      * Endpoint for getting all addresses.
      * It will return a response entity with a list of all addresses.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user Token for authentication.
      * @return Response Entity with a list of all addresses.
@@ -612,7 +612,7 @@ class UserController
     /**
      * Endpoint for finding all addresses in a paginated way.
      * It will return a response entity with a page containing addresses.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user Token for authentication.
      * @param page Page number to be searched.
@@ -647,7 +647,7 @@ class UserController
      * Endpoint for finding all addresses from a particular user.
      * It will return a response entity with a string containing all addresses
      * from the user with the given id,and separated by commas.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userId UUID from the user whose addresses we want to find.
      * @param user Token for authentication.
@@ -674,7 +674,7 @@ class UserController
     /**
      * Endpoint for finding an address from a given id.
      * It will return a response entity with a string that is the name of the found address.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param id UUID to be searched.
      * @param user Token for authentication.
@@ -698,7 +698,7 @@ class UserController
     /**
      * Endpoint for finding an address from a given name.
      * It will return a response entity with a string that is the name of the found address.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param name Address to be searched.
      * @param user Token for authentication.
@@ -725,7 +725,7 @@ class UserController
     /**
      * Endpoint for deleting an address from a given name and from one's list of addresses.
      * It will return a response entity with a string that is the name of the found address.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param name Address to be searched.
      * @param user Token for authentication.
@@ -753,7 +753,7 @@ class UserController
     /**
      * Endpoint for deleting an address from a given name and from a particular user, found by their email.
      * It will return a response entity with a string that is the name of the found address.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param name Address to be searched.
      * @param name Email to be searched.

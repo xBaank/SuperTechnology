@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
  * Custom exception for when an error related to the storage system happens.
  * @property message Error message.
  * @property cause full exception trace.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 sealed class StorageException : RuntimeException {
@@ -21,7 +21,7 @@ sealed class StorageException : RuntimeException {
  * Used for bad requests.
  * @property message Error message.
  * @property cause full exception trace.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -36,7 +36,7 @@ class StorageExceptionBadRequest : StorageException {
  * Used for not founds.
  * @property message Error message.
  * @property cause full exception trace.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)

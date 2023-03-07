@@ -1,7 +1,7 @@
 package resa.rodriguez.config.security.jwt
 
-import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.JWT
 import com.auth0.jwt.interfaces.DecodedJWT
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -10,7 +10,7 @@ import java.util.*
 
 /**
  * Component class for creating, verifying and decoding tokens.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Component
@@ -37,8 +37,7 @@ class JwtTokensUtils {
 
         return try {
             verifier.verify(token)
-        }
-        catch (_: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
