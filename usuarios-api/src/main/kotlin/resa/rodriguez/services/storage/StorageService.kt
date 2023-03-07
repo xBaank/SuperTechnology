@@ -28,7 +28,7 @@ private val log = KotlinLogging.logger {}
 /**
  * Service that will execute the corresponding queries using the repositories and then return the correct DTOs.
  * @param path Path to the storage folder
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Service
@@ -44,7 +44,7 @@ class StorageService(
     /**
      * Function that will initialize the Storage Service by creating a folder on which to save the images,
      * if it has not already been created.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      */
     final override fun initStorageDirectory() {
@@ -61,7 +61,7 @@ class StorageService(
 
     /**
      * Function that will save a multipart file into the storage folder.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param file Multipart file to be saved.
      * @return Name of the stored file.
@@ -92,7 +92,7 @@ class StorageService(
 
     /**
      * Function that will save a multipart file with the given filename into the storage folder.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param file Multipart file to be saved.
      * @param fileName Name that the saved file will have.
@@ -124,7 +124,7 @@ class StorageService(
 
     /**
      * Function that will load every file from the storage folder.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @return Stream with the paths of every file from the storage folder.
      * @throws StorageExceptionBadRequest when it cannot read a file.
@@ -141,7 +141,7 @@ class StorageService(
 
     /**
      * Function that will get the path of a given filename.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param fileName Name of the file to be searched.
      * @return Path of the searched file.
@@ -152,7 +152,7 @@ class StorageService(
 
     /**
      * Function that will get the resource of a given filename.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param fileName Name of the file to be searched.
      * @return Resource of the searched file.
@@ -171,7 +171,7 @@ class StorageService(
 
     /**
      * Function that will delete a file with the given filename from the storage folder.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param fileName The name of the file to be deleted.
      * @throws StorageExceptionBadRequest when it cannot delete the file.
@@ -188,7 +188,7 @@ class StorageService(
 
     /**
      * Function that will delete every file in the storage folder.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      */
     override fun deleteAll() {
@@ -197,7 +197,7 @@ class StorageService(
 
     /**
      * Function that will get the url from a given filename in the storage folder.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param fileName The name of the file to be searched.
      */
