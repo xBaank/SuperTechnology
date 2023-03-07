@@ -1,3 +1,8 @@
+/**
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ * @since 28/2/2023
+ */
 package blanco.maldonado.mendoza.apiproductos.user
 
 import jakarta.validation.constraints.NotEmpty
@@ -18,10 +23,6 @@ data class User(
     @NotEmpty(message = "El usuario debe tener un email.")
     val email: String,
 
-    @NotEmpty(message = "El usuario debe tener una password.")
-    @get:JvmName("userPassword")
-    val password: String,
-
     @NotEmpty(message = "El usuario debe tener un rol.")
     val role: UserRole,
     val active: Boolean
@@ -36,7 +37,7 @@ data class User(
     }
 
     override fun getPassword(): String {
-        return password
+        return "a"
     }
 
     override fun getUsername(): String {

@@ -1,5 +1,10 @@
 package blanco.maldonado.mendoza.apiproductos.config.security
 
+/**
+ * @since 1/3/2023
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ */
 import blanco.maldonado.mendoza.apiproductos.config.security.jwt.JwtAuthorizationFilter
 import blanco.maldonado.mendoza.apiproductos.config.security.jwt.JwtTokensUtils
 import blanco.maldonado.mendoza.apiproductos.service.UserService
@@ -15,6 +20,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 
+/**
+ * Security config
+ *
+ * @property service
+ * @property jwtTokensUtils
+ * @constructor Create empty Security config
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -24,6 +36,12 @@ class SecurityConfig
     private val jwtTokensUtils: JwtTokensUtils
 ) {
 
+    /**
+     * Auth manager: ensures that only authorized users have access to the information and features they need to do their jobs.
+     *
+     * @param http
+     * @return authenticationManagerBuilder
+     */
     @Bean
     fun authManager(http: HttpSecurity): AuthenticationManager {
         val authenticationManagerBuilder = http.getSharedObject(
@@ -33,6 +51,12 @@ class SecurityConfig
         return authenticationManagerBuilder.build()
     }
 
+    /**
+     * Filter chain: Return the filter chain of security
+     *
+     * @param http
+     * @return
+     */
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         val authenticationManager = authManager(http)
@@ -42,32 +66,39 @@ class SecurityConfig
             .disable()
             .exceptionHandling()
             .and()
-            // Para token JWT
             .authenticationManager(authenticationManager)
-            // No usamos estado de sesion
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            // Aceptamos request del tipo Http
             .authorizeHttpRequests()
-            // Spring desplaza a esta ruta todos los errores y excepciones, asi podemos mostrarlas en vez de un Forbidden
             .requestMatchers("/error/**").permitAll()
             .requestMatchers("/api/**").permitAll()
+            .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
             .requestMatchers(
                 HttpMethod.GET,
-                "/productos",
-                "/productos/{id}",
-                "/productos/**",
-                "/productos/categoria/{categoria}",
-                "/productos/categoria/**",
-                "/productos/nombre/{nombre}",
-                "/productos/nombre/**"
+                "/products",
+                "/products/{id}",
+                "/products/**",
+                "/products/category/{categoria}",
+                "/products/category/**",
+                "/products/nombre/{nombre}",
+                "/products/nombre/**"
             ).permitAll()
-            .requestMatchers(HttpMethod.POST, "/productos").hasRole("SUPER_ADMIN")
-            .requestMatchers(HttpMethod.PUT, "/productos/{id}").hasAnyRole("SUPER_ADMIN", "ADMIN")
-            .requestMatchers(HttpMethod.DELETE, "/productos/{id}").hasRole("SUPER_ADMIN")
+            .requestMatchers(
+                HttpMethod.GET,
+                "/products/admin",
+                "/products/admin/{id}",
+                "/products/admin/category/{categoria}",
+                "/products/admin/name/{nombre}",
+                "/products/admin/category/**",
+                "/products/admin/name/**",
+                "/products/admin/paging"
+            ).hasAnyRole("SUPER_ADMIN", "ADMIN")
+            .requestMatchers(HttpMethod.POST, "/products").hasRole("SUPER_ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/products/{id}").hasAnyRole("SUPER_ADMIN", "ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/products/{id}").hasRole("SUPER_ADMIN")
             .anyRequest().authenticated()
             .and()
-            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, authenticationManager, service)) // Autorizacion
+            .addFilter(JwtAuthorizationFilter(jwtTokensUtils, authenticationManager, service))
 
         return http.build()
     }

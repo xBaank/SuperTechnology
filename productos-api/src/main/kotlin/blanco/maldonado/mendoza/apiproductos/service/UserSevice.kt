@@ -1,3 +1,8 @@
+/**
+ * @since 1/3/2023
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ */
 package blanco.maldonado.mendoza.apiproductos.service
 
 import blanco.maldonado.mendoza.apiproductos.config.security.jwt.JwtTokensUtils
@@ -17,10 +22,9 @@ import java.util.*
             val id = tokenDecoded.subject.toString().replace("\"", "")
             val username = tokenDecoded.getClaim("username").toString().replace("\"", "")
             val email = tokenDecoded.getClaim("email").toString().replace("\"", "")
-            val password = tokenDecoded.getClaim("password").toString().replace("\"", "")
             val role = tokenDecoded.getClaim("role").toString().replace("\"", "")
             val active = tokenDecoded.getClaim("active").toString().replace("\"", "")
 
-            User(UUID.fromString(id), username, email, password, User.UserRole.valueOf(role), active.toBoolean())
+            User(UUID.fromString(id), username, email, User.UserRole.valueOf(role), active.toBoolean())
         }
     }
