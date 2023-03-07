@@ -9,11 +9,11 @@ import pedidosApi.dto.requests.UpdatePedidoDto
 
 object PedidosData {
     val createPedido = CreatePedidoDto(
-        usuario = "fake",
+        usuarioUsername = "Fake User",
         tareas = listOf(
             CreateTareaDto(
                 producto = "fake",
-                empleado = "fake"
+                empleadoUsername = "fake"
             )
         ),
         iva = 0.21

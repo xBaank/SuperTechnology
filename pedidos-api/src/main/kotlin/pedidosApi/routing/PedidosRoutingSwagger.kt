@@ -35,8 +35,9 @@ fun OpenApiRoute.getAll() {
     }
 }
 
-fun OpenApiRoute.getByUsuarioId() {
-    description = "Get pedidos paged by user id"
+
+fun OpenApiRoute.getByUsuarioMe() {
+    description = "Get pedidos paged by authenticated user"
     request {
         queryParameter<Int>("page") {
             description = "Page number, Default: 0"
@@ -45,10 +46,6 @@ fun OpenApiRoute.getByUsuarioId() {
         queryParameter<Int>("size") {
             description = "Page size, Default: 10, Max: 500"
             required = false
-        }
-        pathParameter<String>("id") {
-            description = "user id"
-            required = true
         }
         headerParameter<String>("Authorization") {
             description = "Authorization header"
