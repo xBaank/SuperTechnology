@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 /**
  * Configuration class for encrypting and decrypting passwords with Bcrypt.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Configuration

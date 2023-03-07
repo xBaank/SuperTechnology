@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Configuration
 
 /**
  * Configuration class for specifying the API path, version and default values for pagination.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Configuration

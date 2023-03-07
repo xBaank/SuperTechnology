@@ -10,12 +10,15 @@ import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import resa.rodriguez.config.APIConfig
 import resa.rodriguez.exceptions.StorageExceptionNotFound
 import resa.rodriguez.exceptions.StorageException
 import resa.rodriguez.exceptions.StorageExceptionBadRequest
+import resa.rodriguez.models.User
 import resa.rodriguez.services.storage.IStorageService
 import java.io.IOException
 import java.time.LocalDateTime
@@ -28,7 +31,7 @@ import java.time.LocalDateTime
 /**
  * Controller that will manage every endpoint related to the storage system
  * by calling the storage service.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property storageService
  */
@@ -41,7 +44,7 @@ class StorageController
     /**
      * Endpoint for finding a resource with the given filename.
      * It will return a response entity with a resource whose name corresponds to the filename parameter.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param filename Filename to be searched.
      * @param request Http request.
@@ -73,7 +76,7 @@ class StorageController
      * Endpoint for uploading a multipart file.
      * It will return a response entity with a map of string to string with
      * the url, name and creation date of the saved file.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param file Multipart file to be saved.
      * @return Response Entity with a map of string to string with
@@ -84,8 +87,9 @@ class StorageController
     @Parameter(name = "File", description = "Multipart file to be saved.", required = true)
     @ApiResponse(responseCode = "201", description = "Response Entity with a map of string to string with the url, name and creation date of the saved file.")
     @ApiResponse(responseCode = "400", description = "When the file could not be saved.")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping(value = [""], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun uploadFile(@RequestPart("file") file: MultipartFile): ResponseEntity<Map<String, String>> = runBlocking {
+    fun uploadFile(@RequestPart("file") file: MultipartFile, @AuthenticationPrincipal user: User): ResponseEntity<Map<String, String>> = runBlocking {
         try {
             if (!file.isEmpty) {
                 val fileStored = CoroutineScope(Dispatchers.IO).async { storageService.store(file) }.await()
@@ -102,7 +106,7 @@ class StorageController
     /**
      * Endpoint for deleting a resource whose name matches the one given.
      * It will return a response entity with the deleted resource.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param filename Filename of the file to be deleted.
      * @param request Http request.
@@ -114,9 +118,10 @@ class StorageController
     @Parameter(name = "Request", description = "Http request.", required = true)
     @ApiResponse(responseCode = "200", description = "Response Entity with the deleted resource.")
     @ApiResponse(responseCode = "400", description = "When the file could not be deleted.")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping(value = ["{filename:.+}"])
     @ResponseBody
-    fun deleteFile(@PathVariable filename: String?, request: HttpServletRequest): ResponseEntity<Resource> = runBlocking {
+    fun deleteFile(@PathVariable filename: String?, request: HttpServletRequest, @AuthenticationPrincipal user: User): ResponseEntity<Resource> = runBlocking {
         try {
             CoroutineScope(Dispatchers.IO).launch { storageService.delete(filename.toString()) }.join()
             ResponseEntity.ok().build()

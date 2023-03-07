@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 /**
  * Custom exception for when an error related to addresses happens.
  * @property message Error message.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 sealed class AddressException(message: String?) : RuntimeException(message)
@@ -16,7 +16,7 @@ sealed class AddressException(message: String?) : RuntimeException(message)
  * It returns a ResponseEntity with the status code 400 along with the error message.
  * Used for bad requests.
  * @property message Error message.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -27,7 +27,7 @@ class AddressExceptionBadRequest(message: String?) : UserException(message)
  * It returns a ResponseEntity with the status code 404 along with the error message.
  * Used for not founds.
  * @property message Error message.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)

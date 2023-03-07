@@ -18,7 +18,7 @@ private val log = KotlinLogging.logger {}
 
 /**
  * Class for creating an authorization filter for Spring Security.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property jwtTokensUtils
  * @property service

@@ -5,7 +5,7 @@ import resa.rodriguez.models.User
 
 /**
  * Initial data that will be loaded when launching this microservice.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 fun getUsersInit() = listOf(

@@ -11,7 +11,7 @@ import java.time.LocalDate
 
 /**
  * Class for serializing LocalDate objects.
- * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+ * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 object LocalDateSerializer : KSerializer<LocalDate> {
@@ -21,7 +21,7 @@ object LocalDateSerializer : KSerializer<LocalDate> {
      * Function for deserializing a LocalDate.
      * The decoder turns the serialized string into a String object
      * and then said String is parsed into a LocalDate object.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param decoder Decoder containing the serialized localdate.
      * @return The deserialized LocalDate object.
@@ -32,7 +32,7 @@ object LocalDateSerializer : KSerializer<LocalDate> {
 
     /**
      * Function for serializing a LocalDate object.
-     * @author Mario Gonzalez, Daniel Rodriguez, Joan Sebastian Mendoza,
+     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param encoder Encoder for serializing the LocalDate object.
      * @param value LocalDate object to be serialized.
