@@ -1,11 +1,13 @@
 /**
  * @since 16/02/2023
- * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 package blanco.maldonado.mendoza.apiproductos.mapper
 
 import blanco.maldonado.mendoza.apiproductos.dto.ProductoCreateDto
 import blanco.maldonado.mendoza.apiproductos.dto.ProductoDto
+import blanco.maldonado.mendoza.apiproductos.dto.ProductoDtoUser
 import blanco.maldonado.mendoza.apiproductos.model.Producto
 
 /**
@@ -24,6 +26,15 @@ fun Producto.toDto() = ProductoDto(
     createdAt = this.createdAt.toString(),
     updateAt = this.updateAt.toString(),
     deleteAt = this.deleteAt.toString()
+)
+
+fun Producto.toDtoUser() = ProductoDtoUser(
+    uuid = this.uuid,
+    nombre = this.nombre,
+    categoria = this.categoria.toString(),
+    stock = this.stock,
+    description = this.description,
+    precio = this.precio
 )
 
 /**

@@ -1,3 +1,8 @@
+/**
+ * @since 8/2/2023
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ */
 package blanco.maldonado.mendoza.apiproductos
 
 import org.springframework.boot.autoconfigure.SpringBootApplication

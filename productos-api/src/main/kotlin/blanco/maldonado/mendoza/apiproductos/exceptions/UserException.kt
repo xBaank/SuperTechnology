@@ -1,3 +1,8 @@
+/**
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ * @since 3/3/2023
+ */
 package blanco.maldonado.mendoza.apiproductos.exceptions
 
 import org.springframework.http.HttpStatus

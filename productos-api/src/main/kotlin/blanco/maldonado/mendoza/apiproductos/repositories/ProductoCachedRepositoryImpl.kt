@@ -1,6 +1,7 @@
 /**
  * @since 16/02/2023
- * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 
 package blanco.maldonado.mendoza.apiproductos.repositories
@@ -142,6 +143,12 @@ class ProductoCachedRepositoryImpl
         return null
     }
 
+    /**
+     * Find all page: Function to get all paginated products
+     *
+     * @param pageRequest
+     * @return
+     */
     override suspend fun findAllPage(pageRequest: PageRequest): Flow<Page<Producto>> {
         logger.info { "Repositorio de productos findAllPage" }
         return productosRepository.findAllBy(pageRequest).toList()

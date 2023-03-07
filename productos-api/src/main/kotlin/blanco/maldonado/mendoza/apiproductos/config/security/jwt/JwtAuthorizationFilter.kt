@@ -1,5 +1,9 @@
 package blanco.maldonado.mendoza.apiproductos.config.security.jwt
-
+/**
+ * @since 1/3/2023
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ */
 import blanco.maldonado.mendoza.apiproductos.service.UserService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
@@ -16,6 +20,15 @@ import java.io.IOException
 
 private val log = KotlinLogging.logger { }
 
+/**
+ * Jwt authorization filter
+ *
+ * @property jwtTokensUtils
+ * @property service
+ * @constructor
+ *
+ * @param authManager
+ */
 class JwtAuthorizationFilter(
     private val jwtTokensUtils: JwtTokensUtils,
     authManager: AuthenticationManager,
@@ -42,6 +55,12 @@ class JwtAuthorizationFilter(
         chain.doFilter(req, res)
     }
 
+    /**
+     * Get authentication
+     *
+     * @param token
+     * @return authenticating token
+     */
     private fun getAuthentication(token: String): UsernamePasswordAuthenticationToken? = runBlocking {
         log.info { "Obteniendo autenticación" }
         val user = service.loadUserByUsername(token) ?: return@runBlocking null
