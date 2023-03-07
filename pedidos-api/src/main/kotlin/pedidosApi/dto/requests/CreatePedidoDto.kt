@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreatePedidoDto(
-    val usuario: String,
+    val usuarioUsername: String,
     val tareas: List<CreateTareaDto>,
     val iva: Double,
 )
@@ -12,5 +12,5 @@ data class CreatePedidoDto(
 @Serializable
 data class CreateTareaDto(
     val producto: String,
-    val empleado: String
+    val empleadoUsername: String
 )

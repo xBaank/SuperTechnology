@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+  mariadb:
+    container_name: "ProductosMariadb"
+    image: mariadb:latest
+    restart: 'always'
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "mariadbpass"
+      MYSQL_DATABASE: "productosTest"
+      MYSQL_USER: "mariadbadmin"
+      MYSQL_PASSWORD: "mariadbpass"
+  db:
+    container_name: "postgresUsers"
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres1234
+      - POSTGRES_DB=usuarios
+    ports:
+      - '5432:5432'
