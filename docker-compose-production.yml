@@ -17,6 +17,7 @@ services:
   supertechnology-usuarios:
     build: ./usuarios-api
     container_name: "supertechnology-usuarios"
+    restart: always
     environment:
       - POSTGRES_CONNECTION=r2dbc:postgresql://postgres:postgres1234@postgresUsers/usuarios
       - JWT_SECRET=Zanahoria_Turbopropulsada9
