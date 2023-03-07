@@ -13,9 +13,5 @@ EXPOSE 6969:6969
 RUN mkdir /app
 # Copiamos el jar
 COPY --from=build /home/usuarios-api/gradle/src/build/libs/usuarios-api-0.0.1.jar /app/usuarios-api-springboot.jar
-# Directorio donde se almacena el certificado
-RUN mkdir /.cert
-# Copiar los certificados
-COPY --from=build /home/.cert/* /.cert/
 # Ejecutamos la aplicacion
 ENTRYPOINT ["java", "-jar", "/app/usuarios-api-springboot.jar"]
