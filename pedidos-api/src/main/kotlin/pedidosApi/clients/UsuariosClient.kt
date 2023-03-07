@@ -6,10 +6,10 @@ import pedidosApi.dto.responses.UsuarioDto
 import retrofit2.http.*
 
 interface UsuariosClient {
-    @GET("/usuarios/id/{id}")
+    @GET("/usuarios/username/{username}")
     suspend fun getUsuario(
         @Header("Authorization") token: String,
-        @Path("id") id: String
+        @Path("username") username: String
     ): Either<CallError, UsuarioDto>
 
     @GET("/usuarios/list")

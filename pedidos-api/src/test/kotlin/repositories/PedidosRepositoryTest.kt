@@ -12,7 +12,6 @@ import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.coroutine.CoroutineCollection
-import org.litote.kmongo.div
 import org.litote.kmongo.eq
 import pedidosApi.dto.responses.Categoria
 import pedidosApi.dto.responses.ProductoDto
@@ -34,7 +33,6 @@ class PedidosRepositoryTest {
 
     private val userId = UUID.randomUUID().toString()
     private val usuario = UsuarioDto(
-        id = userId,
         username = "Nombre",
         email = "correo@email.com",
         role = Role.USER,
@@ -90,19 +88,6 @@ class PedidosRepositoryTest {
         val result = pedidosRepository.getById(pedido._id.toString())
         result.getOrNull() shouldBeEqualTo pedido
         coVerify { collectionMock.find(Pedido::_id eq pedido._id).first() }
-    }
-
-    @Test
-    fun getByUserId(): Unit = runBlocking {
-        coEvery {
-            collectionMock.find(Pedido::usuario / UsuarioDto::id eq userId).skip(0).limit(10).toFlow()
-        } returns flowOf(pedido)
-        val result = pedidosRepository.getByUserId(userId, 0, 10)
-        result.getOrNull()?.first() shouldBeEqualTo pedido
-        result.getOrNull()?.size shouldBeEqualTo 10
-        result.getOrNull()?.page shouldBeEqualTo 0
-
-        coVerify { collectionMock.find(Pedido::usuario / UsuarioDto::id eq userId).skip(0).limit(10).toFlow() }
     }
 
     @Test

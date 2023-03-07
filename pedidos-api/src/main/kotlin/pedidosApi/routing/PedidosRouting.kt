@@ -13,6 +13,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
+import kotlinx.coroutines.flow.filter
 import org.koin.ktor.ext.inject
 import org.litote.kmongo.id.toId
 import pedidosApi.buildErrorDto
@@ -32,6 +33,7 @@ import pedidosApi.extensions.toObjectIdOrNull
 import pedidosApi.models.EstadoPedido
 import pedidosApi.models.Pedido
 import pedidosApi.models.Tarea
+import pedidosApi.repositories.PagedFlow
 import pedidosApi.repositories.PedidosRepository
 
 const val DEFAULT_PAGE = 0
@@ -43,31 +45,23 @@ fun Routing.pedidosRouting() = route("/pedidos") {
         get("/usuario/me", builder = OpenApiRoute::getByUsuarioMe) {
             val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
             val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
-            val userId = call.principal<JWTPrincipal>()?.getClaim("id", String::class) ?: ""
+            val username = call.principal<JWTPrincipal>()?.getClaim("username", String::class) ?: ""
 
-            repository.getByUserId(userId, page, size)
+            repository.getByUsername(username, page, size)
                 .map { buildPagedPedidoDto(it) }
                 .onLeft { call.handleError(it) }
                 .onRight { call.respond(it) }
         }
     }
     authenticate("admin") {
-        get("/usuario/{id}", builder = OpenApiRoute::getByUsuarioId) {
-            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
-            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
-            val usuarioId = call.parameters.getOrFail("id")
-
-            repository.getByUserId(usuarioId, page, size)
-                .map { buildPagedPedidoDto(it) }
-                .onLeft { call.handleError(it) }
-                .onRight { call.respond(it) }
-        }
-
         get(builder = OpenApiRoute::getAll) {
             val page = call.request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
             val size = call.request.queryParameters["size"]?.toIntOrNull() ?: DEFAULT_SIZE
 
+            val username = call.request.queryParameters["username"]
+
             repository.getByPage(page, size)
+                .map { filterByUsername(username, it) }
                 .map { buildPagedPedidoDto(it) }
                 .onLeft { call.handleError(it) }
                 .onRight { call.respond(it) }
@@ -118,6 +112,15 @@ fun Routing.pedidosRouting() = route("/pedidos") {
     }
 }
 
+private fun filterByUsername(
+    username: String?,
+    it: PagedFlow<Pedido>
+): PagedFlow<Pedido> {
+    val filtered = if (username != null) it.filter { pedido -> pedido.usuario.username.contains(username) }
+    else it
+    return PagedFlow(it.page, it.size, filtered)
+}
+
 private suspend fun createPedido(
     pedido: CreatePedidoDto,
     token: String
@@ -126,7 +129,7 @@ private suspend fun createPedido(
     val productoClient by inject<ProductosClient>()
 
 
-    val usuario = userClient.getUsuario(token, pedido.usuario).mapToApiError().bind()
+    val usuario = userClient.getUsuario(token, pedido.usuarioUsername).mapToApiError().bind()
 
     val current = System.currentTimeMillis()
 
@@ -163,10 +166,9 @@ private suspend fun updatePedido(
         ?: shift(PedidoError.InvalidPedidoId("Invalid id format"))
 
     val pedidoToUpdate = pedidosRepository.getById(_id.toString()).bind()
-    val usuario = userClient.getUsuario(token, pedidoToUpdate.usuario.id).mapToApiError().bind()
+    //val usuario = userClient.getUsuario(token, pedidoToUpdate.usuario.id).mapToApiError().bind()
 
     pedidoToUpdate.copy(
-        usuario = usuario,
         iva = updatePedidoDto?.iva ?: pedidoToUpdate.iva,
         estado = updatePedidoDto?.estado ?: pedidoToUpdate.estado
     )

@@ -14,7 +14,6 @@ import retrofit2.http.Path
 //pa testear por ahora
 fun fakeUserClient() = object : UsuariosClient {
     val user = UsuarioDto(
-        id = "fake",
         username = "Fake User",
         email = "test@gmail.com",
         role = Role.USER,
@@ -23,13 +22,13 @@ fun fakeUserClient() = object : UsuariosClient {
         createdAt = "2021-01-01",
         active = true
     )
-    val users = mutableMapOf(user.id to user)
+    val users = mutableMapOf(user.username to user)
 
     override suspend fun getUsuario(
         @Header(value = "Authorization") token: String,
-        @Path(value = "id") id: String
+        @Path(value = "username") username: String
     ): Either<CallError, UsuarioDto> {
-        return users[id]?.right() ?: HttpError(404, "User not found", "").left()
+        return users[username]?.right() ?: HttpError(404, "User not found", "").left()
     }
 
     override suspend fun getUsuarios(@Header(value = "Authorization") token: String): Either<CallError, List<UsuarioDto>> {
