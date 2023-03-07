@@ -1,20 +1,29 @@
 ### Pedidos API
 
-| Environment Variable    | Default Value                          | Description                                             |
-|-------------------------|----------------------------------------|---------------------------------------------------------|
-| PORT                    | 8080                                   | The port that the server will listen on                 |
-| SSL_PORT                | 8443                                   | The SSL port that the server will listen on             |
-| KEYSTORE                | .cert/server_key.p12                   | The path to the keystore containing the SSL certificate |
-| KEY_ALIAS               | SuperTechnology                        | The alias of the key in the keystore                    |
-| KEYSTORE_PASSWORD       | 1A2B3C4O                               | The password to the keystore                            |
-| PRIVATE_KEY_PASSWORD    | 1A2B3C4O                               | The password to the private key in the keystore         |
-| JWT_ISSUER              | pedidos                                | The issuer of the JWT token                             |
-| JWT_AUDIENCE            | pedidos                                | The audience of the JWT token                           |
-| JWT_SECRET              | pedidos                                | The secret used to sign the JWT token                   |
-| MONGO_CONNECTION_STRING | mongodb://root:example@localhost:27017 | The connection string for the MongoDB instance          |
-| MONGO_DATABASE          | pedidos                                | The name of the database to use in the MongoDB instance |
-| USUARIOS_URL            | http://localhost:8081                  | The URL for the usuarios microservice                   |
-| PRODUCTOS_URL           | http://localhost:8082                  | The URL for the productos microservice                  |
+| Environment Variable    | Default Value                          | Description                             |
+|-------------------------|----------------------------------------|-----------------------------------------|
+| PORT                    | 8080                                   | Puerto                                  |
+| SSL_PORT                | 8443                                   | Puerto seguro                           |
+| KEYSTORE                | .cert/server_key.p12                   | Directorio del certificado del servidor |
+| KEY_ALIAS               | SuperTechnology                        | Alias del certificado                   |
+| KEYSTORE_PASSWORD       | 1A2B3C4O                               | Contraseña del keystore                 |
+| PRIVATE_KEY_PASSWORD    | 1A2B3C4O                               | Contraseña privada del keystore         |
+| JWT_SECRET              | pedidos                                | Contraseña para cifrar el token         |
+| MONGO_CONNECTION_STRING | mongodb://root:example@localhost:27017 | Cadena de conexion a mongo              |
+| MONGO_DATABASE          | pedidos                                | Nombre de la base de datos              |
+| USUARIOS_URL            | http://localhost:8081                  | Url para el microservicio de usuarios   |
+| PRODUCTOS_URL           | http://localhost:8082                  | Url para el microservicio de productos  |
+
+## Pedidos
+
+| Método | Endpoint(/pedidos) | Auth  | Descripción                          | Status Code       | Return Content |
+|--------|--------------------|-------|--------------------------------------|-------------------|----------------|
+| GET    | /                  | ADMIN | Devuelve todos los pedidos paginados | 200 or 401        | JSON           |
+| POST   | /                  | ADMIN | Crea un pedidos                      | 200 or 401        | JSON           |
+| GET    | /{id}              | ADMIN | Devuelve un pedido                   | 200 or 401 or 423 | JSON           |
+| PUT    | /{id}              | ADMIN | Actualiza un pedido                  | 200 or 401        | JSON           |
+| DELETE | /{id}              | ADMIN | Elimina un pedido                    | 204 or 401        | JSON           |
+| GET    | /me                | USER  | Devuelve un pedido                   | 200 or 401        | JSON           |
 
 ### Docker compose
 
