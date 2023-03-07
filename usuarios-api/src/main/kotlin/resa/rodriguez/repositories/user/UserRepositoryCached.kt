@@ -23,7 +23,7 @@ import java.util.*
  * It has a cache.
  * @property repo User repository.
  * @property aRepo Address repository.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Repository
@@ -34,7 +34,7 @@ class UserRepositoryCached
 ) : IUserRepositoryCached {
     /**
      * Function that will return a flow with every user present in the database.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @return Flow with every user in the database.
      */
@@ -44,7 +44,7 @@ class UserRepositoryCached
 
     /**
      * Function that will return a flow of pages of user DTOs.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param page Page request.
      * @return A flow of pages containing user DTOs.
@@ -61,7 +61,7 @@ class UserRepositoryCached
 
     /**
      * Function that will return a flow of users filtered by the given activity and filtered by creation date.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param activo Type of activity to search for.
      * @return Flow of users filtered by whether they are active or not.
@@ -72,7 +72,7 @@ class UserRepositoryCached
 
     /**
      * Function that will return a user whose id matches the specified id.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param id UUID to search for.
      * @return A user whose id matches the one given in the id parameter, or null if it is not found.
@@ -84,7 +84,7 @@ class UserRepositoryCached
 
     /**
      * Function that will return a user whose email matches the specified email.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param email Email to search for.
      * @return A user whose email matches the one given in the email parameter, or null if it is not found.
@@ -96,7 +96,7 @@ class UserRepositoryCached
 
     /**
      * Function that will return a user whose username matches the specified username.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param username Username to search for.
      * @return A user whose username matches the one given in the username parameter, or null if it is not found.
@@ -108,7 +108,7 @@ class UserRepositoryCached
 
     /**
      * Function that will return a user whose phone number matches the specified phone.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param phone Phone number to search for.
      * @return A user whose phone number matches the one given in the phone parameter, or null if it is not found.
@@ -120,7 +120,7 @@ class UserRepositoryCached
 
     /**
      * Function that will return a user once it has been saved into the database.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user User to be saved.
      * @return The saved user.
@@ -133,7 +133,7 @@ class UserRepositoryCached
     /**
      * Function that will return the deleted user once it has been deleted from the database,
      * or null if a user with the specified id is not found.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param id UUID to be searched for.
      * @return The deleted user, or null if a user with the given id was not found.

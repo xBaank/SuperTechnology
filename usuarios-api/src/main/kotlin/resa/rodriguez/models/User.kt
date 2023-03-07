@@ -12,7 +12,7 @@ import java.util.*
 
 /**
  * Model for users.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property id Main identifier, UUID.
  * @property username Username, String.
@@ -48,7 +48,7 @@ data class User(
 
     /**
      * Clase enum usada para los distintos roles de los usuarios
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      */
     enum class UserRole {

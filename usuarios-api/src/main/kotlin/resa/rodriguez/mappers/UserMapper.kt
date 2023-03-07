@@ -13,7 +13,7 @@ import java.util.*
 
 /**
  * Functions that will map a DTO to their respective model and vice versa.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 fun User.toDTO(addresses: Set<Address>): UserDTOresponse {

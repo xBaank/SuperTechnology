@@ -5,7 +5,7 @@ import resa.rodriguez.exceptions.UserExceptionBadRequest
 
 /**
  * Functions that validate every kind of user DTO along with their fields.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 fun UserDTOcreate.validate(): UserDTOcreate {

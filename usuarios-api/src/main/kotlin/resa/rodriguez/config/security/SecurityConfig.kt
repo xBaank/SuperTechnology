@@ -20,7 +20,7 @@ import resa.rodriguez.services.UserService
  * Configuration class for Spring Security.
  * @property service
  * @property jwtTokensUtils
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Configuration

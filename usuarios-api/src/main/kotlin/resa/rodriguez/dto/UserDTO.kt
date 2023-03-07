@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 /**
  * DTO used for login.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property username
  * @property password
@@ -20,7 +20,7 @@ data class UserDTOlogin(
 
 /**
  * DTO used for register.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property username
  * @property email
@@ -41,7 +41,7 @@ data class UserDTOregister(
 
 /**
  * DTO used for creation.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property username
  * @property email
@@ -66,7 +66,7 @@ data class UserDTOcreate(
 
 /**
  * DTO used for the responses.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property username
  * @property email
@@ -90,7 +90,7 @@ data class UserDTOresponse(
 
 /**
  * DTO used for updating.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property password
  * @property addresses
@@ -103,7 +103,7 @@ data class UserDTOUpdated(
 
 /**
  * DTO used for updating a role.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property email
  * @property role
@@ -117,7 +117,7 @@ data class UserDTORoleUpdated(
 /**
  * DTO used for the login/register/create responses.
  * It not only has the user's data, but also their token.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property user
  * @property token

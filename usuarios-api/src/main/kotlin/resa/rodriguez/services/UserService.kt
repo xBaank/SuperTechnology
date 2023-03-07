@@ -37,7 +37,7 @@ private val log = KotlinLogging.logger {}
  * @property userRepositoryCached User repository cached.
  * @property addressRepositoryCached Address repository cached.
  * @property passwordEncoder Password encoder.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Service
@@ -49,7 +49,7 @@ class UserService
 ) : UserDetailsService {
     /**
      * Function that will return a UserDetails object with the given username. Cannot be a suspended function.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param username Username to be searched.
      * @return User whose username matches the given parameter.
@@ -64,7 +64,7 @@ class UserService
      * Function for registering.
      * Saves the user in the database along with their encrypted password, thanks to Bcrypt.
      * The registered user will always have the USER role.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userDto DTO with the information we need for registering.
      * @return The inserted user.
@@ -97,7 +97,7 @@ class UserService
      * Function for inserting a new user by an administrator.
      * Its purpose is the same as the Register function,
      * but with the difference that this one can create users with any role.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userDTOcreate DTO with the information we need to insert.
      * @return The inserted user.
@@ -124,7 +124,7 @@ class UserService
 
     /**
      * Function for getting a list with every existing user.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @return A list containing every user from the database.
      */
@@ -139,7 +139,7 @@ class UserService
      * Function for getting a particular user from a given username.
      * Different from loadUserByUsername in that this one is indeed a suspended function,
      * therefore this one will be used whenever we want to find a user.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param username Username to be searched.
      * @return User whose username matches the given parameter.
@@ -154,7 +154,7 @@ class UserService
 
     /**
      * Function for getting a particular user from a given UUID.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param id UUID to be searched.
      * @return User whose id matches the given parameter.
@@ -168,7 +168,7 @@ class UserService
 
     /**
      * Function for getting a particular user from a given email.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param email Email to be searched.
      * @return User whose email matches the given parameter.
@@ -182,7 +182,7 @@ class UserService
 
     /**
      * Function for getting a particular user from a given phone number.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param phone Phone number to be searched.
      * @return User whose phone number matches the given parameter.
@@ -196,7 +196,7 @@ class UserService
 
     /**
      * Function for getting every address from a user whose ID matches the given parameter.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userId UUID from the user whose addresses we want to find.
      * @return Flow of every address from that user.
@@ -209,7 +209,7 @@ class UserService
 
     /**
      * Function for getting every user in a paginated manner, and sorted by the given parameter.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param page Page number to be searched.
      * @param size Size of the page.
@@ -228,7 +228,7 @@ class UserService
 
     /**
      * Function for getting every user whose activity matches the given parameter.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param active Boolean that determines the type of activity that we want to filter.
      * @return List of every user with the specified activity.
@@ -241,7 +241,7 @@ class UserService
 
     /**
      * Function for updating your own password and/or list of addresses.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user User to be updated.
      * @param userDTOUpdated DTO containing the new information.
@@ -277,7 +277,7 @@ class UserService
 
     /**
      * Function for updating your own avatar.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param user User to be updated.
      * @return User with the updated fields.
@@ -288,7 +288,7 @@ class UserService
 
     /**
      * Function for switching a user's activity from a given email.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param email Email of the user whose activity is going to be switched.
      * @return User with the updated activity.
@@ -315,7 +315,7 @@ class UserService
 
     /**
      * Function for updating a user's role from a given email.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userDTORoleUpdated DTO containing the user's email and new role.
      * @return User with the updated role.
@@ -341,7 +341,7 @@ class UserService
 
     /**
      * Function for deleting a user from a given email.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param email Email of the user to be deleted.
      * @return The deleted user.
@@ -359,7 +359,7 @@ class UserService
 
     /**
      * Function for getting every address.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @return A list with every address present in the database.
      */
@@ -369,7 +369,7 @@ class UserService
 
     /**
      * Function for getting a paginated list of addresses.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param page Number of the page to be searched.
      * @param size Size of the page to be searched.
@@ -388,7 +388,7 @@ class UserService
 
     /**
      * Function for getting all addresses from a given user.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param userId UUID from the user whose addresses we want to find.
      * @return String with the corresponding addresses, separated by commas.
@@ -407,7 +407,7 @@ class UserService
 
     /**
      * Function for getting an address from a given id.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param id UUID from the address we want to find.
      * @return String with the corresponding address name.
@@ -421,7 +421,7 @@ class UserService
 
     /**
      * Function for getting an address from a given name.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param name Name of the address we want to find.
      * @return String with the corresponding address name.
@@ -435,7 +435,7 @@ class UserService
 
     /**
      * Function for deleting an address with a given name from a user with the specified email.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param name Name of the address we want to find.
      * @param email Email of the user whose addresses we want to check.

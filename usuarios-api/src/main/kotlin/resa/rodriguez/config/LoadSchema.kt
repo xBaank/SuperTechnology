@@ -13,7 +13,7 @@ import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator
  * loading the schema generated in the resources folder.
  * This action is necessary for R2DBC.
  * Uses the necessary annotations so that Spring can detect it.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 @Configuration

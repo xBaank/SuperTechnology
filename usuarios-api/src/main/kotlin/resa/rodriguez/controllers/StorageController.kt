@@ -31,7 +31,7 @@ import java.time.LocalDateTime
 /**
  * Controller that will manage every endpoint related to the storage system
  * by calling the storage service.
- * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
  * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  * @property storageService
  */
@@ -44,7 +44,7 @@ class StorageController
     /**
      * Endpoint for finding a resource with the given filename.
      * It will return a response entity with a resource whose name corresponds to the filename parameter.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param filename Filename to be searched.
      * @param request Http request.
@@ -76,7 +76,7 @@ class StorageController
      * Endpoint for uploading a multipart file.
      * It will return a response entity with a map of string to string with
      * the url, name and creation date of the saved file.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param file Multipart file to be saved.
      * @return Response Entity with a map of string to string with
@@ -106,7 +106,7 @@ class StorageController
     /**
      * Endpoint for deleting a resource whose name matches the one given.
      * It will return a response entity with the deleted resource.
-     * @author Mario Gonzalez, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+     * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
      * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
      * @param filename Filename of the file to be deleted.
      * @param request Http request.
