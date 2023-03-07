@@ -1,6 +1,7 @@
 /**
  * @since 16/02/2023
- * @author Azahara Blanco, Alfredo Maldonado, Sebastian Mendoza
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
  */
 package blanco.maldonado.mendoza.apiproductos.controller
 
@@ -38,9 +39,6 @@ import java.util.*
 private val logger = KotlinLogging.logger { }
 
 /**
- * @author Azahara Blanco, Alfredo Maldonado y Sebastian Mendoza
- * @since 20/02/2023
- *
  * Producto controller: api endpoint controller.
  *
  * @property repository
@@ -77,7 +75,7 @@ class ProductoController
         }
 
     /**
-     * Find all products - Admins: Get all productos from database with details.
+     * Find all products - Admins: Get all products from database with details.
      *
      * @return Return all products with details .
      */

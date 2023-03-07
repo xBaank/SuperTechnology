@@ -1,3 +1,8 @@
+/**
+ * @since 1/3/2023
+ * @author Mario Resa, Daniel Rodriguez, Jhoan Sebastian Mendoza,
+ * Alfredo Rafael Maldonado, Azahara Blanco, Ivan Azagra, Roberto Blazquez
+ */
 package blanco.maldonado.mendoza.apiproductos.service
 
 import blanco.maldonado.mendoza.apiproductos.config.security.jwt.JwtTokensUtils
