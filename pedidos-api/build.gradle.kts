@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.dam"
-version = "1.0-SNAPSHOT"
+version = "0.0.1"
 
 repositories {
     mavenCentral()
@@ -74,6 +74,9 @@ dependencies {
 
     //koin
     implementation("io.insert-koin:koin-core:$koinVersion")
+    implementation("io.insert-koin:koin-logger-slf4j:3.3.0")
+    implementation("ch.qos.logback:logback-classic:1.4.5")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     //koin ktor
     implementation("io.insert-koin:koin-ktor:$koinKtorVersion")
     //arrow core
@@ -95,5 +98,5 @@ kotlin {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("pedidosApi.MainKt")
 }

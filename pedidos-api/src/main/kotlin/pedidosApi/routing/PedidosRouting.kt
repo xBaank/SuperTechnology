@@ -134,8 +134,19 @@ private suspend fun createPedido(
     val current = System.currentTimeMillis()
 
     val tareas = pedido.tareas.map { tarea ->
+        val producto = productoClient.getProducto(token, tarea.producto)
+            .mapToApiError()
+            .bind()
+
+        if (producto.stock <= 0) shift<ApiError>(ApiError("No hay stock del producto ${producto.nombre}", null))
+
+        val updatedProducto =
+            productoClient.updateProducto(token, producto.id ?: "", producto.copy(stock = producto.stock - 1))
+                .mapToApiError()
+                .bind()
+
         Tarea(
-            producto = productoClient.getProducto(token, tarea.producto).mapToApiError().bind(),
+            producto = updatedProducto,
             empleado = usuario,
             createdAt = current
         )
@@ -210,7 +221,7 @@ suspend fun ApplicationCall.handleError(error: DomainError) = when (error) {
     is ApiError -> respond(
         HttpStatusCode.FailedDependency,
         buildErrorDto(
-            "Dependency failed with message : ${error.message.ifEmpty { "No message" }} and code ${error.code}",
+            "Dependency failed with message : ${error.message.ifEmpty { "No message" }}, and code ${error.code}",
             HttpStatusCode.FailedDependency.value
         )
     )

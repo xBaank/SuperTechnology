@@ -38,4 +38,13 @@ fun fakeProductosClient() = object : ProductosClient {
         return productos.values.toList().right()
     }
 
+    override suspend fun updateProducto(
+        token: String,
+        id: String,
+        producto: ProductoDto
+    ): Either<CallError, ProductoDto> {
+        productos[id] = producto
+        return producto.right()
+    }
+
 }

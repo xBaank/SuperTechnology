@@ -14,4 +14,11 @@ interface ProductosClient {
 
     @GET("/api/products")
     suspend fun getProductos(@Header("Authorization") token: String): Either<CallError, List<ProductoDto>>
+
+    @PUT("/api/products/{id}")
+    suspend fun updateProducto(
+        @Header("Authorization") token: String,
+        @Path("id") id: String,
+        @Body producto: ProductoDto
+    ): Either<CallError, ProductoDto>
 }
