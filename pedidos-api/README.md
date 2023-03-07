@@ -16,6 +16,17 @@
 | USUARIOS_URL            | http://localhost:8081                  | The URL for the usuarios microservice                   |
 | PRODUCTOS_URL           | http://localhost:8082                  | The URL for the productos microservice                  |
 
+## Pedidos
+
+| Método | Endpoint(/pedidos) | Auth  | Descripción                          | Status Code       | Return Content |
+|--------|--------------------|-------|--------------------------------------|-------------------|----------------|
+| GET    | /                  | ADMIN | Devuelve todos los pedidos paginados | 200 or 401        | JSON           |
+| POST   | /                  | ADMIN | Crea un pedidos                      | 200 or 401        | JSON           |
+| GET    | /{id}              | ADMIN | Devuelve un pedido                   | 200 or 401 or 423 | JSON           |
+| PUT    | /{id}              | ADMIN | Actualiza un pedido                  | 200 or 401        | JSON           |
+| DELETE | /{id}              | ADMIN | Elimina un pedido                    | 204 or 401        | JSON           |
+| GET    | /me                | USER  | Devuelve un pedido                   | 200 or 401        | JSON           |
+
 ### Docker compose
 
 ```

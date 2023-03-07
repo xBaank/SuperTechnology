@@ -1,15 +1,25 @@
 {
 	"info": {
-		"_postman_id": "639b4609-1305-4118-87df-932e0265c2b6",
+		"_postman_id": "eab6e4c6-d7b1-4b51-b6f8-1909f7a85a2e",
 		"name": "Pedidos",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25878521"
 	},
 	"item": [
 		{
 			"name": "GET PAGED",
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/pedidos",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"pedidos"
+					]
+				}
 			},
 			"response": [
 				{
@@ -18,24 +28,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/pedidos?page=0&size=10",
-							"protocol": "http",
+							"raw": "{{URL}}/pedidos",
 							"host": [
-								"localhost"
+								"{{URL}}"
 							],
-							"port": "8080",
 							"path": [
 								"pedidos"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "0"
-								},
-								{
-									"key": "size",
-									"value": "10"
-								}
 							]
 						}
 					},
@@ -45,7 +43,7 @@
 					"header": [
 						{
 							"key": "Content-Length",
-							"value": "501"
+							"value": "1216"
 						},
 						{
 							"key": "Content-Type",
@@ -57,7 +55,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"page\": 0,\n    \"size\": 1,\n    \"result\": [\n        {\n            \"id\": \"63eb63db256c9c2385fbf9d5\",\n            \"usuario\": {\n                \"id\": \"fake\",\n                \"username\": \"Fake User\",\n                \"email\": \"test@gmail.com\"\n            },\n            \"tareas\": [\n                {\n                    \"id\": \"63eb63db256c9c2385fbf9d4\",\n                    \"productos\": [\n                        {\n                            \"id\": \"fake\",\n                            \"nombre\": \"Fake Producto\",\n                            \"categoria\": \"Fake Categoria\",\n                            \"stock\": 10,\n                            \"descripcion\": \"Fake Descripcion\",\n                            \"precio\": 10,\n                            \"avatar\": \"Fake Avatar\"\n                        }\n                    ],\n                    \"empleado\": {\n                        \"id\": \"fake\",\n                        \"username\": \"Fake User\",\n                        \"email\": \"test@gmail.com\"\n                    },\n                    \"createdAt\": 1676370907162\n                }\n            ],\n            \"iva\": 21,\n            \"estado\": \"PENDIENTE\",\n            \"createdAt\": 1676370907162\n        }\n    ]\n}"
+					"body": "{\n    \"page\": 0,\n    \"size\": 1,\n    \"result\": [\n        {\n            \"id\": \"6407840efcb3b6788549cbb5\",\n            \"usuario\": {\n                \"username\": \"Test_User\",\n                \"email\": \"test@example.com\",\n                \"role\": \"SUPER_ADMIN\",\n                \"addresses\": [\n                    \"C/1\",\n                    \"C/1_1\"\n                ],\n                \"avatar\": \"\",\n                \"createdAt\": \"2023-03-07\",\n                \"active\": true\n            },\n            \"tareas\": [\n                {\n                    \"id\": \"6407840efcb3b6788549cbb3\",\n                    \"producto\": {\n                        \"id\": \"13a5397b-bd15-11ed-8dec-0242ac120003\",\n                        \"nombre\": \"perro\",\n                        \"categoria\": \"PIEZA\",\n                        \"stock\": 3,\n                        \"description\": \"Animal\",\n                        \"precio\": 12.3,\n                        \"activo\": \"true\",\n                        \"createdAt\": \"2023-03-07T19:35:58.045178300\",\n                        \"updateAt\": \"null\",\n                        \"deleteAt\": \"null\"\n                    },\n                    \"empleado\": {\n                        \"username\": \"Test_User\",\n                        \"email\": \"test@example.com\",\n                        \"role\": \"SUPER_ADMIN\",\n                        \"addresses\": [\n                            \"C/1\",\n                            \"C/1_1\"\n                        ],\n                        \"avatar\": \"\",\n                        \"createdAt\": \"2023-03-07\",\n                        \"active\": true\n                    },\n                    \"createdAt\": 1678214157905\n                },\n                {\n                    \"id\": \"6407840efcb3b6788549cbb4\",\n                    \"producto\": {\n                        \"id\": \"13a5397b-bd15-11ed-8dec-0242ac120003\",\n                        \"nombre\": \"perro\",\n                        \"categoria\": \"PIEZA\",\n                        \"stock\": 3,\n                        \"description\": \"Animal\",\n                        \"precio\": 12.3,\n                        \"activo\": \"true\",\n                        \"createdAt\": \"2023-03-07T19:35:58.100346800\",\n                        \"updateAt\": \"null\",\n                        \"deleteAt\": \"null\"\n                    },\n                    \"empleado\": {\n                        \"username\": \"Test_User\",\n                        \"email\": \"test@example.com\",\n                        \"role\": \"SUPER_ADMIN\",\n                        \"addresses\": [\n                            \"C/1\",\n                            \"C/1_1\"\n                        ],\n                        \"avatar\": \"\",\n                        \"createdAt\": \"2023-03-07\",\n                        \"active\": true\n                    },\n                    \"createdAt\": 1678214157905\n                }\n            ],\n            \"iva\": 21,\n            \"estado\": \"EN_PROCESO\",\n            \"createdAt\": 1678214157905\n        }\n    ]\n}"
 				}
 			]
 		},
@@ -68,7 +66,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"usuario\": \"fake\",\r\n    \"productos\": [\"fake\"],\r\n    \"iva\": 21\r\n}",
+					"raw": "{\r\n    \"iva\": 21,\r\n    \"tareas\": [\r\n        {\r\n            \"empleadoUsername\": \"Test_User2\",\r\n            \"producto\": \"13a5397b-bd15-11ed-8dec-0242ac120003\"\r\n        },\r\n        {\r\n            \"empleadoUsername\": \"Test_User2\",\r\n            \"producto\": \"13a5397b-bd15-11ed-8dec-0242ac120003\"\r\n        }\r\n    ],\r\n    \"usuarioUsername\": \"Test_User\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -76,12 +74,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/pedidos",
-					"protocol": "http",
+					"raw": "{{URL}}/pedidos",
 					"host": [
-						"localhost"
+						"{{URL}}"
 					],
-					"port": "8080",
 					"path": [
 						"pedidos"
 					]
@@ -95,7 +91,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"usuario\": \"fake\",\r\n    \"productos\": [\"fake\"],\r\n    \"iva\": 21\r\n}",
+							"raw": "{\r\n    \"iva\": 21,\r\n    \"tareas\": [\r\n        {\r\n            \"empleadoUsername\": \"Test_User2\",\r\n            \"producto\": \"13a5397b-bd15-11ed-8dec-0242ac120003\"\r\n        },\r\n        {\r\n            \"empleadoUsername\": \"Test_User2\",\r\n            \"producto\": \"13a5397b-bd15-11ed-8dec-0242ac120003\"\r\n        }\r\n    ],\r\n    \"usuarioUsername\": \"Test_User\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -103,24 +99,22 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/pedidos",
-							"protocol": "http",
+							"raw": "{{URL}}/pedidos",
 							"host": [
-								"localhost"
+								"{{URL}}"
 							],
-							"port": "8080",
 							"path": [
 								"pedidos"
 							]
 						}
 					},
-					"status": "OK",
-					"code": 200,
+					"status": "Created",
+					"code": 201,
 					"_postman_previewlanguage": "json",
 					"header": [
 						{
 							"key": "Content-Length",
-							"value": "470"
+							"value": "1185"
 						},
 						{
 							"key": "Content-Type",
@@ -132,7 +126,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": \"63eb63db256c9c2385fbf9d5\",\n    \"usuario\": {\n        \"id\": \"fake\",\n        \"username\": \"Fake User\",\n        \"email\": \"test@gmail.com\"\n    },\n    \"tareas\": [\n        {\n            \"id\": \"63eb63db256c9c2385fbf9d4\",\n            \"productos\": [\n                {\n                    \"id\": \"fake\",\n                    \"nombre\": \"Fake Producto\",\n                    \"categoria\": \"Fake Categoria\",\n                    \"stock\": 10,\n                    \"descripcion\": \"Fake Descripcion\",\n                    \"precio\": 10,\n                    \"avatar\": \"Fake Avatar\"\n                }\n            ],\n            \"empleado\": {\n                \"id\": \"fake\",\n                \"username\": \"Fake User\",\n                \"email\": \"test@gmail.com\"\n            },\n            \"createdAt\": 1676370907162\n        }\n    ],\n    \"iva\": 21,\n    \"estado\": \"PENDIENTE\",\n    \"createdAt\": 1676370907162\n}"
+					"body": "{\n    \"id\": \"6407840efcb3b6788549cbb5\",\n    \"usuario\": {\n        \"username\": \"Test_User\",\n        \"email\": \"test@example.com\",\n        \"role\": \"SUPER_ADMIN\",\n        \"addresses\": [\n            \"C/1\",\n            \"C/1_1\"\n        ],\n        \"avatar\": \"\",\n        \"createdAt\": \"2023-03-07\",\n        \"active\": true\n    },\n    \"tareas\": [\n        {\n            \"id\": \"6407840efcb3b6788549cbb3\",\n            \"producto\": {\n                \"id\": \"13a5397b-bd15-11ed-8dec-0242ac120003\",\n                \"nombre\": \"perro\",\n                \"categoria\": \"PIEZA\",\n                \"stock\": 3,\n                \"description\": \"Animal\",\n                \"precio\": 12.3,\n                \"activo\": \"true\",\n                \"createdAt\": \"2023-03-07T19:35:58.045178300\",\n                \"updateAt\": \"null\",\n                \"deleteAt\": \"null\"\n            },\n            \"empleado\": {\n                \"username\": \"Test_User\",\n                \"email\": \"test@example.com\",\n                \"role\": \"SUPER_ADMIN\",\n                \"addresses\": [\n                    \"C/1\",\n                    \"C/1_1\"\n                ],\n                \"avatar\": \"\",\n                \"createdAt\": \"2023-03-07\",\n                \"active\": true\n            },\n            \"createdAt\": 1678214157905\n        },\n        {\n            \"id\": \"6407840efcb3b6788549cbb4\",\n            \"producto\": {\n                \"id\": \"13a5397b-bd15-11ed-8dec-0242ac120003\",\n                \"nombre\": \"perro\",\n                \"categoria\": \"PIEZA\",\n                \"stock\": 3,\n                \"description\": \"Animal\",\n                \"precio\": 12.3,\n                \"activo\": \"true\",\n                \"createdAt\": \"2023-03-07T19:35:58.100346800\",\n                \"updateAt\": \"null\",\n                \"deleteAt\": \"null\"\n            },\n            \"empleado\": {\n                \"username\": \"Test_User\",\n                \"email\": \"test@example.com\",\n                \"role\": \"SUPER_ADMIN\",\n                \"addresses\": [\n                    \"C/1\",\n                    \"C/1_1\"\n                ],\n                \"avatar\": \"\",\n                \"createdAt\": \"2023-03-07\",\n                \"active\": true\n            },\n            \"createdAt\": 1678214157905\n        }\n    ],\n    \"iva\": 21,\n    \"estado\": \"EN_PROCESO\",\n    \"createdAt\": 1678214157905\n}"
 				}
 			]
 		},
@@ -143,7 +137,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"estado\" : \"COMPLETADO\"\r\n}",
+					"raw": "{\r\n    \"iva\" : 22,\r\n    \"estado\" : \"COMPLETADO\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -151,15 +145,13 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/pedidos/{id}",
-					"protocol": "http",
+					"raw": "{{URL}}/pedidos/6407840efcb3b6788549cbb5",
 					"host": [
-						"localhost"
+						"{{URL}}"
 					],
-					"port": "8080",
 					"path": [
 						"pedidos",
-						"{id}"
+						"6407840efcb3b6788549cbb5"
 					]
 				}
 			},
@@ -171,7 +163,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"estado\" : \"COMPLETADO\"\r\n}",
+							"raw": "{\r\n    \"iva\" : 22,\r\n    \"estado\" : \"COMPLETADO\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -179,15 +171,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/pedidos/63eb63db256c9c2385fbf9d5",
-							"protocol": "http",
+							"raw": "{{URL}}/pedidos/6407840efcb3b6788549cbb5",
 							"host": [
-								"localhost"
+								"{{URL}}"
 							],
-							"port": "8080",
 							"path": [
 								"pedidos",
-								"63eb63db256c9c2385fbf9d5"
+								"6407840efcb3b6788549cbb5"
 							]
 						}
 					},
@@ -197,7 +187,7 @@
 					"header": [
 						{
 							"key": "Content-Length",
-							"value": "471"
+							"value": "1185"
 						},
 						{
 							"key": "Content-Type",
@@ -209,7 +199,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": \"63eb63db256c9c2385fbf9d5\",\n    \"usuario\": {\n        \"id\": \"fake\",\n        \"username\": \"Fake User\",\n        \"email\": \"test@gmail.com\"\n    },\n    \"tareas\": [\n        {\n            \"id\": \"63eb63db256c9c2385fbf9d4\",\n            \"productos\": [\n                {\n                    \"id\": \"fake\",\n                    \"nombre\": \"Fake Producto\",\n                    \"categoria\": \"Fake Categoria\",\n                    \"stock\": 10,\n                    \"descripcion\": \"Fake Descripcion\",\n                    \"precio\": 10,\n                    \"avatar\": \"Fake Avatar\"\n                }\n            ],\n            \"empleado\": {\n                \"id\": \"fake\",\n                \"username\": \"Fake User\",\n                \"email\": \"test@gmail.com\"\n            },\n            \"createdAt\": 1676370907162\n        }\n    ],\n    \"iva\": 21,\n    \"estado\": \"COMPLETADO\",\n    \"createdAt\": 1676370907162\n}"
+					"body": "{\n    \"id\": \"6407840efcb3b6788549cbb5\",\n    \"usuario\": {\n        \"username\": \"Test_User\",\n        \"email\": \"test@example.com\",\n        \"role\": \"SUPER_ADMIN\",\n        \"addresses\": [\n            \"C/1\",\n            \"C/1_1\"\n        ],\n        \"avatar\": \"\",\n        \"createdAt\": \"2023-03-07\",\n        \"active\": true\n    },\n    \"tareas\": [\n        {\n            \"id\": \"6407840efcb3b6788549cbb3\",\n            \"producto\": {\n                \"id\": \"13a5397b-bd15-11ed-8dec-0242ac120003\",\n                \"nombre\": \"perro\",\n                \"categoria\": \"PIEZA\",\n                \"stock\": 3,\n                \"description\": \"Animal\",\n                \"precio\": 12.3,\n                \"activo\": \"true\",\n                \"createdAt\": \"2023-03-07T19:35:58.045178300\",\n                \"updateAt\": \"null\",\n                \"deleteAt\": \"null\"\n            },\n            \"empleado\": {\n                \"username\": \"Test_User\",\n                \"email\": \"test@example.com\",\n                \"role\": \"SUPER_ADMIN\",\n                \"addresses\": [\n                    \"C/1\",\n                    \"C/1_1\"\n                ],\n                \"avatar\": \"\",\n                \"createdAt\": \"2023-03-07\",\n                \"active\": true\n            },\n            \"createdAt\": 1678214157905\n        },\n        {\n            \"id\": \"6407840efcb3b6788549cbb4\",\n            \"producto\": {\n                \"id\": \"13a5397b-bd15-11ed-8dec-0242ac120003\",\n                \"nombre\": \"perro\",\n                \"categoria\": \"PIEZA\",\n                \"stock\": 3,\n                \"description\": \"Animal\",\n                \"precio\": 12.3,\n                \"activo\": \"true\",\n                \"createdAt\": \"2023-03-07T19:35:58.100346800\",\n                \"updateAt\": \"null\",\n                \"deleteAt\": \"null\"\n            },\n            \"empleado\": {\n                \"username\": \"Test_User\",\n                \"email\": \"test@example.com\",\n                \"role\": \"SUPER_ADMIN\",\n                \"addresses\": [\n                    \"C/1\",\n                    \"C/1_1\"\n                ],\n                \"avatar\": \"\",\n                \"createdAt\": \"2023-03-07\",\n                \"active\": true\n            },\n            \"createdAt\": 1678214157905\n        }\n    ],\n    \"iva\": 21,\n    \"estado\": \"EN_PROCESO\",\n    \"createdAt\": 1678214157905\n}"
 				}
 			]
 		},
@@ -219,15 +209,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/pedidos/63eb63db256c9c2385fbf9d5",
-					"protocol": "http",
+					"raw": "{{URL}}/pedidos/6407840efcb3b6788549cbb5",
 					"host": [
-						"localhost"
+						"{{URL}}"
 					],
-					"port": "8080",
 					"path": [
 						"pedidos",
-						"63eb63db256c9c2385fbf9d5"
+						"6407840efcb3b6788549cbb5"
 					]
 				}
 			},
@@ -238,7 +226,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/pedidos/63eb63db256c9c2385fbf9d5",
+							"raw": "http://localhost:8080/pedidos/6407840efcb3b6788549cbb5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -246,7 +234,7 @@
 							"port": "8080",
 							"path": [
 								"pedidos",
-								"63eb63db256c9c2385fbf9d5"
+								"6407840efcb3b6788549cbb5"
 							]
 						}
 					},
@@ -270,16 +258,18 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/pedidos/usuario/fake",
-					"protocol": "http",
+					"raw": "{{URL}}/pedidos?username=Test_User",
 					"host": [
-						"localhost"
+						"{{URL}}"
 					],
-					"port": "8080",
 					"path": [
-						"pedidos",
-						"usuario",
-						"fake"
+						"pedidos"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "Test_User"
+						}
 					]
 				}
 			},
@@ -290,16 +280,18 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/pedidos/usuario/fake",
-							"protocol": "http",
+							"raw": "{{URL}}/pedidos?username=Test_User",
 							"host": [
-								"localhost"
+								"{{URL}}"
 							],
-							"port": "8080",
 							"path": [
-								"pedidos",
-								"usuario",
-								"fake"
+								"pedidos"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "Test_User"
+								}
 							]
 						}
 					},
@@ -309,7 +301,7 @@
 					"header": [
 						{
 							"key": "Content-Length",
-							"value": "501"
+							"value": "1216"
 						},
 						{
 							"key": "Content-Type",
@@ -321,9 +313,46 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"page\": 0,\n    \"size\": 1,\n    \"result\": [\n        {\n            \"id\": \"63eb6509256c9c2385fbf9d8\",\n            \"usuario\": {\n                \"id\": \"fake\",\n                \"username\": \"Fake User\",\n                \"email\": \"test@gmail.com\"\n            },\n            \"tareas\": [\n                {\n                    \"id\": \"63eb6509256c9c2385fbf9d7\",\n                    \"productos\": [\n                        {\n                            \"id\": \"fake\",\n                            \"nombre\": \"Fake Producto\",\n                            \"categoria\": \"Fake Categoria\",\n                            \"stock\": 10,\n                            \"descripcion\": \"Fake Descripcion\",\n                            \"precio\": 10,\n                            \"avatar\": \"Fake Avatar\"\n                        }\n                    ],\n                    \"empleado\": {\n                        \"id\": \"fake\",\n                        \"username\": \"Fake User\",\n                        \"email\": \"test@gmail.com\"\n                    },\n                    \"createdAt\": 1676371209941\n                }\n            ],\n            \"iva\": 21,\n            \"estado\": \"PENDIENTE\",\n            \"createdAt\": 1676371209941\n        }\n    ]\n}"
+					"body": "{\n    \"page\": 0,\n    \"size\": 1,\n    \"result\": [\n        {\n            \"id\": \"640786bae7e25a3ff2d7c403\",\n            \"usuario\": {\n                \"username\": \"Test_User\",\n                \"email\": \"test@example.com\",\n                \"role\": \"SUPER_ADMIN\",\n                \"addresses\": [\n                    \"C/1\",\n                    \"C/1_1\"\n                ],\n                \"avatar\": \"\",\n                \"createdAt\": \"2023-03-07\",\n                \"active\": true\n            },\n            \"tareas\": [\n                {\n                    \"id\": \"640786bae7e25a3ff2d7c401\",\n                    \"producto\": {\n                        \"id\": \"13a5397b-bd15-11ed-8dec-0242ac120003\",\n                        \"nombre\": \"perro\",\n                        \"categoria\": \"PIEZA\",\n                        \"stock\": 3,\n                        \"description\": \"Animal\",\n                        \"precio\": 12.3,\n                        \"activo\": \"true\",\n                        \"createdAt\": \"2023-03-07T19:47:22.063032600\",\n                        \"updateAt\": \"null\",\n                        \"deleteAt\": \"null\"\n                    },\n                    \"empleado\": {\n                        \"username\": \"Test_User\",\n                        \"email\": \"test@example.com\",\n                        \"role\": \"SUPER_ADMIN\",\n                        \"addresses\": [\n                            \"C/1\",\n                            \"C/1_1\"\n                        ],\n                        \"avatar\": \"\",\n                        \"createdAt\": \"2023-03-07\",\n                        \"active\": true\n                    },\n                    \"createdAt\": 1678214842037\n                },\n                {\n                    \"id\": \"640786bae7e25a3ff2d7c402\",\n                    \"producto\": {\n                        \"id\": \"13a5397b-bd15-11ed-8dec-0242ac120003\",\n                        \"nombre\": \"perro\",\n                        \"categoria\": \"PIEZA\",\n                        \"stock\": 3,\n                        \"description\": \"Animal\",\n                        \"precio\": 12.3,\n                        \"activo\": \"true\",\n                        \"createdAt\": \"2023-03-07T19:47:22.090871600\",\n                        \"updateAt\": \"null\",\n                        \"deleteAt\": \"null\"\n                    },\n                    \"empleado\": {\n                        \"username\": \"Test_User\",\n                        \"email\": \"test@example.com\",\n                        \"role\": \"SUPER_ADMIN\",\n                        \"addresses\": [\n                            \"C/1\",\n                            \"C/1_1\"\n                        ],\n                        \"avatar\": \"\",\n                        \"createdAt\": \"2023-03-07\",\n                        \"active\": true\n                    },\n                    \"createdAt\": 1678214842037\n                }\n            ],\n            \"iva\": 21,\n            \"estado\": \"EN_PROCESO\",\n            \"createdAt\": 1678214842037\n        }\n    ]\n}"
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzN2NlZDQ5NC0wNjYxLTQ2MjYtOTlmYi0zODMwNTllNWNhODIiLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3ODM4NjMwOCwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.3wVY8HormqjBEUoDDmFt1d9C_2du2lPY23Xi1TucnWq2qkPGDeZ9OWjOByfewEESxDxAT9MoF-k7t1gGMSX88g",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "https://localhost:8443",
+			"type": "string"
 		}
 	]
 }
