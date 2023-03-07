@@ -137,8 +137,8 @@ La ruta del micro servicio será: https://localhost:6969/usuarios
 | Método | Endpoint(/usuarios/storage) | Auth | Descripción                              | Status Code | Return Content |
 |--------|-----------------------------|------|------------------------------------------|-------------|----------------|
 | GET    | /filename:.+                | NO   | Obtener archivo especificado almacenado. | 200         | Resource       |
-| POST   | " "                         | JWT  | Subir archivo multiparte.                | 200         | JSON           |
-| DELETE | /filename:.+                | JWT  | Eliminar archivo especifo almacenado.    | 200         | Resource       |
+| POST   | " "                         | JWT  | Subir archivo multiparte.                | 201         | JSON           |
+| DELETE | /filename:.+                | JWT  | Eliminar archivo especifo almacenado.    | 200         |                |
 
 # Funcionamiento de la aplicación
 
