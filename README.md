@@ -46,7 +46,7 @@ Las tareas, por su parte, tendrán un id, producto, empleado que las creó, prec
 Un pedido está compuesto de múltiples tareas, pero una tarea solo pertenece a un pedido, y un pedido no puede existir sin 
 tener una tarea asociada.
 
-El microservicio de productos y servicios contrará con la entidad producto, que tendrá un id, uuid, 
+El microservicio de productos y servicios contará con la entidad producto, que tendrá un id, uuid, 
 nombre del producto o servicio, categoria, stock, una descripción, fecha de generación, de actualización y de borrado, 
 y también contará con un precio y si está activo o no. La fecha de borrado simboliza cuando se ha desactivado por ultima vez 
 el producto, ya que la actividad del mismo actúa a modo de "borrado lógico".

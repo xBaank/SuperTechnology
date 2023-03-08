@@ -11,8 +11,8 @@
 | JWT_SECRET              | pedidos                                | Contraseña para cifrar el token         |
 | MONGO_CONNECTION_STRING | mongodb://root:example@localhost:27017 | Cadena de conexion a mongo              |
 | MONGO_DATABASE          | pedidos                                | Nombre de la base de datos              |
-| USUARIOS_URL            | http://localhost:8081                  | Url para el microservicio de usuarios   |
-| PRODUCTOS_URL           | http://localhost:8082                  | Url para el microservicio de productos  |
+| USUARIOS_URL            | https://localhost:6969                 | Url para el microservicio de usuarios   |
+| PRODUCTOS_URL           | https://localhost:6963                 | Url para el microservicio de productos  |
 
 ## Pedidos
 
@@ -43,13 +43,11 @@ services:
       - KEY_ALIAS=SuperTechnology
       - KEYSTORE_PASSWORD=1A2B3C4O
       - PRIVATE_KEY_PASSWORD=1A2B3C4O
-      - JWT_ISSUER=pedidos
-      - JWT_AUDIENCE=pedidos
-      - JWT_SECRET=pedidos
+      - JWT_SECRET=Zanahoria_Turbopropulsada9
       - MONGO_CONNECTION_STRING=mongodb://root:example@mongo:27017
       - MONGO_DATABASE=pedidos
-      - USUARIOS_URL=http://usuarios:8081
-      - PRODUCTOS_URL=http://productos:8082
+      - USUARIOS_URL=https://usuarios:6969
+      - PRODUCTOS_URL=https://productos:6963
     depends_on:
       - mongo
       - usuarios
