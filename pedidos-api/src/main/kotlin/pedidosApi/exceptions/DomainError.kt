@@ -8,6 +8,7 @@ sealed class PedidoError : DomainError() {
     class InvalidPedidoPage(override val message: String) : PedidoError()
     class InvalidPedidoFormat(override val message: String) : PedidoError()
     class MissingPedidoId(override val message: String) : PedidoError()
+    class InvalidPedido(override val message: String) : PedidoError()
 }
 
 class ApiError(override val message: String, val code: Int?) : DomainError()

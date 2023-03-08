@@ -124,10 +124,11 @@ private fun filterByUsername(
 private suspend fun createPedido(
     pedido: CreatePedidoDto,
     token: String
-): Either<ApiError, Pedido> = either {
+): Either<DomainError, Pedido> = either {
     val userClient by inject<UsuariosClient>()
     val productoClient by inject<ProductosClient>()
 
+    if (pedido.iva < 0) shift<DomainError>(PedidoError.InvalidPedido("El iva no puede ser negativo"))
 
     val usuario = userClient.getUsuario(token, pedido.usuarioUsername).mapToApiError().bind()
 
@@ -172,6 +173,10 @@ private suspend fun updatePedido(
 ): Either<DomainError, Pedido> = either {
     val userClient by inject<UsuariosClient>()
     val pedidosRepository by inject<PedidosRepository>()
+
+    if (updatePedidoDto?.iva != null && updatePedidoDto.iva < 0)
+        shift<DomainError>(PedidoError.InvalidPedido("El iva no puede ser negativo"))
+
 
     val _id = id.toObjectIdOrNull()?.toId<Pedido>()
         ?: shift(PedidoError.InvalidPedidoId("Invalid id format"))
@@ -224,5 +229,10 @@ suspend fun ApplicationCall.handleError(error: DomainError) = when (error) {
             "Dependency failed with message : ${error.message.ifEmpty { "No message" }}, and code ${error.code}",
             HttpStatusCode.FailedDependency.value
         )
+    )
+
+    is PedidoError.InvalidPedido -> respond(
+        HttpStatusCode.BadRequest,
+        buildErrorDto(error.message, HttpStatusCode.BadRequest.value)
     )
 }
