@@ -16,6 +16,7 @@ en el ***IES Luis Vives*** de ***Leganés***, y en el curso **2022 / 2023**.
 
 - [***Diseño***](#diseño)
 - [***Funcionamiento de la aplicación***](#funcionamiento-de-la-aplicación)
+- [***Swagger***](#swagger)
 - [***Autores***](#autores)
 
 ---
@@ -108,6 +109,14 @@ crear nuevos productos, consultar cosas como los productos no disponibles o
 todos los usuarios registrados, y borrar *lógicamente* las distintas entidades (ponerlas como inactivas); 
 y por último los super administradores, que pueden acceder a todos y cada uno de los endpoints, 
 incluidos los de borrado permanente o la creación de otros usuarios distintos a ellos mismos y con el rol que quieran.
+
+---
+
+## Swagger
+
+- [Productos](https://localhost:6963/swagger/index.html)
+- [Usuarios](https://localhost:6969/swagger/index.html)
+- [Pedidos](http://localhost:8080/docs/index.html#/)
 
 ---
 
