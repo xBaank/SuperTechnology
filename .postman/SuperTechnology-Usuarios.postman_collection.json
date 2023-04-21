@@ -1,0 +1,960 @@
+{
+	"info": {
+		"_postman_id": "c92b8d29-2297-4710-9d7c-3f9e908fa19a",
+		"name": "SuperTechnology-Usuarios",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25935391"
+	},
+	"item": [
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"TEST_99\",\r\n    \"email\": \"test99@gmail.com\",\r\n    \"password\": \"1234567\",\r\n    \"repeatPassword\": \"1234567\",\r\n    \"phone\": \"111111111\",\r\n    \"addresses\": [\r\n        \"C/55\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:6969/usuarios/register",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Test_User\",\r\n    \"password\": \"1234567\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:6969/usuarios/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listado Usuarios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/list",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listado Usuarios Paginado",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/list/paging?page=0&size=2",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"list",
+								"paging"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listado Usuarios Activos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/list/true",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"list",
+								"true"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listado Usuarios No Activos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/list/false",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"list",
+								"false"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Búsqueda Usuario Por Username",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/username/Test_User2",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"username",
+								"Test_User2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Búsqueda Usuario Por Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/id/013f6c63-ec33-40fb-bb8d-b5083694f937",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"id",
+								"013f6c63-ec33-40fb-bb8d-b5083694f937"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Búsqueda Usuario Por Email",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/email/test2@example.com",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"email",
+								"test2@example.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Búsqueda Usuario Por Móvil",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/phone/123456799",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"phone",
+								"123456799"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"7654321\",\r\n    \"addresses\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:6969/usuarios/me",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Me Avatar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/Mario/Desktop/avatarTest.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://localhost:6969/usuarios/me/avatar",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"me",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Actividad Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/activity/test2@example.com",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"activity",
+								"test2@example.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Rol Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test2@example.com\",\r\n    \"role\": \"USER\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:6969/usuarios/role",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/test4@example.com",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"test4@example.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/me",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Direcciones",
+			"item": [
+				{
+					"name": "Listado Direcciones",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/list/address",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"list",
+								"address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listado Direcciones Paginado",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/list/address/paging?page=0&size=2",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"list",
+								"address",
+								"paging"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listado Direcciones Por UserId",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/list/address/1fa5f526-2759-45a9-9900-bb506fb1db6e",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"list",
+								"address",
+								"1fa5f526-2759-45a9-9900-bb506fb1db6e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Búsqueda Dirección Por Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/address/11f3cb92-f2df-4862-a4ac-b16ff09bd3be",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"address",
+								"11f3cb92-f2df-4862-a4ac-b16ff09bd3be"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Búsqueda Dirección Por Nombre",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/address?name=C/1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"address"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "C/1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Dirección Me Por Nombre",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/me/address?name=C/1_1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"me",
+								"address"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "C/1_1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Dirección Por Nombre",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/address?name=C/5&email=test5@example.com",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"address"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "C/5"
+								},
+								{
+									"key": "email",
+									"value": "test5@example.com"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Almacenamiento",
+			"item": [
+				{
+					"name": "Obtener Archivo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/storage/Test_User.png",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"storage",
+								"Test_User.png"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subir Archivo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/Mario/Desktop/avatarTest.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://localhost:6969/usuarios/storage",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"storage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar archivo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_SUPER_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:6969/usuarios/storage/Test_User.png",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"storage",
+								"Test_User.png"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bienvenida",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6969/usuarios",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6969",
+					"path": [
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bienvenida 2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6969/usuarios/",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6969",
+					"path": [
+						"usuarios",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Token_SUPER_ADMIN",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0ZTVlNDE1Ni0wZDAzLTRkNDYtODVmYi05M2M4YjZjOTZhNzkiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3ODE4MDM1NSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.t6i0-Op76y6y3AE6ruEpFzAFc6vWEMX5bazJMZQwceM5ZWLv-W9zbFwkCu1rGsT7nchkIhdMq2gdF3CGH1YN3Q",
+			"type": "string"
+		}
+	]
+}

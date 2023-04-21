@@ -1,0 +1,441 @@
+{
+	"info": {
+		"_postman_id": "2b396c5d-6014-492b-acfe-f2646473ad9a",
+		"name": "dev-productos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19419657"
+	},
+	"item": [
+		{
+			"name": "Get All Productos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Productos ADMINS",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/admin",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Producto",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre\": \"prueba\",\r\n    \"categoria\":\"MOVIL\",\r\n    \"stock\":3,\r\n    \"description\":\"prueba\",\r\n    \"precio\": 20.3,\r\n    \"activo\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:6963/api/products",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByID Producto",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/30d5e193-bc54-11ed-8709-0242ac1e0002",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"30d5e193-bc54-11ed-8709-0242ac1e0002"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByID Producto ADMINS",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/admin/e4b42aec-bc13-11ed-979c-0242ac120002",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"admin",
+						"e4b42aec-bc13-11ed-979c-0242ac120002"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByCategoria",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/category/movil",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"category",
+						"movil"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByCategoria ADMINS",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/admin/category/PIEZA",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"admin",
+						"category",
+						"PIEZA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByNombre Producto",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/name/Lenovo Yoga Tab 11 4-128GB 11 Gris",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"name",
+						"Lenovo Yoga Tab 11 4-128GB 11 Gris"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByNombre ADMINS",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/admin/name/Lenovo Yoga Tab 11 4-128GB 11 Gris",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"admin",
+						"name",
+						"Lenovo Yoga Tab 11 4-128GB 11 Gris"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Paging",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/paging?page=3&size=5",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"paging"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "3"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Paging ADMINS",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/admin/paging?page=3&size=5",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"admin",
+						"paging"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "3"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\r\n        \"uuid\": \"e523798b-bc13-11ed-979c-0242ac120002\",\r\n        \"nombre\": \"Lenovo Yoga Tab 11 4-128GB 11 Gris\",\r\n        \"categoria\": \"TABLET\",\r\n        \"stock\": 20,\r\n        \"description\": \"Tablet de Lenovo\",\r\n        \"precio\": 440.08,\r\n        \"activo\": false\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:6963/api/products/e523798b-bc13-11ed-979c-0242ac120002",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"e523798b-bc13-11ed-979c-0242ac120002"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6963/api/products/215759aa-bc16-11ed-979c-0242ac120002",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6963",
+					"path": [
+						"api",
+						"products",
+						"215759aa-bc16-11ed-979c-0242ac120002"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0ZTVlNDE1Ni0wZDAzLTRkNDYtODVmYi05M2M4YjZjOTZhNzkiLCJwYXNzd29yZCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJhY3RpdmUiOnRydWUsImV4cCI6MTY3ODE4MDM1NSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJUZXN0X1VzZXIifQ.t6i0-Op76y6y3AE6ruEpFzAFc6vWEMX5bazJMZQwceM5ZWLv-W9zbFwkCu1rGsT7nchkIhdMq2gdF3CGH1YN3Q",
+			"type": "string"
+		}
+	]
+}

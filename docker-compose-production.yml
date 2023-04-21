@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+
+  # -- USUARIOS --
+  postgresUsers:
+    container_name: "postgresUsers"
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres1234
+      - POSTGRES_DB=usuarios
+    volumes:
+      - postgresUsers:/var/lib/postgresql/data
+
+  supertechnology-usuarios:
+    build: ./usuarios-api
+    container_name: "supertechnology-usuarios"
+    restart: always
+    environment:
+      - POSTGRES_CONNECTION=r2dbc:postgresql://postgres:postgres1234@postgresUsers/usuarios
+      - JWT_SECRET=Zanahoria_Turbopropulsada9
+      - KEY_STORE_PATH=/cert/server_key.p12
+    ports:
+      - '6969:6969'
+    depends_on:
+      - postgresUsers
+    volumes:
+      - ./.cert:/cert
+
+  # -- PRODUCTOS --
+  mariadbProductos:
+    container_name: "mariadbProductos"
+    image: mariadb:latest
+    restart: 'always'
+    environment:
+      MYSQL_ROOT_PASSWORD: "mariadb1234"
+      MYSQL_DATABASE: "productos"
+      MYSQL_USER: "mariadb"
+      MYSQL_PASSWORD: "mariadb1234"
+    volumes:
+      - db:/var/lib/mariadb/data
+
+  supertechnology-productos:
+    build: ./productos-api
+    container_name: "supertechnology-productos"
+    environment:
+      - MARIADB_CONNECTION=r2dbc:mariadb://mariadb:mariadb1234@mariadbProductos/productos
+      - KEY_STORE_PATH=/cert/server_key.p12
+    restart: always
+    ports:
+      - '6963:6963'
+    depends_on:
+      - mariadbProductos
+    volumes:
+      - ./.cert:/cert
+
+  # -- PEDIDOS --
+  supertechnology-pedidos:
+    build: ./pedidos-api
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    environment:
+      - PORT=8080
+      - SSL_PORT=8443
+      - KEYSTORE=/cert/server_key.p12
+      - KEY_ALIAS=SuperTechnology
+      - KEYSTORE_PASSWORD=1A2B3C4O
+      - PRIVATE_KEY_PASSWORD=1A2B3C4O
+      - JWT_SECRET=Zanahoria_Turbopropulsada9
+      - MONGO_CONNECTION_STRING=mongodb://root:example@mongo:27017
+      - MONGO_DATABASE=pedidos
+      - USUARIOS_URL=https://supertechnology-usuarios:6969
+      - PRODUCTOS_URL=https://supertechnology-productos:6963
+    depends_on:
+      - mongo
+      - supertechnology-productos
+      - supertechnology-usuarios
+    volumes:
+      - ./.cert:/cert
+
+  mongo:
+    image: mongo:latest
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+
+
+volumes:
+  postgresUsers:
+    driver: local
+  db:
+    driver: local

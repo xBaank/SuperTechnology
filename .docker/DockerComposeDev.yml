@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+
+  # -- PEDIDOS --
+  mongoDev:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+
+  # -- PRODUCTOS --
+  mariadbProductosDev:
+    container_name: "mariadbProductosDev"
+    image: mariadb:latest
+    restart: 'always'
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "mariadbpass"
+      MYSQL_DATABASE: "productos"
+      MYSQL_USER: "mariadb"
+      MYSQL_PASSWORD: "mariadb1234"
+    volumes:
+      - dbDev:/var/lib/mariadb/data
+
+  # -- USUARIOS --
+  postgresUsersDev:
+    container_name: "postgresUsersDev"
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres1234
+      - POSTGRES_DB=usuarios
+    ports:
+      - "5555:5432"
+    volumes:
+      - postgresUsersDev:/var/lib/postgresql/data
+
+volumes:
+  postgresUsersDev:
+    driver: local
+  dbDev:
+    driver: local
